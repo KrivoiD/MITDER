@@ -3,13 +3,43 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
         xmlns:local="clr-namespace:MITDER"
         x:Class="MITDER.MainWindow"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="auto" Width="auto" DataContext="{Binding Source={StaticResource Locator}, Path=Main}">
     <Grid>
-
-        <Controls:ValueIndicator Value="1234.56789" IndicatorDiameter="20" IsLedOn="True" FontSize="50" IsTitleEnabled="False" IsUnitEnabled="true" BorderThickness="1" BorderBrush="Black" VerticalAlignment="Center"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Menu Grid.Row="0">
+            <MenuItem Header="Файл">
+                <MenuItem Header="Выход" Command="{Binding ExitCommand}"/>
+            </MenuItem>
+        </Menu>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Orientation="Vertical">
+                <Controls:ValueIndicator Margin="5,5,5,0" Value="{Binding CurrentValue, Mode=OneWay}" IndicatorDiameter="20" IsLedOn="True" FontSize="30" IsTitleEnabled="true" IsUnitEnabled="true" BorderThickness="1" BorderBrush="Black" VerticalAlignment="Center"/>
+                <Controls:ValueIndicator Margin="5,5,5,0" Value="1234.56789" IndicatorDiameter="20" IsLedOn="True" FontSize="30" IsTitleEnabled="true" IsUnitEnabled="true" BorderThickness="1" BorderBrush="Black" VerticalAlignment="Center"/>
+                <Controls:ValueIndicator Margin="5,5,5,0" Value="1234.56789" IndicatorDiameter="20" IsLedOn="True" FontSize="30" IsTitleEnabled="true" IsUnitEnabled="true" BorderThickness="1" BorderBrush="Black" VerticalAlignment="Center"/>
+                <Controls:ValueIndicator Margin="5,5,5,0" Value="1234.56789" IndicatorDiameter="20" IsLedOn="True" FontSize="30" IsTitleEnabled="true" IsUnitEnabled="true" BorderThickness="1" BorderBrush="Black" VerticalAlignment="Center"/>
+                <Controls:ValueIndicator Margin="5,5,5,0" Value="1234.56789" IndicatorDiameter="20" IsLedOn="True" FontSize="30" IsTitleEnabled="true" IsUnitEnabled="true" BorderThickness="1" BorderBrush="Black" VerticalAlignment="Center"/>
+                
+            </StackPanel>
+            <lvc:CartesianChart Grid.Column="1" Series="{Binding SeriesCollection}" IsManipulationEnabled="True" >
+                <lvc:CartesianChart.AxisY>
+                    <lvc:Axis Title="Sales" LabelFormatter="{Binding YFormatter}"></lvc:Axis>
+                </lvc:CartesianChart.AxisY>
+                <lvc:CartesianChart.AxisX>
+                    <lvc:Axis Title="Month" Labels="{Binding Labels}"></lvc:Axis>
+                </lvc:CartesianChart.AxisX>
+            </lvc:CartesianChart>
+        </Grid>
 
     </Grid>
 </Window>
