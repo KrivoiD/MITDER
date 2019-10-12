@@ -77,10 +77,6 @@
       <Project>{2C5EAC7F-CA6B-4E21-873A-009B7A912013}</Project>
       <Name>Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\CurrentValueIndicator\CurrentValueIndicator.csproj">
-      <Project>{550406BB-8B2B-4C65-9F84-DB458084E873}</Project>
-      <Name>CurrentValueIndicator</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Multimeters\Multimeters.csproj">
       <Project>{BABBF6A5-53FA-4EF8-AA86-DD1082172C56}</Project>
       <Name>Multimeters</Name>

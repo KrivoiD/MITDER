@@ -7,12 +7,12 @@ using System.Windows;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("CurrentValueIndicator")]
+[assembly: AssemblyTitle("Indicators")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("WolfishLair")]
-[assembly: AssemblyProduct("CurrentValueIndicator")]
-[assembly: AssemblyCopyright("Copyright © WolfishLair 2018")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("MITDER")]
+[assembly: AssemblyCopyright("Copyright © Krivchenya")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

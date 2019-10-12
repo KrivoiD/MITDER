@@ -12,7 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace CurrentValueIndicator
+namespace Indicators
 {
     /// <summary>
     /// Interaction logic for UserControl1.xaml
