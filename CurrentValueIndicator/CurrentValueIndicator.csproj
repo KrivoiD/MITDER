@@ -1,18 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\Configurations.targets" />
   <PropertyGroup>
-    <ProjectGuid>{CFC3ADD6-916C-4FB5-83A5-5E7A77B94F06}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <ProjectGuid>{550406BB-8B2B-4C65-9F84-DB458084E873}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MITDER</RootNamespace>
-    <AssemblyName>MITDER</AssemblyName>
+    <RootNamespace>CurrentValueIndicator</RootNamespace>
+    <AssemblyName>CurrentValueIndicator</AssemblyName>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -27,21 +25,12 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <ApplicationDefinition Include="App.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </ApplicationDefinition>
-    <Compile Include="ViewModel\MainWindowViewModel.cs" />
-    <Page Include="MainWindow.xaml">
+    <Page Include="CurrentValueIndicator.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="App.xaml.cs">
-      <DependentUpon>App.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
+    <Compile Include="CurrentValueIndicator.xaml.cs">
+      <DependentUpon>CurrentValueIndicator.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -63,29 +52,13 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="app.config">
-      <SubType>Designer</SubType>
-    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Core\Core.csproj">
-      <Project>{2C5EAC7F-CA6B-4E21-873A-009B7A912013}</Project>
-      <Name>Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CurrentValueIndicator\CurrentValueIndicator.csproj">
-      <Project>{550406BB-8B2B-4C65-9F84-DB458084E873}</Project>
-      <Name>CurrentValueIndicator</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Multimeters\Multimeters.csproj">
-      <Project>{BABBF6A5-53FA-4EF8-AA86-DD1082172C56}</Project>
-      <Name>Multimeters</Name>
-    </ProjectReference>
-  </ItemGroup>
+  <Import Project="..\Configurations.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

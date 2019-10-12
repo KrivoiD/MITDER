@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\Configurations.targets" />
+  <PropertyGroup>
+    <ProjectGuid>{BABBF6A5-53FA-4EF8-AA86-DD1082172C56}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Multimeters</RootNamespace>
+    <AssemblyName>Multimeters</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Agilent34410.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <Choose>
+    <When Condition=" '$(Configuration)' == 'WithoutDevices' ">
+      <ItemGroup>
+        <COMReference Include="Agilent34410Lib">
+          <Guid>{7E65C8D3-046F-42D3-BA3F-4C7C31925DF5}</Guid>
+          <VersionMajor>1</VersionMajor>
+          <VersionMinor>1</VersionMinor>
+          <Lcid>0</Lcid>
+          <WrapperTool>primary</WrapperTool>
+          <Isolated>False</Isolated>
+          <EmbedInteropTypes>False</EmbedInteropTypes>
+        </COMReference>
+        <COMReference Include="IviDmmLib">
+          <Guid>{47ED5122-A398-11D4-BA58-000064657374}</Guid>
+          <VersionMajor>3</VersionMajor>
+          <VersionMinor>0</VersionMinor>
+          <Lcid>0</Lcid>
+          <WrapperTool>primary</WrapperTool>
+          <Isolated>False</Isolated>
+          <EmbedInteropTypes>False</EmbedInteropTypes>
+        </COMReference>
+        <COMReference Include="IviDriverLib">
+          <Guid>{47ED5120-A398-11D4-BA58-000064657374}</Guid>
+          <VersionMajor>1</VersionMajor>
+          <VersionMinor>0</VersionMinor>
+          <Lcid>0</Lcid>
+          <WrapperTool>primary</WrapperTool>
+          <Isolated>False</Isolated>
+          <EmbedInteropTypes>False</EmbedInteropTypes>
+        </COMReference>
+        <COMReference Include="VisaComLib">
+      <Guid>{DB8CBF00-D6D3-11D4-AA51-00A024EE30BD}</Guid>
+      <VersionMajor>5</VersionMajor>
+      <VersionMinor>5</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </COMReference>        
+      </ItemGroup>
+    </When>
+  </Choose>
+  <ItemGroup>
+    <ProjectReference Include="..\Core\Core.csproj">
+      <Project>{2C5EAC7F-CA6B-4E21-873A-009B7A912013}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using MITDER.ViewModel;
 
 namespace MITDER
 {
@@ -22,6 +23,13 @@ namespace MITDER
         public MainWindow()
         {
             InitializeComponent();
+            DataContext = new MainWindowViewModel();
+            this.Closed += new EventHandler(MainWindow_Closed);
+        }
+
+        void MainWindow_Closed(object sender, EventArgs e)
+        {
+            ((MainWindowViewModel)DataContext).Dispose();
         }
     }
 }
