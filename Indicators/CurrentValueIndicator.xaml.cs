@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -25,8 +26,9 @@ namespace Indicators
             InitializeComponent();
         }
 
+        #region Dependency Properties and its valuechanged methods
 
-
+        [Category("Values")]
         public double Value {
             get { return (double)GetValue(ValueProperty); }
             set { SetValue(ValueProperty, value); }
@@ -43,6 +45,72 @@ namespace Indicators
             var currentSize = new Size(indicator.ValueTextBlock.ActualWidth, indicator.ValueTextBlock.ActualHeight);
             indicator.ValueTextBlock.FontSize = CalculateFontSize(currentSize, indicator.ValueTextBlock);
         }
+
+        [Category("Values")]
+        public string Title {
+            get { return (string)GetValue(TitleProperty); }
+            set { SetValue(TitleProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for Title.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty TitleProperty =
+            DependencyProperty.Register("Title", typeof(string), typeof(CurrentValueIndicator), new PropertyMetadata("Title", new PropertyChangedCallback(TitleChanged)));
+
+        private static void TitleChanged(DependencyObject sender, DependencyPropertyChangedEventArgs args)
+        {
+            var indicator = sender as CurrentValueIndicator;
+            indicator.TitleTextBlock.Text = ((string)args.NewValue);
+            var currentSize = new Size(indicator.TitleTextBlock.ActualWidth, indicator.TitleTextBlock.ActualHeight);
+            indicator.TitleTextBlock.FontSize = CalculateFontSize(currentSize, indicator.TitleTextBlock);
+        }
+
+        [Category("Values")]
+        public string Unit {
+            get { return (string)GetValue(UnitProperty); }
+            set { SetValue(UnitProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for Title.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty UnitProperty =
+            DependencyProperty.Register("Unit", typeof(string), typeof(CurrentValueIndicator), new PropertyMetadata("Unit", new PropertyChangedCallback(UnitChanged)));
+
+        private static void UnitChanged(DependencyObject sender, DependencyPropertyChangedEventArgs args)
+        {
+            var indicator = sender as CurrentValueIndicator;
+            indicator.UnitTextBlock.Text = ((string)args.NewValue);
+            var currentSize = new Size(indicator.UnitTextBlock.ActualWidth, indicator.UnitTextBlock.ActualHeight);
+            indicator.UnitTextBlock.FontSize = CalculateFontSize(currentSize, indicator.UnitTextBlock);
+        }
+
+        [Category("Values"), Description("Значение true отображается зеленным, false - красным, неопределенное состояние - черным")]
+        public bool? State {
+            get { return (bool?)GetValue(StateProperty); }
+            set { SetValue(StateProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for State.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty StateProperty =
+            DependencyProperty.Register("State", typeof(bool?), typeof(CurrentValueIndicator), new PropertyMetadata(null, new PropertyChangedCallback(StateChanged)));
+
+        private static void StateChanged(DependencyObject sender, DependencyPropertyChangedEventArgs args)
+        {
+            var indicator = sender as CurrentValueIndicator;
+            indicator.StateIndicator.Fill = ConvertBoolToBrush((bool?)args.NewValue);
+        }
+
+        /// <summary>
+        /// Преобразует тип <see cref="bool?"/> в тип <see cref="Brush"/>
+        /// </summary>
+        /// <param name="state"></param>
+        /// <returns></returns>
+        private static Brush ConvertBoolToBrush(Nullable<bool> state)
+        {
+            if (state == null)
+                return Brushes.Black;
+            return state.Value ? Brushes.Green : Brushes.Red;
+        }
+
+        #endregion
 
         /// <summary>
         /// 
