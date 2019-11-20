@@ -18,9 +18,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Interfaces\IMeasurementSettings.cs" />
     <Compile Include="MeasurementCore.cs" />
     <Compile Include="Interfaces\IResistanceMeasurable.cs" />
     <Compile Include="Interfaces\IVoltageMeasurable.cs" />
+    <Compile Include="MeasurementSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />

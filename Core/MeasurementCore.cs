@@ -16,28 +16,33 @@ namespace Core
         IVoltageMeasurable _topThermocouple = null;
         IVoltageMeasurable _bottomThermocouple = null;
         IResistanceMeasurable _resistance = null;
-        double _from = 0;
-        double _pointRange = 0.05;
-        double _step = 0.1;
+		IMeasurementSettings _settings;
 
         /// <summary>
         /// Интервал (в миллисекундах) измерения напряжения на верхней и нижней термопарах, контролирующих температуру.
         /// По умолчанию 250 мс. Диапазон устанавливаемых значений от 200 мс до 10 с.
         /// Установка нового значения перезапускает таймер измерений.
         /// </summary>
-        public double Interval {
-            get { return _timer.Interval; }
-            set {
-                if(value < 200)
-                    value = 200;
-                if(value > 10000)
-                    value = 10000;
-                if (_timer.Enabled)
-                    _timer.Stop();
-                _timer.Interval = value;
-                _timer.Start();
-            }
-        }
+		public double Interval
+		{
+			get { return _timer.Interval; }
+			set
+			{
+				if (value < 200)
+					value = 200;
+				if (value > 10000)
+					value = 10000;
+				if (_timer.Enabled)
+					_timer.Stop();
+				_timer.Interval = value;
+				_timer.Start();
+			}
+		}
+
+		/// <summary>
+		/// Следующее значение в мВ, при котором измеряется сопротивление
+		/// </summary>
+		public double Next { get; set; }
 
         /// <summary>
         /// Температура верхней термопары в мВ
@@ -47,58 +52,7 @@ namespace Core
         /// <summary>
         /// Температура нижней термопары в мВ
         /// </summary>
-        public double BottomTemperature { get; private set; }
-
-        /// <summary>
-        /// Значение напряжения в мВ для начала измерения
-        /// </summary>
-        public double From {
-            get { return _from; }
-            set {
-                _from = value;
-                Next = value;
-            }
-        }
-
-        /// <summary>
-        /// Значение напряжения в мВ для окончания измерения
-        /// </summary>
-        public double To { get; set; }
-
-        /// <summary>
-        /// Значение напряжения шага измерения в мВ.
-        /// По умолчанию значение равно 0,1 мВ.
-        /// НЕ может быть меньше двойного значения <see cref="MeasurementCore.PointRange"/>.
-        /// </summary>
-        public double Step {
-            get { return _step; }
-            set {
-                if (value <= PointRange)
-                    value = 2 * PointRange;
-                _step = value;
-            }
-        }
-
-        /// <summary>
-        /// Следующее значение в мВ, при котором измеряется сопротивление
-        /// </summary>
-        public double Next { get; private set; }
-
-        /// <summary>
-        /// Диапазон в мВ для точки измерения <see cref="MeasurementCore.Next"/>, при попадании в который производится измерения.
-        /// Минимальное значение - 0,010 мВ, максимальное значение - 0,1 мВ. По умолчанию - 0,015 мВ.
-        /// </summary>
-        public double PointRange {
-            get { return _pointRange; }
-            set
-            {
-                if (value < 0.010)
-                    value = 0.010;
-                if (value > 0.1)
-                    value = 0.1;
-                _pointRange = value;
-            }
-        }
+        public double BottomTemperature { get; private set; }  
 
         /// <summary>
         /// Последнее измеренное значение сопротивления
@@ -136,7 +90,9 @@ namespace Core
         /// <param name="topThermocouple">Устройство, снимающее показания с верхней термопары</param>
         /// <param name="bottomThermocouple">Устройство, снимающее показания с нижней термопары</param>
         /// <param name="resistance">Устройство, снимающее сопротивление с образца</param>
-        public MeasurementCore(IVoltageMeasurable topThermocouple, IVoltageMeasurable bottomThermocouple, IResistanceMeasurable resistance) : this()
+		/// <param name="settings">Параметры измерения</param>
+		public MeasurementCore(IVoltageMeasurable topThermocouple, IVoltageMeasurable bottomThermocouple, IResistanceMeasurable resistance,
+								IMeasurementSettings settings) : this()
         {
             if (topThermocouple == null || bottomThermocouple == null || resistance == null)
                 throw new ArgumentNullException();
@@ -145,6 +101,8 @@ namespace Core
             _topThermocouple = topThermocouple;
             _bottomThermocouple = bottomThermocouple;
             _resistance = resistance;
+			_settings = settings;
+			Next = settings.From;
             _timer.Start();
         }
 
@@ -171,10 +129,10 @@ namespace Core
                 MeasuredVoltage.Invoke(BottomTemperature);
             }
 
-            if (BottomTemperature > Next + 2 * PointRange)
-                while (Next < BottomTemperature)
+			if (BottomTemperature > Next + 2 * _settings.PointRange)
+				while (Next < BottomTemperature)
                 {
-                    Next += Step;
+					Next += _settings.Step;
                 }
 
             if (IsResistanceMeasured)
@@ -185,8 +143,8 @@ namespace Core
         /// Проверяет, нужно ли измерить сопротивление при текущих значениях температуры и заданных параметрах
         /// </summary>
         private void MeasureResistanceIfNeed()
-        {            
-            if(BottomTemperature < Next - PointRange || BottomTemperature > Next + PointRange)
+        {
+			if (BottomTemperature < Next - _settings.PointRange || BottomTemperature > Next + _settings.PointRange)
                 return;
             
             //определяем диапазон измеряемого значения для омметра
@@ -196,7 +154,7 @@ namespace Core
 
             MeasureResistance(range);
 
-            Next += Step;
+			Next += _settings.Step;
         }
 
         /// <summary>

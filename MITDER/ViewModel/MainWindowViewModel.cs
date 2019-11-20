@@ -62,11 +62,13 @@ namespace MITDER.ViewModel
             }
         }
 
-        #endregion
+		public MeasurementSettings MeasurementSettings { get; set; }
+
+		#endregion
 
         public MainWindowViewModel()
         {
-            if (string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["BottomVISA"])
+            if (   string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["BottomVISA"])
                 || string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["TopVISA"])
                 || string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["ResistanceVISA"]))
                 throw new ApplicationException("Не указаны VISA-адреса в app.config.");
@@ -74,13 +76,18 @@ namespace MITDER.ViewModel
             _bottomThermocuple = new Agilent34410(ConfigurationManager.AppSettings["BottomVISA"]);
             _topThermocuple = new Agilent34410(ConfigurationManager.AppSettings["TopVISA"]);
             _resistanceDevice = new Agilent34410(ConfigurationManager.AppSettings["ResistanceVISA"]);
-            _core = new MeasurementCore(_topThermocuple, _bottomThermocuple, _resistanceDevice);
+
+			MeasurementSettings = new MeasurementSettings()
+			{
+				From = -5.6,
+				To = -0.2,
+				Step = 0.2,
+				PointRange = 0.1
+			};
+
+			_core = new MeasurementCore(_topThermocuple, _bottomThermocuple, _resistanceDevice, MeasurementSettings);
             _core.MeasuredVoltage += _core_MeasuredVoltages;
             _core.MeasuredResistance += _core_MeasuredResistance;
-            _core.From = -5.6;
-            _core.To = -0.2;
-            _core.Step = 0.2;
-            _core.PointRange = 0.1;
             _core.IsResistanceMeasured = true;
         }
 

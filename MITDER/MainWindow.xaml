@@ -23,9 +23,5 @@
         <indicators:CurrentValueIndicator Grid.Column="1" Grid.Row="1" Value="{Binding BottomTemperature}" />
         <indicators:CurrentValueIndicator Grid.Column="1" Grid.Row="2" Value="{Binding NextPoint}" />
         <indicators:CurrentValueIndicator Grid.Column="1" Grid.Row="3" Value="{Binding Resistance}" />
-        <!--<TextBox Grid.Column="1" Grid.Row="0" Text="{Binding TopTemperature}" IsReadOnly="True" />-->
-        <!--<TextBox Grid.Column="1" Grid.Row="1" Text="{Binding BottomTemperature}" IsReadOnly="True" />
-        <TextBox Grid.Column="1" Grid.Row="2" Text="{Binding NextPoint}" IsReadOnly="True" />
-        <TextBox Grid.Column="1" Grid.Row="3" Text="{Binding Resistance}" IsReadOnly="True" />-->
     </Grid>
 </Window>
