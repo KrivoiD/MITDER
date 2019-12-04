@@ -60,7 +60,7 @@ namespace Indicators
         {
             var indicator = sender as CurrentValueIndicator;
             indicator.TitleTextBlock.Text = ((string)args.NewValue);
-            var currentSize = new Size(indicator.TitleTextBlock.ActualWidth, indicator.TitleTextBlock.ActualHeight);
+            var currentSize = new Size(indicator.TitleTextBlock.ActualWidth, indicator.TitleTextBlock.ActualHeight);            
             indicator.TitleTextBlock.FontSize = CalculateFontSize(currentSize, indicator.TitleTextBlock);
         }
 
@@ -79,7 +79,7 @@ namespace Indicators
             var indicator = sender as CurrentValueIndicator;
             indicator.UnitTextBlock.Text = ((string)args.NewValue);
             var currentSize = new Size(indicator.UnitTextBlock.ActualWidth, indicator.UnitTextBlock.ActualHeight);
-            indicator.UnitTextBlock.FontSize = CalculateFontSize(currentSize, indicator.UnitTextBlock);
+            indicator.UnitTextBlock.FontSize = CalculateFontSize(currentSize, indicator.UnitTextBlock); 
         }
 
         [Category("Values"), Description("Значение true отображается зеленным, false - красным, неопределенное состояние - черным")]
@@ -133,6 +133,9 @@ namespace Indicators
         /// <returns></returns>
         private static double CalculateFontSize(Size newSize, TextBlock tb)
         {
+            if (newSize.Height <= 0 || newSize.Width <= 0)
+                return tb.FontSize;
+
             double fontSize = tb.FontSize;
 
             // get desired size with fontsize = MaxFontSize
