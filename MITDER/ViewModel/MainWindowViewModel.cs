@@ -6,10 +6,11 @@ using System.ComponentModel;
 using Multimeters;
 using System.Configuration;
 using Core;
+using MITDER.ViewModelClasses;
 
 namespace MITDER.ViewModel
 {
-    public class MainWindowViewModel : INotifyPropertyChanged, IDisposable
+	public class MainWindowViewModel : ViewModelBase
     {
         #region Properties
 
@@ -21,45 +22,28 @@ namespace MITDER.ViewModel
         private double _bottomTemperature;
         public double BottomTemperature {
             get { return _bottomTemperature; }
-            set {
-                _bottomTemperature = value;
-                OnPropertyChanged("BottomTemperature");
-            }
+            set { RaisePropertyChanged("BottomTemperature", ref _bottomTemperature, value); }
         }
 
         private double _topTemperature;
         public double TopTemperature
         {
             get { return _topTemperature; }
-            set
-            {
-                _topTemperature = value;
-                OnPropertyChanged("TopTemperature");
-            }
+			set { RaisePropertyChanged("TopTemperature", ref _topTemperature, value); }
         }
 
         private double _resistanceValue;
         public double Resistance
         {
             get { return _resistanceValue; }
-            set
-            {
-                _resistanceValue = value;
-                OnPropertyChanged("Resistance");
-            }
+			set { RaisePropertyChanged("Resistance", ref _resistanceValue, value); }
         }
 
         private double _nextPoint;
         public double NextPoint
         {
             get { return _nextPoint; }
-            set
-            {
-                if (_nextPoint == value)
-                    return;
-                _nextPoint = value;
-                OnPropertyChanged("NextPoint");
-            }
+			set { RaisePropertyChanged("NextPoint", ref _nextPoint, value); }
         }
 
 		public MeasurementSettings MeasurementSettings { get; set; }
@@ -107,14 +91,8 @@ namespace MITDER.ViewModel
                 Resistance = value.Resistance;
             }));
         }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        public void OnPropertyChanged(string prop = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
-        }
     
-        public void  Dispose()
+        public override void Dispose()
         {
             if (_core != null)
             {
