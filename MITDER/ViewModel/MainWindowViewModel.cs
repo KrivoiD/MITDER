@@ -91,28 +91,27 @@ namespace MITDER.ViewModel
             _core.IsResistanceMeasured = true;
         }
 
-        private void _core_MeasuredVoltages(double value)
+        private void _core_MeasuredVoltages(MeasuredValues value)
         {
             App.Current.Dispatcher.BeginInvoke(new Action(() => {
-                BottomTemperature = _core.BottomTemperature;
-                TopTemperature = _core.TopTemperature;
+                BottomTemperature = value.BottomTemperature;
+                TopTemperature = value.TopTemperature;
                 NextPoint = _core.Next;
             }));
         }
 
-        private void _core_MeasuredResistance(double value)
+        private void _core_MeasuredResistance(MeasuredValues value)
         {
             App.Current.Dispatcher.BeginInvoke(new Action(() =>
             {
-                Resistance = _core.Resistance;
+                Resistance = value.Resistance;
             }));
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged(string prop = "")
         {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(prop));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
     
         public void  Dispose()

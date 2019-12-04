@@ -7,6 +7,13 @@ using Core.Interfaces;
 
 namespace Core
 {
+    /// <summary>
+    /// Делегат метода, обрабатывающий события <see cref="MeasurementCore.MeasuredVoltage" /> и <see cref="MeasurementCore.MeasuredResistance" /> 
+    /// в классе <see cref="MeasurementCore" />
+    /// </summary>
+    /// <param name="value"></param>
+    public delegate void MeasuredValueHandler(MeasuredValues value);
+
     public class MeasurementCore : IDisposable
     {
         #region Properties and Variables
@@ -65,15 +72,15 @@ namespace Core
         /// </summary>
         public bool IsResistanceMeasured { get; set; }
 
-        public delegate void MeasuredValue(double value);
+        
         /// <summary>
         /// Событие измерения напряжения. Передает последнее измеренное напряжение с нижней термопары
         /// </summary>
-        public event MeasuredValue MeasuredVoltage;
+        public event MeasuredValueHandler MeasuredVoltage;
         /// <summary>
         /// Событие измерения сопротивления. Передает последнее измеренное сопротивление
         /// </summary>
-        public event MeasuredValue MeasuredResistance;
+        public event MeasuredValueHandler MeasuredResistance;
 
         #endregion
 
@@ -94,7 +101,7 @@ namespace Core
 		public MeasurementCore(IVoltageMeasurable topThermocouple, IVoltageMeasurable bottomThermocouple, IResistanceMeasurable resistance,
 								IMeasurementSettings settings) : this()
         {
-            if (topThermocouple == null || bottomThermocouple == null || resistance == null)
+            if (topThermocouple == null || bottomThermocouple == null || resistance == null || settings == null)
                 throw new ArgumentNullException();
             if (!topThermocouple.IsInitialized || !bottomThermocouple.IsInitialized || !resistance.IsInitialized)
                 throw new InvalidOperationException("Должны быть инициализированы все устройства.");
@@ -126,7 +133,7 @@ namespace Core
             BottomTemperature = _bottomThermocouple.GetVoltage(0.1) * 1000;
             if (MeasuredVoltage != null)
             {
-                MeasuredVoltage.Invoke(BottomTemperature);
+                MeasuredVoltage.Invoke(new MeasuredValues(DateTime.Now) { TopTemperature = this.TopTemperature, BottomTemperature = this.BottomTemperature });
             }
 
 			if (BottomTemperature > Next + 2 * _settings.PointRange)
@@ -170,7 +177,10 @@ namespace Core
                 return double.NaN;
             Resistance = _resistance.GetResistance(range);
             if (MeasuredResistance != null)
-                MeasuredResistance.Invoke(Resistance);
+                MeasuredResistance.Invoke(new MeasuredValues(DateTime.Now) { 
+                                                TopTemperature = this.TopTemperature, 
+                                                BottomTemperature = this.BottomTemperature, 
+                                                Resistance = this.Resistance });
             return Resistance;
         }
 
