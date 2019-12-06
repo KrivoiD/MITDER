@@ -31,9 +31,15 @@
         </Grid>
         <GridSplitter Grid.Column="0" Grid.Row="1" Height="3" VerticalAlignment="Center" HorizontalAlignment="Stretch" />
         <GridSplitter Grid.Column="1" Grid.Row="0" Width="3" HorizontalAlignment="Center" />
-        <TextBox Grid.Column="2" Grid.Row="0" Text="{Binding TopTemperature}" IsReadOnly="True" />
-        <TextBox Grid.Column="2" Grid.Row="2" Text="{Binding BottomTemperature}" IsReadOnly="True" />
-        <TextBox Grid.Column="2" Grid.Row="3" Text="{Binding NextPoint}" IsReadOnly="True" />
-        <TextBox Grid.Column="2" Grid.Row="4" Text="{Binding Resistance}" IsReadOnly="True" />
+        <ListView Grid.Row="0" Grid.Column="2" Grid.RowSpan="5" ItemsSource="{Binding MeasuredValuesCollection}">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn DisplayMemberBinding="{Binding Date}">Дата и время</GridViewColumn>
+                    <GridViewColumn DisplayMemberBinding="{Binding Path=BottomTemperature, StringFormat='{}{0:0.000}'}">Нижняя термопара</GridViewColumn>
+                    <GridViewColumn DisplayMemberBinding="{Binding Path=TopTemperature, StringFormat='{}{0:0.000}'}">Верхняя термопара</GridViewColumn>
+                    <GridViewColumn DisplayMemberBinding="{Binding Path=Resistance, StringFormat='{}{0:0.00000}'}">Сопротивление</GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
     </Grid>
 </Window>

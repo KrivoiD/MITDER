@@ -76,7 +76,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj">
-      <Project>{2C5EAC7F-CA6B-4E21-873A-009B7A912013}</Project>
+      <Project>{2c5eac7f-ca6b-4e21-873a-009b7a912013}</Project>
       <Name>Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\Indicators\Indicators.csproj">

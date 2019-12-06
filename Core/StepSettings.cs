@@ -6,7 +6,10 @@ using Core.Interfaces;
 
 namespace Core
 {
-	public class MeasurementSettings : IMeasurementSettings
+    /// <summary>
+    /// Класс для описания этапа измерения.
+    /// </summary>
+	public class StepSettings : IMeasurementSettings
 	{
 		double _from = 0;
 		double _pointRange = 0.05;

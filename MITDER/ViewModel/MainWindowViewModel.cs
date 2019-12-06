@@ -7,6 +7,7 @@ using Multimeters;
 using System.Configuration;
 using Core;
 using MITDER.ViewModelClasses;
+using System.Collections.ObjectModel;
 
 namespace MITDER.ViewModel
 {
@@ -46,9 +47,18 @@ namespace MITDER.ViewModel
 			set { RaisePropertyChanged("NextPoint", ref _nextPoint, value); }
         }
 
-		public MeasurementSettings MeasurementSettings { get; set; }
+		public StepSettings MeasurementSettings { get; set; }
 
-		#endregion
+        /// <summary>
+        /// Коллекция, содержащая измерянные значения.
+        /// </summary>
+        public ObservableCollection<MeasuredValues> MeasuredValuesCollection { get; set; }
+        /// <summary>
+        /// Коллекция, содержащая настройки этапов измерения.
+        /// </summary>
+        public ObservableCollection<StepSettings> StepSettingsCollection { get; set; }
+
+        #endregion
 
         public MainWindowViewModel()
         {
@@ -61,7 +71,10 @@ namespace MITDER.ViewModel
             _topThermocuple = new Agilent34410(ConfigurationManager.AppSettings["TopVISA"]);
             _resistanceDevice = new Agilent34410(ConfigurationManager.AppSettings["ResistanceVISA"]);
 
-			MeasurementSettings = new MeasurementSettings()
+            MeasuredValuesCollection = new ObservableCollection<MeasuredValues>();
+            StepSettingsCollection = new ObservableCollection<StepSettings>();
+
+            MeasurementSettings = new StepSettings()
 			{
 				From = -5.6,
 				To = -0.2,
@@ -89,11 +102,15 @@ namespace MITDER.ViewModel
             App.Current.Dispatcher.BeginInvoke(new Action(() =>
             {
                 Resistance = value.Resistance;
+                MeasuredValuesCollection.Insert(0, value);
             }));
         }
     
         public override void Dispose()
         {
+            if(MeasuredValuesCollection != null)
+                MeasuredValuesCollection.Clear();
+            MeasuredValuesCollection = null;
             if (_core != null)
             {
                 _core.MeasuredVoltage -= _core_MeasuredVoltages;
