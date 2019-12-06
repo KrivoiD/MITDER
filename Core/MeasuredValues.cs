@@ -23,18 +23,18 @@ namespace Core
         /// <summary>
         /// Значение напряжения в мВ на верхней термопаре.
         /// </summary>
-        public double TopTemperature { get; set; } = Double.NaN;
+        public double TopTemperature { get; set; }
         /// <summary>
         /// Значение напряжения в мВ на нижней термопаре.
         /// </summary>
-        public double BottomTemperature { get; set; } = Double.NaN;
+        public double BottomTemperature { get; set; }
         /// <summary>
         /// Значение сопротивления в Ом
         /// </summary>
-        public double Resistance { get; set; } = Double.NaN;
+        public double Resistance { get; set; }
         /// <summary>
         /// Дата и время измерения
         /// </summary>
-        public DateTime Date { get; }
+        public DateTime Date { get; private set; }
     }
 }
