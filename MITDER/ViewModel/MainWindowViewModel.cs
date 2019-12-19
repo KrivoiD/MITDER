@@ -108,15 +108,17 @@ namespace MITDER.ViewModel
     
         public override void Dispose()
         {
-            if(MeasuredValuesCollection != null)
-                MeasuredValuesCollection.Clear();
-            MeasuredValuesCollection = null;
-            if (_core != null)
-            {
-                _core.MeasuredVoltage -= _core_MeasuredVoltages;
-                _core.MeasuredResistance -= _core_MeasuredResistance;
-                _core.Dispose();
-            }
+			if (_core != null)
+			{
+				_core.MeasuredVoltage -= _core_MeasuredVoltages;
+				_core.MeasuredResistance -= _core_MeasuredResistance;
+				_core.Dispose();
+			}
+			if (MeasuredValuesCollection != null)
+			{
+				MeasuredValuesCollection.Clear();
+				MeasuredValuesCollection = null;
+			}
         }
     }
 }
