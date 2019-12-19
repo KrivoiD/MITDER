@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Timers;
 using Core.Interfaces;
 
@@ -19,7 +20,7 @@ namespace Core
         #region Properties and Variables
 
         //таймер для обновления данных с устройств
-        Timer _timer;
+        System.Timers.Timer _timer;
         IVoltageMeasurable _topThermocouple = null;
         IVoltageMeasurable _bottomThermocouple = null;
         IResistanceMeasurable _resistance = null;
@@ -72,7 +73,12 @@ namespace Core
         /// </summary>
         public bool IsResistanceMeasured { get; set; }
 
-        
+        /// <summary>
+        /// Указывает, запущен ли процесс измерения.
+        /// </summary>
+        public bool IsMeasurementStarted { get; set; }
+
+
         /// <summary>
         /// Событие измерения напряжения. Передает последнее измеренное напряжение с нижней термопары
         /// </summary>
@@ -86,7 +92,7 @@ namespace Core
 
         private MeasurementCore()
         {
-            _timer = new Timer(200);
+            _timer = new System.Timers.Timer(200);
             _timer.AutoReset = true;
             _timer.Elapsed += _timer_Elapsed;
         }
@@ -136,10 +142,11 @@ namespace Core
                 MeasuredVoltage.Invoke(new MeasuredValues(DateTime.Now) { TopTemperature = this.TopTemperature, BottomTemperature = this.BottomTemperature });
             }
 
-			if (BottomTemperature > Next + 2 * _settings.PointRange)
-				while (Next < BottomTemperature)
+            //определяет следующее точку измерения
+            if (IsMeasurementStarted && BottomTemperature > Next + 2 * _settings.PointRange)
+                while (Next < BottomTemperature)
                 {
-					Next += _settings.Step;
+                    Next += _settings.Step;
                 }
 
             if (IsResistanceMeasured)
@@ -153,7 +160,7 @@ namespace Core
         {
 			if (BottomTemperature < Next - _settings.PointRange || BottomTemperature > Next + _settings.PointRange)
                 return;
-            
+
             //определяем диапазон измеряемого значения для омметра
             var integer = (int)Resistance;
             var digitNumber = integer.ToString().Length;
@@ -185,16 +192,33 @@ namespace Core
         }
 
         /// <summary>
+        /// Синхронизатор освобождения ресурсов 
+        /// </summary>
+        private static ManualResetEvent _manualResetEvent = new ManualResetEvent(false);
+        /// <summary>
         /// Освобождает ресурсы, используемые <see cref="MeasurementCore"/>.
         /// </summary>
         public void Dispose()
         {
             if (_timer == null)
                 return;
+            _timer.Disposed += _timer_Disposed; 
             if (_timer.Enabled)
                 _timer.Stop();
             _timer.Elapsed -= _timer_Elapsed;
-            _timer.Dispose();            
+            _timer.Dispose();
+            //ожидает полного освобождения ресурсов _timer;
+            _manualResetEvent.WaitOne();
+        }
+
+        /// <summary>
+        /// Сигнализирует <see cref="MeasurementCore"/> об окончании полном освобождении ресурсов объекта <see cref="System.Timers.Timer"/>.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void _timer_Disposed(object sender, EventArgs e)
+        {
+            _manualResetEvent.Set();
         }
     }
 }
