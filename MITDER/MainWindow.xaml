@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:MITDER.ViewModel"
         xmlns:indicators="clr-namespace:Indicators;assembly=Indicators"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="500" Width="650">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto" />
@@ -11,7 +11,6 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
@@ -30,6 +29,24 @@
             <indicators:CurrentValueIndicator Grid.Column="0" Grid.Row="3" Value="{Binding Resistance}" Title="Сопротивление" Unit="Ом" />
         </Grid>
         <GridSplitter Grid.Column="0" Grid.Row="1" Height="3" VerticalAlignment="Center" HorizontalAlignment="Stretch" />
+        <Grid Grid.Column="0" Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" Content="Старт" Command="{Binding Start}" />
+            <Button Grid.Column="1" Content="Стоп" Command="{Binding Stop}" />
+        </Grid>
+        <ListView Grid.Row="3" Grid.Column="0" ItemsSource="{Binding StepSettings}">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn DisplayMemberBinding="{Binding Path=From, StringFormat='{}{0:0.000}'}">С</GridViewColumn>
+                    <GridViewColumn DisplayMemberBinding="{Binding Path=To, StringFormat='{}{0:0.000}'}">До</GridViewColumn>
+                    <GridViewColumn DisplayMemberBinding="{Binding Path=Step, StringFormat='{}{0:0.000}'}">Шаг</GridViewColumn>
+                    <GridViewColumn DisplayMemberBinding="{Binding Path=Type}">Тип</GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
         <GridSplitter Grid.Column="1" Grid.Row="0" Width="3" HorizontalAlignment="Center" />
         <ListView Grid.Row="0" Grid.Column="2" Grid.RowSpan="5" ItemsSource="{Binding MeasuredValuesCollection}">
             <ListView.View>

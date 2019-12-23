@@ -64,5 +64,38 @@ namespace Core
 				_pointRange = value;
 			}
 		}
+
+		/// <summary>
+		/// Тип этапа измерения. 
+		/// По окончанию этапа тип меняется на <see cref="StepType.Done"/>.
+		/// </summary>
+		public StepType Type { get; set; }
+	}
+
+	/// <summary>
+	/// Определяет тип этапа измерения.
+	/// </summary>
+	public enum StepType
+	{
+		/// <summary>
+		/// Не проводятся измерения.
+		/// </summary>
+		NotMeasuring = 0,
+		/// <summary>
+		/// Ожидание заданной температуры.
+		/// </summary>
+		Waiting,
+		/// <summary>
+		/// Производятся измерения с подъемом температуры.
+		/// </summary>
+		Heating,
+		/// <summary>
+		/// Производятся измерения с понижением температуры.
+		/// </summary>
+		Cooling,
+		/// <summary>
+		/// Данный этап измерения окончен.
+		/// </summary>
+		Done,
 	}
 }

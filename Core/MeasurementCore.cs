@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -24,7 +25,6 @@ namespace Core
         IVoltageMeasurable _topThermocouple = null;
         IVoltageMeasurable _bottomThermocouple = null;
         IResistanceMeasurable _resistance = null;
-		IMeasurementSettings _settings;
 
         /// <summary>
         /// Интервал (в миллисекундах) измерения напряжения на верхней и нижней термопарах, контролирующих температуру.
@@ -78,7 +78,6 @@ namespace Core
         /// </summary>
         public bool IsMeasurementStarted { get; set; }
 
-
         /// <summary>
         /// Событие измерения напряжения. Передает последнее измеренное напряжение с нижней термопары
         /// </summary>
@@ -88,13 +87,32 @@ namespace Core
         /// </summary>
         public event MeasuredValueHandler MeasuredResistance;
 
+        /// <summary>
+        /// Коллекция, содержащая параметры этапов измерения.
+        /// </summary>
+        public ObservableCollection<StepSettings> MeasurementSteps { get; private set; }
+
+        private StepSettings _currentStep;
+
         #endregion
 
         private MeasurementCore()
         {
+            MeasurementSteps = new ObservableCollection<StepSettings>();
+            MeasurementSteps.CollectionChanged += MeasurementSteps_CollectionChanged;
             _timer = new System.Timers.Timer(200);
             _timer.AutoReset = true;
             _timer.Elapsed += _timer_Elapsed;
+        }
+
+        private void MeasurementSteps_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            //назначает текущий этап измерения и свойство Next при добавлении первого объекта в коллекцию.
+            if(e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add && MeasurementSteps.Count == 1 && e.NewItems.Count == 1)
+            {
+                _currentStep = e.NewItems.Cast<StepSettings>().Single();
+                Next = _currentStep.From;
+            }
         }
 
         /// <summary>
@@ -103,19 +121,16 @@ namespace Core
         /// <param name="topThermocouple">Устройство, снимающее показания с верхней термопары</param>
         /// <param name="bottomThermocouple">Устройство, снимающее показания с нижней термопары</param>
         /// <param name="resistance">Устройство, снимающее сопротивление с образца</param>
-		/// <param name="settings">Параметры измерения</param>
-		public MeasurementCore(IVoltageMeasurable topThermocouple, IVoltageMeasurable bottomThermocouple, IResistanceMeasurable resistance,
-								IMeasurementSettings settings) : this()
+        /// <param name="settings">Параметры измерения</param>
+        public MeasurementCore(IVoltageMeasurable topThermocouple, IVoltageMeasurable bottomThermocouple, IResistanceMeasurable resistance) : this()
         {
-            if (topThermocouple == null || bottomThermocouple == null || resistance == null || settings == null)
+            if (topThermocouple == null || bottomThermocouple == null || resistance == null)
                 throw new ArgumentNullException();
             if (!topThermocouple.IsInitialized || !bottomThermocouple.IsInitialized || !resistance.IsInitialized)
                 throw new InvalidOperationException("Должны быть инициализированы все устройства.");
             _topThermocouple = topThermocouple;
             _bottomThermocouple = bottomThermocouple;
             _resistance = resistance;
-			_settings = settings;
-			Next = settings.From;
             _timer.Start();
         }
 
@@ -143,10 +158,10 @@ namespace Core
             }
 
             //определяет следующее точку измерения
-            if (IsMeasurementStarted && BottomTemperature > Next + 2 * _settings.PointRange)
+            if (IsMeasurementStarted && BottomTemperature > Next + 2 * _currentStep.PointRange)
                 while (Next < BottomTemperature)
                 {
-                    Next += _settings.Step;
+                    Next += _currentStep.Step;
                 }
 
             if (IsResistanceMeasured)
@@ -158,7 +173,7 @@ namespace Core
         /// </summary>
         private void MeasureResistanceIfNeed()
         {
-			if (BottomTemperature < Next - _settings.PointRange || BottomTemperature > Next + _settings.PointRange)
+			if (BottomTemperature < Next - _currentStep.PointRange || BottomTemperature > Next + _currentStep.PointRange)
                 return;
 
             //определяем диапазон измеряемого значения для омметра
@@ -168,7 +183,7 @@ namespace Core
 
             MeasureResistance(range);
 
-			Next += _settings.Step;
+			Next += _currentStep.Step;
         }
 
         /// <summary>
