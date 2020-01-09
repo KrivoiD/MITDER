@@ -122,7 +122,7 @@ namespace MITDER.ViewModel
                 From = -5.6,
                 To = -0.2,
                 Step = 0.2,
-                PointRange = 0.1,
+                PointRange = 0.01,
                 Type = StepType.Heating
             });
 

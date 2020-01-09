@@ -97,7 +97,7 @@ namespace Multimeters
         Random rand = new Random(DateTime.Now.Second);
         double lastVoltageValue = -0.0058;
         double lastResistanceValue = 10;
-        public double valueStep = 0.00003;
+        public double valueStep = 0.00001;
 #endif
 
         /// <summary>

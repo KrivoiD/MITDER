@@ -157,8 +157,9 @@ namespace Core
                 MeasuredVoltage.Invoke(new MeasuredValues(DateTime.Now) { TopTemperature = this.TopTemperature, BottomTemperature = this.BottomTemperature });
             }
 
-            //определяет следующее точку измерения
-            if (IsMeasurementStarted && BottomTemperature > Next + 2 * _currentStep.PointRange)
+            //определяет следующую точку измерения, если были какие-либо сбои
+            if (IsMeasurementStarted && BottomTemperature < _currentStep.To && 
+				BottomTemperature > Next + 2 * _currentStep.PointRange)
                 while (Next < BottomTemperature)
                 {
                     Next += _currentStep.Step;
@@ -183,7 +184,8 @@ namespace Core
 
             MeasureResistance(range);
 
-			Next += _currentStep.Step;
+			if (Next < _currentStep.To)
+				Next += _currentStep.Step;
         }
 
         /// <summary>
