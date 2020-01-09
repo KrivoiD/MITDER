@@ -130,22 +130,23 @@ namespace MITDER.ViewModel
             _core.MeasuredResistance += _core_MeasuredResistance;
         }
 
-        private void _core_MeasuredVoltages(MeasuredValues value)
-        {
-            App.Current.Dispatcher.BeginInvoke(new Action(() =>
-            {
-                BottomTemperature = value.BottomTemperature;
-                TopTemperature = value.TopTemperature;
-                NextPoint = _core.Next;
-            }));
-        }
+		private void _core_MeasuredVoltages(MeasuredValues value)
+		{
+			App.Current.Dispatcher.BeginInvoke(new Action(() =>
+			{
+				BottomTemperature = value.BottomTemperature;
+				TopTemperature = value.TopTemperature;
+				NextPoint = _core.Next;
+			}));
+		}
 
         private void _core_MeasuredResistance(MeasuredValues value)
         {
-            App.Current.Dispatcher.BeginInvoke(new Action(() =>
+			App.Current.Dispatcher.BeginInvoke(new Action(() =>
             {
                 Resistance = value.Resistance;
-                MeasuredValuesCollection.Insert(0, value);
+				if(MeasuredValuesCollection != null)
+					MeasuredValuesCollection.Insert(0, value);
             }));
         }
 
