@@ -30,24 +30,55 @@ namespace Core
 		public delegate void StepChanged(StepCollection collection, StepCollectionEventArgs args);
 		public event StepChanged SelectionChanged;
 
-		public StepSettings SellectedStep { get; private set; }
+		public StepSettings SelectedStep { get; private set; }
 
 		/// <summary>
-		/// Изменяет текущий этап настройки
+		/// Изменяет текущий этап настройки.
+		/// Если не указан этап, то изменяет на следующий этап. 
 		/// </summary>
 		/// <param name="step"></param>
 		/// <returns></returns>
-		public bool ChangeSellection(StepSettings step)
+		internal bool ChangeSellection(StepSettings step = null)
 		{
-			if(!this.Contains(step))
+			if(this.Count == 0)
 				return false;
-			if (this.SellectedStep == step)
+
+			if(step != null && (!this.Contains(step) || this.SelectedStep == step))
 				return false;
-			var oldStep = SellectedStep;
-			SellectedStep = step;
+
+			if (step == null)
+				step = GetNextStep();
+			
+			var oldStep = SelectedStep;
+			SelectedStep = step;
 			if (SelectionChanged != null)
 				SelectionChanged.Invoke(this, new StepCollectionEventArgs(oldStep, step));
 			return true;
+		}
+
+		/// <summary>
+		/// Изменяет текущий этап настройки на этап по его индексу
+		/// </summary>
+		/// <param name="index"></param>
+		/// <returns></returns>
+		internal bool ChangeSelection(int index)
+		{
+			if (index < 0 || index >= this.Count)
+				throw new ArgumentOutOfRangeException("index", "Разрешенный диапазон индекса - [0; " + (this.Count - 1) + "].");
+			var oldStep = SelectedStep;
+			SelectedStep = this[index];
+			if (SelectionChanged != null)
+				SelectionChanged.Invoke(this, new StepCollectionEventArgs(oldStep, SelectedStep));
+			return true;
+		}
+
+		internal StepSettings GetNextStep()
+		{
+			var index = this.IndexOf(SelectedStep);
+			if (this.Count == 0 || this.SelectedStep == null || index == this.Count)
+				return null;
+
+			return this[index + 1];
 		}
 	}
 }

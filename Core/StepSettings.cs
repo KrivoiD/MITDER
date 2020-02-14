@@ -78,24 +78,24 @@ namespace Core
 	public enum StepType
 	{
 		/// <summary>
-		/// Не проводятся измерения.
+		/// Не назначен тип.
 		/// </summary>
-		NotMeasuring = 0,
+		NotAssigned = 0,
 		/// <summary>
 		/// Ожидание заданной температуры.
 		/// </summary>
-		Waiting,
+		Waiting = 2,
 		/// <summary>
 		/// Производятся измерения с подъемом температуры.
 		/// </summary>
-		Heating,
+		Heating = 1,
 		/// <summary>
 		/// Производятся измерения с понижением температуры.
 		/// </summary>
-		Cooling,
+		Cooling = -1,
 		/// <summary>
 		/// Данный этап измерения окончен.
 		/// </summary>
-		Done,
+		Done = 100,
 	}
 }
