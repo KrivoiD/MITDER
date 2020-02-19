@@ -29,16 +29,27 @@ namespace Core
 
 		public delegate void StepChanged(StepCollection collection, StepCollectionEventArgs args);
 		public event StepChanged SelectionChanged;
+		private int _selectedIndex;
 
 		public StepSettings SelectedStep { get; private set; }
 
 		/// <summary>
-		/// Изменяет текущий этап настройки.
-		/// Если не указан этап, то изменяет на следующий этап. 
+		/// Изменяет текущий этап настройки на следующий.
+		/// </summary>
+		/// <returns></returns>
+		internal bool ChangeSelection()
+		{
+			if (_selectedIndex >= this.Count)
+				return false;
+			return ChangeSelection(_selectedIndex + 1);
+		}
+		
+		/// <summary>
+		/// Изменяет текущий этап настройки на указанный этап.
 		/// </summary>
 		/// <param name="step"></param>
 		/// <returns></returns>
-		internal bool ChangeSellection(StepSettings step = null)
+		internal bool ChangeSelection(StepSettings step)
 		{
 			if(this.Count == 0)
 				return false;
@@ -46,14 +57,7 @@ namespace Core
 			if(step != null && (!this.Contains(step) || this.SelectedStep == step))
 				return false;
 
-			if (step == null)
-				step = GetNextStep();
-			
-			var oldStep = SelectedStep;
-			SelectedStep = step;
-			if (SelectionChanged != null)
-				SelectionChanged.Invoke(this, new StepCollectionEventArgs(oldStep, step));
-			return true;
+			return ChangeSelection(this.IndexOf(step));
 		}
 
 		/// <summary>
@@ -65,20 +69,24 @@ namespace Core
 		{
 			if (index < 0 || index >= this.Count)
 				throw new ArgumentOutOfRangeException("index", "Разрешенный диапазон индекса - [0; " + (this.Count - 1) + "].");
+			if (index == _selectedIndex)
+				return false;
+
 			var oldStep = SelectedStep;
+			_selectedIndex = index;
 			SelectedStep = this[index];
 			if (SelectionChanged != null)
 				SelectionChanged.Invoke(this, new StepCollectionEventArgs(oldStep, SelectedStep));
 			return true;
 		}
 
-		internal StepSettings GetNextStep()
-		{
-			var index = this.IndexOf(SelectedStep);
-			if (this.Count == 0 || this.SelectedStep == null || index == this.Count)
-				return null;
+		//internal StepSettings GetNextStep()
+		//{
+		//	var index = this.IndexOf(SelectedStep);
+		//	if (this.Count == 0 || this.SelectedStep == null || index == this.Count)
+		//		return null;
 
-			return this[index + 1];
-		}
+		//	return this[index + 1];
+		//}
 	}
 }
