@@ -9,11 +9,11 @@ namespace Core
 	{
 		private Action MeasureResistance;
 		
-		public StepCollection StepCollection { get; private set; }
+		public WSICollection<StepSettings> StepCollection { get; private set; }
 
 		public double CurrentTemperature { get; private set; }
 
-		public TemperatureHelper(StepCollection steps, Action measureResistance)
+		public TemperatureHelper(WSICollection<StepSettings> steps, Action measureResistance)
 		{
 			if (steps == null || measureResistance == null)
 				throw new NullReferenceException("Параметры steps/measureResistance не должены быть null.");
@@ -21,7 +21,7 @@ namespace Core
 				throw new ArgumentException("Передаваемая коллекция не должна быть пустой.");
 
 			StepCollection = steps;
-			StepCollection.SelectionChanged += StepCollection_SelectionChanged;
+			StepCollection.SelectedItemChanged += StepCollection_SelectionChanged;
 			StepCollection.ChangeSelection(0);
 			MeasureResistance = measureResistance;
 		}
@@ -31,9 +31,9 @@ namespace Core
 		/// </summary>
 		private int _coeff = 1;
 
-		private void StepCollection_SelectionChanged(StepCollection collection, StepCollection.StepCollectionEventArgs args)
+		private void StepCollection_SelectionChanged(WSICollection<StepSettings> collection, ChangedEventArgs<StepSettings> args)
 		{
-			switch (StepCollection.SelectedStep.Type)
+			switch (StepCollection.SelectedItem.Type)
 			{
 				//TODO: необходимо ли проверять на два этих типа?
 				case StepType.NotAssigned:
@@ -52,10 +52,10 @@ namespace Core
 		public void SetCurrentTemperature(double temperature)
 		{
 			CurrentTemperature = temperature;
-			var step = StepCollection.SelectedStep;
+			var step = StepCollection.SelectedItem;
 
-			var from = StepCollection.SelectedStep.From;
-			var to = StepCollection.SelectedStep.To;
+			var from = StepCollection.SelectedItem.From;
+			var to = StepCollection.SelectedItem.To;
 
 			//проверяем, вышли за конечную точку этапа
 			if (_coeff * temperature > _coeff * to)

@@ -23,7 +23,7 @@
     <Compile Include="MeasurementCore.cs" />
     <Compile Include="Interfaces\IResistanceMeasurable.cs" />
     <Compile Include="Interfaces\IVoltageMeasurable.cs" />
-    <Compile Include="StepCollection.cs" />
+    <Compile Include="CollectionWithSelectedItem.cs" />
     <Compile Include="StepSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TemperatureHelper.cs" />
