@@ -25,13 +25,20 @@ namespace Core
 	/// Коллекция с указанием на текущий элемент
 	/// (WSI - with selected item)
 	/// </summary>
-	public class WSICollection<T> : Collection<T>
+	public class WSICollection<T> : Collection<T> 
 	{
 		public delegate void SelectionChangedDelegate(WSICollection<T> collection, ChangedEventArgs<T> args);
 		public event SelectionChangedDelegate SelectedItemChanged;
-		private int _selectedIndex;
+		private int _selectedIndex = -1;
 
-		public T SelectedItem { get; private set; }
+		/// <summary>
+		/// Текущий выделенный элемент коллекции
+		/// </summary>
+		public T SelectedItem { 
+			get {
+				return _selectedIndex < 0 ? (T)GetDefault() : this[_selectedIndex];
+			}
+		}
 
 		/// <summary>
 		/// Изменяет текущий элемент на следующий в коллекции.
@@ -74,10 +81,23 @@ namespace Core
 
 			var oldItem = SelectedItem;
 			_selectedIndex = index;
-			SelectedItem = this[index];
 			if (SelectedItemChanged != null)
 				SelectedItemChanged.Invoke(this, new ChangedEventArgs<T>(oldItem, SelectedItem));
 			return true;
+		}
+
+		/// <summary>
+		/// Возвращает значение по умолчанию для типа коллекции
+		/// </summary>
+		/// <returns></returns>
+		private static object GetDefault()
+		{
+			var type = typeof(T);
+			if (type.IsValueType)
+			{
+				return (T)Activator.CreateInstance(type);
+			}
+			return null;
 		}
 	}
 }
