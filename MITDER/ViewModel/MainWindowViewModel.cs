@@ -74,6 +74,8 @@ namespace MITDER.ViewModel
         {
             _core.IsMeasurementStarted = true;
             _core.IsResistanceMeasured = true;
+            if (_core.MeasurementSteps.SelectedIndex == -1)
+                _core.MeasurementSteps.ChangeSelection();
         }
 
         /// <summary>

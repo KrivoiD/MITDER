@@ -25,7 +25,7 @@ namespace Core
 	/// Коллекция с указанием на текущий элемент
 	/// (WSI - with selected item)
 	/// </summary>
-	public class WSICollection<T> : Collection<T>
+	public class WSICollection<T> : ObservableCollection<T>
 	{
 		public delegate void SelectionChangedDelegate(WSICollection<T> collection, ChangedEventArgs<T> args);
 		public event SelectionChangedDelegate SelectedItemChanged;
@@ -56,12 +56,13 @@ namespace Core
 
 		/// <summary>
 		/// Изменяет текущий элемент на следующий в коллекции.
+		/// Если было достигнуто конца списка, то меняет индекс на -1.
 		/// </summary>
 		/// <returns></returns>
 		public bool ChangeSelection()
 		{
-			if (_selectedIndex >= this.Count)
-				return false;
+			if (_selectedIndex == this.Count - 1)
+				return ChangeSelection(-1);
 			return ChangeSelection(_selectedIndex + 1);
 		}
 
@@ -88,8 +89,8 @@ namespace Core
 		/// <returns></returns>
 		public bool ChangeSelection(int index)
 		{
-			if (index < 0 || index >= this.Count)
-				throw new ArgumentOutOfRangeException("index", "Разрешенный диапазон индекса - [0; " + (this.Count - 1) + "].");
+			if (index < -1 || index >= this.Count)
+				throw new ArgumentOutOfRangeException("index", "Разрешенный диапазон индекса - [-1; " + (this.Count - 1) + "].");
 			if (index == _selectedIndex)
 				return false;
 
@@ -114,14 +115,14 @@ namespace Core
 		{
 			var oldItem = SelectedItem;
 			_selectedIndex = index;
-			RaiseselectedItemChanged(oldItem);
+			RaiseSelectedItemChanged(oldItem);
 		}
 
 		/// <summary>
 		/// Генерирует событие <see cref="SelectedItemChanged"/>.
 		/// </summary>
 		/// <param name="oldItem"></param>
-		private void RaiseselectedItemChanged(T oldItem)
+		private void RaiseSelectedItemChanged(T oldItem)
 		{
 			if (SelectedItemChanged != null)
 				SelectedItemChanged.Invoke(this, new ChangedEventArgs<T>(oldItem, SelectedItem));
@@ -169,6 +170,18 @@ namespace Core
 				throw new InvalidOperationException("Нельзя заменить текущий выделенный элемент. Измените выделенный элемент методами ChangeSelection() или ResetSelection() и выполните операцию повторно.");
 			
 			base.SetItem(index, item);
+		}
+
+		protected override void MoveItem(int oldIndex, int newIndex)
+		{
+			base.MoveItem(oldIndex, newIndex);
+			
+			if (_selectedIndex > oldIndex)
+				if(_selectedIndex <= newIndex)
+					_selectedIndex--;
+			if (_selectedIndex < oldIndex)
+				if (_selectedIndex >= newIndex)
+					_selectedIndex++;
 		}
 	}
 }

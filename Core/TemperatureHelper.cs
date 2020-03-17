@@ -5,13 +5,12 @@ using System.Text;
 
 namespace Core
 {
+	/// <summary>
+	/// Вспомогательный класс, следящий за температурой и указывающий в нужный момент на необходимость измерения сопротивления,
+	/// а также меняет на следующий этап измерения при достижении точки окончания действия текущего этапа.
+	/// </summary>
 	class TemperatureHelper
 	{
-		/// <summary>
-		/// Действие, вызываемое для измерения сопротивления
-		/// </summary>
-		private Action MeasureResistance;
-		
 		/// <summary>
 		/// Коллекция, содержащая этапы измерения
 		/// </summary>
@@ -32,17 +31,13 @@ namespace Core
 		/// </summary>
 		/// <param name="steps">Коллекция, содержащая этапы измерения</param>
 		/// <param name="measureResistance">Действие, вызываемое для измерения сопротивления</param>
-		public TemperatureHelper(WSICollection<StepSettings> steps, Action measureResistance)
+		public TemperatureHelper(WSICollection<StepSettings> steps)
 		{
-			if (steps == null || measureResistance == null)
-				throw new NullReferenceException("Параметры steps/measureResistance не должны быть null.");
-			if (!steps.Any())
-				throw new ArgumentException("Передаваемая коллекция не должна быть пустой.");
-
+			if (steps == null)
+				throw new ArgumentNullException("Параметр steps не должен быть null.");
+			
 			StepCollection = steps;
 			StepCollection.SelectedItemChanged += StepCollection_SelectionChanged;
-			StepCollection.ChangeSelection(0);
-			MeasureResistance = measureResistance;
 		}
 
 		/// <summary>
@@ -53,10 +48,25 @@ namespace Core
 		/// Текущий этап измерения
 		/// </summary>
 		private StepSettings _step = null;
-
+		/// <summary>
+		/// Признак окончания измерений, т.е. достигли конца коллекции этапов.
+		/// </summary>
+		private bool isDone = false;
+		
 		private void StepCollection_SelectionChanged(WSICollection<StepSettings> collection, ChangedEventArgs<StepSettings> args)
 		{
-			switch (StepCollection.SelectedItem.Type)
+			isDone = false;
+			_step = collection.SelectedItem;
+			
+			//Установка текущего индекса в -1 означает, что достигли конца коллекции 
+			// или был вызван метод ResetSelection(), т.е. перезапустили этапы
+			if(collection.SelectedIndex == -1)
+			{
+				isDone = true;
+				return;
+			}
+
+			switch (collection.SelectedItem.Type)
 			{
 				//TODO: необходимо ли проверять на два этих типа?
 				case StepType.NotAssigned:
@@ -70,29 +80,46 @@ namespace Core
 					_coeff = -1;
 					break;
 			}
-			_step = collection.SelectedItem;
+
+			NextTemperature = _step.From;
+			while (_coeff * NextTemperature < _coeff * CurrentTemperature)
+			{
+				NextTemperature += _coeff * _step.Step;
+			}
 		}
 
-		public void SetCurrentTemperature(double temperature)
+		/// <summary>
+		/// Возвращает признак необходимости измерения сопротивления, проверяет выполнения условий этапа, 
+		/// при необходимости расчитывает следующую точку для измерений.
+		/// </summary>
+		/// <param name="temperature"></param>
+		public bool IsMeasureResistance(double temperature)
 		{
+			var isMeasure = false;
 			CurrentTemperature = temperature;
-			
+
+			if (isDone || _step == null)
+				return isMeasure;
+
+			var temper = _coeff * temperature;
 			//проверяем, достигли ли отправной точки этапа
-			if (_coeff * temperature < _coeff * _step.From)
-				return;
+			if (temper < _coeff * _step.From)
+				return isMeasure;
 
 			//проверяем, надо ли проводить измерение сопротивления
-			if (_coeff * temperature >= _coeff * (NextTemperature - _step.PointRange)
-				&& _coeff * temperature <= _coeff * (NextTemperature + _step.PointRange))
-				MeasureResistance();
-
-			//проверяем, вышли за конечную точку этапа - переходим к следующему этапу
-			if (_coeff * temperature > _coeff * _step.To)
-				StepCollection.ChangeSelection();
+			if (temper >= _coeff * (NextTemperature - _step.PointRange)
+				&& temper <= _coeff * (NextTemperature + _step.PointRange))
+				isMeasure = true;
 
 			//расчитываем следующую точку для измерения
-			if (_coeff * temperature > _coeff * (NextTemperature + _step.PointRange))
+			if (temper > _coeff * (NextTemperature + _step.PointRange) || isMeasure)
 				NextTemperature += _coeff * _step.Step;
+
+			//проверяем, вышли за конечную точку этапа - переходим к следующему этапу
+			if (temper > _coeff * _step.To)
+				StepCollection.ChangeSelection();
+
+			return isMeasure;
 		}
 	}
 }

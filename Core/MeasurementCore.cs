@@ -90,29 +90,22 @@ namespace Core
         /// <summary>
         /// Коллекция, содержащая параметры этапов измерения.
         /// </summary>
-        public ObservableCollection<StepSettings> MeasurementSteps { get; private set; }
+        public WSICollection<StepSettings> MeasurementSteps { get; private set; }
 
-        private StepSettings _currentStep;
+        /// <summary>
+        /// Объект, реализующий логику проверок при изменении текущей температуры.
+        /// </summary>
+        private TemperatureHelper _tempHelper;
 
         #endregion
 
         private MeasurementCore()
         {
-            MeasurementSteps = new ObservableCollection<StepSettings>();
-            MeasurementSteps.CollectionChanged += MeasurementSteps_CollectionChanged;
+            MeasurementSteps = new WSICollection<StepSettings>();
+            _tempHelper = new TemperatureHelper(MeasurementSteps);
             _timer = new System.Timers.Timer(200);
             _timer.AutoReset = true;
             _timer.Elapsed += _timer_Elapsed;
-        }
-
-        private void MeasurementSteps_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            //назначает текущий этап измерения и свойство Next при добавлении первого объекта в коллекцию.
-            if(e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add && MeasurementSteps.Count == 1 && e.NewItems.Count == 1)
-            {
-                _currentStep = e.NewItems.Cast<StepSettings>().Single();
-                Next = _currentStep.From;
-            }
         }
 
         /// <summary>
@@ -136,7 +129,7 @@ namespace Core
 
         void _timer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            MeasureTemperatureVoltages();
+                MeasureTemperatureVoltages();
         }
 
         /// <summary>
@@ -156,17 +149,9 @@ namespace Core
             {
                 MeasuredVoltage.Invoke(new MeasuredValues(DateTime.Now) { TopTemperature = this.TopTemperature, BottomTemperature = this.BottomTemperature });
             }
-
-            //определяет следующую точку измерения, если были какие-либо сбои
-            if (IsMeasurementStarted && BottomTemperature < _currentStep.To && 
-				BottomTemperature > Next + 2 * _currentStep.PointRange)
-                while (Next < BottomTemperature)
-                {
-                    Next += _currentStep.Step;
-                }
-
-            if (IsResistanceMeasured)
+            if (_tempHelper.IsMeasureResistance(BottomTemperature))
                 MeasureResistanceIfNeed();
+            Next = _tempHelper.NextTemperature;
         }
 
         /// <summary>
@@ -174,7 +159,7 @@ namespace Core
         /// </summary>
         private void MeasureResistanceIfNeed()
         {
-			if (BottomTemperature < Next - _currentStep.PointRange || BottomTemperature > Next + _currentStep.PointRange)
+            if (!IsResistanceMeasured)
                 return;
 
             //определяем диапазон измеряемого значения для омметра
@@ -183,9 +168,6 @@ namespace Core
             var range = Math.Pow(10, digitNumber);
 
             MeasureResistance(range);
-
-			if (Next < _currentStep.To)
-				Next += _currentStep.Step;
         }
 
         /// <summary>
