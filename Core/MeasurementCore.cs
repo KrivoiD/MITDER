@@ -102,10 +102,36 @@ namespace Core
         private MeasurementCore()
         {
             MeasurementSteps = new WSICollection<StepSettings>();
+            MeasurementSteps.SelectedItemChanged += MeasurementSteps_SelectedItemChanged;
             _tempHelper = new TemperatureHelper(MeasurementSteps);
             _timer = new System.Timers.Timer(200);
             _timer.AutoReset = true;
             _timer.Elapsed += _timer_Elapsed;
+        }
+
+        private void MeasurementSteps_SelectedItemChanged(WSICollection<StepSettings> collection, ChangedEventArgs<StepSettings> args)
+        {
+            if (collection.SelectedItem == null)
+                return;
+#if WithoutDevices
+            switch (collection.SelectedItem.Type)
+            {
+                //TODO: необходимо ли проверять на два этих типа?
+                case StepType.NotAssigned:
+                case StepType.Done:
+                    return;
+                case StepType.Waiting:
+                case StepType.Heating:
+                    _bottomThermocouple.Direction = 1;
+                    _topThermocouple.Direction = 1;
+                    break;
+                case StepType.Cooling:
+                    _bottomThermocouple.Direction = -1;
+                    _topThermocouple.Direction = -1;
+                    break;
+            }
+#else
+#endif
         }
 
         /// <summary>

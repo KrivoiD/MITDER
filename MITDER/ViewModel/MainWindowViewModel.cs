@@ -127,6 +127,22 @@ namespace MITDER.ViewModel
                 PointRange = 0.01,
                 Type = StepType.Heating
             });
+            _core.MeasurementSteps.Add(new StepSettings()
+            {
+                From = -0.2,
+                To = 2,
+                Step = 0.1,
+                PointRange = 0.01,
+                Type = StepType.Heating
+            });
+            _core.MeasurementSteps.Add(new StepSettings()
+            {
+                From = 2,
+                To = -5.6,
+                Step = 0.2,
+                PointRange = 0.01,
+                Type = StepType.Cooling
+            });
 
             _core.MeasuredVoltage += _core_MeasuredVoltages;
             _core.MeasuredResistance += _core_MeasuredResistance;

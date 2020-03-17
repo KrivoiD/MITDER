@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27703.2042
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29519.181
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MITDER", "MITDER\MITDER.csproj", "{CFC3ADD6-916C-4FB5-83A5-5E7A77B94F06}"
 EndProject
@@ -74,8 +74,8 @@ Global
 		{2C5EAC7F-CA6B-4E21-873A-009B7A912013}.Release|x86.Build.0 = Debug|Any CPU
 		{2C5EAC7F-CA6B-4E21-873A-009B7A912013}.WithoutDevices|Any CPU.ActiveCfg = Debug|Any CPU
 		{2C5EAC7F-CA6B-4E21-873A-009B7A912013}.WithoutDevices|Any CPU.Build.0 = Debug|Any CPU
-		{2C5EAC7F-CA6B-4E21-873A-009B7A912013}.WithoutDevices|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{2C5EAC7F-CA6B-4E21-873A-009B7A912013}.WithoutDevices|Mixed Platforms.Build.0 = Debug|Any CPU
+		{2C5EAC7F-CA6B-4E21-873A-009B7A912013}.WithoutDevices|Mixed Platforms.ActiveCfg = WithoutDevices|Any CPU
+		{2C5EAC7F-CA6B-4E21-873A-009B7A912013}.WithoutDevices|Mixed Platforms.Build.0 = WithoutDevices|Any CPU
 		{2C5EAC7F-CA6B-4E21-873A-009B7A912013}.WithoutDevices|x86.ActiveCfg = Debug|Any CPU
 		{2C5EAC7F-CA6B-4E21-873A-009B7A912013}.WithoutDevices|x86.Build.0 = Debug|Any CPU
 		{ADF3E301-C191-40DA-B59D-0D0B42A037F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU

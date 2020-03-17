@@ -94,10 +94,11 @@ namespace Multimeters
 #endif
 
 #if WithoutDevices
-        Random rand = new Random(DateTime.Now.Second);
+        Random rand = new Random((int)DateTime.Now.Ticks);
         double lastVoltageValue = -0.0058;
         double lastResistanceValue = 10;
         public double valueStep = 0.00001;
+        public int Direction { get; set; } = 1;
 #endif
 
         /// <summary>
@@ -108,7 +109,7 @@ namespace Multimeters
         public double GetVoltage(double range = 0.01)
         {
 #if WithoutDevices
-            lastVoltageValue += valueStep + rand.NextDouble() / 100000;
+            lastVoltageValue += Direction * valueStep + rand.NextDouble() / 100000;
             return  lastVoltageValue;
 #else
             return _driver.Voltage.DCVoltage.Measure(range, Agilent34410ResolutionEnum.Agilent34410ResolutionDefault);

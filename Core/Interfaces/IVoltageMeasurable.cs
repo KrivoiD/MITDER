@@ -21,5 +21,9 @@ namespace Core.Interfaces
         /// <param name="range">Диапазон измерения в Вольтах. Указывает верхнее измеряемое значение.</param>
         /// <returns></returns>
         double GetVoltage(double range);
+
+#if WithoutDevices
+        int Direction { get; set; }
+#endif
     }
 }

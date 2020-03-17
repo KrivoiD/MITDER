@@ -22,7 +22,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Choose>
-    <When Condition=" '$(Configuration)' == 'WithoutDevices' ">
+    <When Condition=" '$(Configuration)' != 'WithoutDevices' ">
       <ItemGroup>
         <COMReference Include="Agilent34410Lib">
           <Guid>{7E65C8D3-046F-42D3-BA3F-4C7C31925DF5}</Guid>

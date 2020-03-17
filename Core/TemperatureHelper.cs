@@ -107,8 +107,8 @@ namespace Core
 				return isMeasure;
 
 			//проверяем, надо ли проводить измерение сопротивления
-			if (temper >= _coeff * (NextTemperature - _step.PointRange)
-				&& temper <= _coeff * (NextTemperature + _step.PointRange))
+			if (temperature >=  (NextTemperature - _step.PointRange)
+				&& temperature <=  (NextTemperature + _step.PointRange))
 				isMeasure = true;
 
 			//расчитываем следующую точку для измерения
