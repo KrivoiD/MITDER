@@ -15,7 +15,13 @@
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="auto" />
         </Grid.RowDefinitions>
+        <Menu Grid.Row="4" Grid.ColumnSpan="3">
+            <MenuItem Header="Файл">
+                <MenuItem Header="Выход" />
+            </MenuItem>
+        </Menu>
         <Grid Grid.Column="0" Grid.Row="0" >
             <Grid.RowDefinitions>
                 <RowDefinition MinHeight="60" />
@@ -37,7 +43,7 @@
             <Button Grid.Column="0" Content="Старт" Command="{Binding Start}" />
             <Button Grid.Column="1" Content="Стоп" Command="{Binding Stop}" />
         </Grid>
-        <ListView Grid.Row="3" Grid.Column="0" ItemsSource="{Binding StepSettings}">
+        <ListView Grid.Row="3" Grid.Column="0" ItemsSource="{Binding StepSettings}" >
             <ListView.View>
                 <GridView>
                     <GridViewColumn DisplayMemberBinding="{Binding Path=From, StringFormat='{}{0:0.000}'}">С</GridViewColumn>
@@ -48,7 +54,7 @@
             </ListView.View>
         </ListView>
         <GridSplitter Grid.Column="1" Grid.Row="0" Width="3" HorizontalAlignment="Center" />
-        <ListView Grid.Row="0" Grid.Column="2" Grid.RowSpan="5" ItemsSource="{Binding MeasuredValuesCollection}">
+        <ListView Grid.Row="0" Grid.Column="2" Grid.RowSpan="4" ItemsSource="{Binding MeasuredValuesCollection}">
             <ListView.View>
                 <GridView>
                     <GridViewColumn DisplayMemberBinding="{Binding Date}">Дата и время</GridViewColumn>

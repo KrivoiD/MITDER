@@ -32,6 +32,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="WindowService.cs" />
     <Compile Include="ViewModelClasses\RelayCommand.cs" />
     <Compile Include="ViewModelClasses\ViewModelBase.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
