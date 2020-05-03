@@ -46,8 +46,23 @@ namespace MITDER
 			if (!TypeMapping.ContainsKey(viewModelType))
 				throw new InvalidOperationException("Для класса " + viewModelType.FullName + " не задан класс отображения.");
 
-			var viewModel = Activator.CreateInstance(viewModelType);
-			CreateWindow<TViewModel>();
+			CreateWindow(typeof(TViewModel)).Show();
+		}
+		
+		/// <summary>
+		/// Создает и отображает ассоциированную View с ViewModel по указанному типу ViewModel.
+		/// Дополнительно устанавливает в <see cref="Application.MainWindow"/> созданную View.
+		/// </summary>
+		/// <typeparam name="TViewModel"></typeparam>
+		public static void ShowMainWindow<TViewModel>() where TViewModel : ViewModelBase
+		{
+			var viewModelType = typeof(TViewModel);
+			if (!TypeMapping.ContainsKey(viewModelType))
+				throw new InvalidOperationException("Для класса " + viewModelType.FullName + " не задан класс отображения.");
+
+			var window = CreateWindow(typeof(TViewModel));
+			App.Current.MainWindow = window;
+			window.Show();
 		}
 
 		/// <summary>
@@ -59,26 +74,77 @@ namespace MITDER
 		{
 			if (viewModel == null)
 				throw new ArgumentNullException();
-			var viewModelType = viewModel.GetType();
+			var viewModelType = typeof(TViewModel);
+			//получаем тип объекта на случай, если в переменной родительского типа хранится объект типа наследника
+			var trueModelType = viewModel.GetType();
+			if (!TypeMapping.ContainsKey(trueModelType) || !TypeMapping.ContainsKey(typeof(TViewModel)))
+				throw new InvalidOperationException("Для класса " + trueModelType.FullName + " не задан класс отображения.");
+
+			CreateWindow(typeof(TViewModel), viewModel).Show();
+		}
+
+		/// <summary>
+		/// Создает и отображает ассоциированную View с ViewModel по указанному типу ViewModel виде диалога
+		/// </summary>
+		/// <typeparam name="TViewModel"></typeparam>
+		public static bool? ShowDialog<TViewModel>() where TViewModel : ViewModelBase
+		{
+			var viewModelType = typeof(TViewModel);
 			if (!TypeMapping.ContainsKey(viewModelType))
 				throw new InvalidOperationException("Для класса " + viewModelType.FullName + " не задан класс отображения.");
 
-			CreateWindow<TViewModel>(viewModel);
+			return CreateWindow(typeof(TViewModel)).ShowDialog();
+		}
+
+		/// <summary>
+		/// Создает и отображает ассоциированную View с ViewModel по заданному объекту ViewModel виде диалога
+		/// </summary>
+		/// <typeparam name="TViewModel"></typeparam>
+		/// <param name="viewModel"></param>
+		public static bool? ShowDialog<TViewModel>(TViewModel viewModel) where TViewModel : ViewModelBase
+		{
+			if (viewModel == null)
+				throw new ArgumentNullException();
+			var viewModelType = typeof(TViewModel);
+			//получаем тип объекта на случай, если в переменной родительского типа хранится объект типа наследника
+			var trueModelType = viewModel.GetType();
+			if (!TypeMapping.ContainsKey(trueModelType) || !TypeMapping.ContainsKey(typeof(TViewModel)))
+				throw new InvalidOperationException("Для класса " + trueModelType.FullName + " не задан класс отображения.");
+
+			return CreateWindow(typeof(TViewModel), viewModel).ShowDialog();
 		}
 
 		/// <summary>
 		/// Скрытый метод для создания окна и установки в DataContext объекта ViewModel.
 		/// Если переданный объект ViewModel нулевой, то создается объект соответствующего типа.
 		/// </summary>
-		/// <typeparam name="TViewModel"></typeparam>
+		/// <param name="viewModelType"></param>
 		/// <param name="viewModel"></param>
-		private static void CreateWindow<TViewModel>(TViewModel viewModel = null) where TViewModel : ViewModelBase
+		private static Window CreateWindow(Type viewModelType, ViewModelBase viewModel = null)
 		{
-			var window = Activator.CreateInstance(TypeMapping[typeof(TViewModel)]) as Window;
-			viewModel = viewModel ?? Activator.CreateInstance(typeof(TViewModel)) as TViewModel;
-			window.DataContext = viewModel ?? Activator.CreateInstance(typeof(TViewModel));
+			var window = Activator.CreateInstance(TypeMapping[viewModelType]) as Window;
+			viewModel = viewModel ?? Activator.CreateInstance(viewModelType) as ViewModelBase;
+			window.DataContext = viewModel;
 			ObjectsMapping.Add(viewModel, window);
-			window.Show();
+			return window;
+		}
+
+		/// <summary>
+		/// Закрывает View, ассоциированную с ViewModel. Если не находит по ViewModel, то ничего не происходит.
+		/// </summary>
+		/// <param name="viewModel"></param>
+		/// <param name="isAccept"></param>
+		public static void CloseWindow(ViewModelBase viewModel, bool isAccept = false)
+		{
+			if (viewModel == null)
+				throw new ArgumentNullException();
+			if (!ObjectsMapping.ContainsKey(viewModel))
+				return;
+
+			var window = ObjectsMapping[viewModel];
+			window.DialogResult = isAccept;
+			ObjectsMapping.Remove(viewModel);
+			window.Close();
 		}
 	}
 }
