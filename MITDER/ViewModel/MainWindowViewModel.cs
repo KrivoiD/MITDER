@@ -48,12 +48,14 @@ namespace MITDER.ViewModel
         /// Коллекция, содержащая измерянные значения.
         /// </summary>
         public ObservableCollection<MeasuredValues> MeasuredValuesCollection { get; set; }
-        /// <summary>
-        /// Коллекция, содержащая настройки этапов измерения.
-        /// </summary>
-        public ObservableCollection<StepSettings> StepSettings {
-            get { return _core.MeasurementSteps; }
-        }
+		private WSICollection<StepSettings> _stepSettings;
+		/// <summary>
+		/// Коллекция, содержащая настройки этапов измерения.
+		/// </summary>
+		public WSICollection<StepSettings> StepSettings {
+            get { return _stepSettings; }
+			set { RaisePropertyChanged("StepSettings", ref _stepSettings, value); }
+		}
 
         #endregion
 
@@ -100,11 +102,96 @@ namespace MITDER.ViewModel
             _core.IsResistanceMeasured = false;
             _core.IsMeasurementStarted = false;
         }
-        #endregion //Stop command
+		#endregion //Stop command
 
-        #endregion
+		#region AddStep command
 
-        public MainWindowViewModel()
+		/// <summary>
+		/// Комманда добавления нового этапа
+		/// </summary>
+		public RelayCommand AddStep {
+			get { return new RelayCommand(AddStepSettings); }
+		}
+
+		/// <summary>
+		/// Открыввает окно с параметрами этапа измерения
+		/// </summary>
+		private void AddStepSettings(object obj)
+		{
+			var stepViewModel = new StepSettingsViewModel();
+			if (WindowService.ShowDialog(stepViewModel) ?? false)
+			{
+				StepSettings.Add(stepViewModel.StepSettigs);
+			}
+			
+		}
+
+		#endregion
+
+		#region EditStep command
+
+		/// <summary>
+		/// Комманда редактирования указанного этапа
+		/// </summary>
+		public RelayCommand EditStep {
+			get { return new RelayCommand(EditStepSettings); }
+		}
+
+		/// <summary>
+		/// Открыввает окно с параметрами указанного этапа для редактирования
+		/// </summary>
+		private void EditStepSettings(object obj)
+		{
+			if (!(obj is StepSettings step))
+				return;
+			var stepViewModel = new StepSettingsViewModel(step);
+			if (WindowService.ShowDialog(stepViewModel) ?? false)
+			{
+				//TODO: Обновить данные без изменения свойства StepSettings
+				StepSettings = null;
+				StepSettings = _core.MeasurementSteps;
+			}
+			
+		}
+
+		#endregion
+
+		#region DeleteStep command
+
+		/// <summary>
+		/// Комманда удаления указанного этапа
+		/// </summary>
+		public RelayCommand DeleteStep {
+			get { return new RelayCommand(DeleteStepSettings, CanDeleteStepSettings); }
+		}
+
+		/// <summary>
+		/// Удаляет указанный этапа для редактирования
+		/// </summary>
+		private void DeleteStepSettings(object obj)
+		{
+			if (!(obj is StepSettings step))
+				return;
+			StepSettings.Remove(step);
+		}
+
+		/// <summary>
+		/// Проверяет возможность удаления указанный этапа
+		/// </summary>
+		private bool CanDeleteStepSettings(object obj)
+		{
+			if (!(obj is StepSettings step))
+				return false;
+			if (StepSettings.SelectedItem != step && StepSettings.Contains(step))
+				return true;
+			return false;
+		}
+
+		#endregion
+
+		#endregion
+
+		public MainWindowViewModel()
         {
             if (string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["BottomVISA"])
                 || string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["TopVISA"])
@@ -146,6 +233,8 @@ namespace MITDER.ViewModel
 
             _core.MeasuredVoltage += _core_MeasuredVoltages;
             _core.MeasuredResistance += _core_MeasuredResistance;
+
+			StepSettings = _core.MeasurementSteps;
         }
 
 		private void _core_MeasuredVoltages(MeasuredValues value)

@@ -124,6 +124,7 @@ namespace Core
 		/// <param name="oldItem"></param>
 		private void RaiseSelectedItemChanged(T oldItem)
 		{
+			OnPropertyChanged(new System.ComponentModel.PropertyChangedEventArgs("SelectedItem"));
 			if (SelectedItemChanged != null)
 				SelectedItemChanged.Invoke(this, new ChangedEventArgs<T>(oldItem, SelectedItem));
 		}

@@ -1,4 +1,5 @@
-﻿using MITDER.ViewModel;
+﻿using MITDER.View;
+using MITDER.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -16,11 +17,9 @@ namespace MITDER
         protected override void OnStartup(StartupEventArgs e)
         {
             WindowService.AddMapping<MainWindowViewModel, MainWindow>();
-            WindowService.ShowWindow<MainWindowViewModel>();
+            WindowService.AddMapping<StepSettingsViewModel, StepSettingsView>();
+            WindowService.ShowMainWindow<MainWindowViewModel>();
             //base.OnStartup(e);
-        }
-        private void Application_Startup(object sender, StartupEventArgs e)
-        {
         }
     }
 }

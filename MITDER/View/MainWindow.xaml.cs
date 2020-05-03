@@ -14,7 +14,7 @@ using System.Windows.Shapes;
 using MITDER.ViewModel;
 using MITDER.ViewModelClasses;
 
-namespace MITDER
+namespace MITDER.View
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -24,7 +24,6 @@ namespace MITDER
         public MainWindow()
         {
             InitializeComponent();
-            //DataContext = new MainWindowViewModel();
             this.Closed += new EventHandler(MainWindow_Closed);
         }
 

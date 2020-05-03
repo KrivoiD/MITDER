@@ -1,8 +1,9 @@
-﻿<Window x:Class="MITDER.MainWindow"
+﻿<Window x:Name="window" x:Class="MITDER.View.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:MITDER.ViewModel"
         xmlns:indicators="clr-namespace:Indicators;assembly=Indicators"
+        DataContext="{x:Type local:MainWindowViewModel}"
         Title="MainWindow" Height="500" Width="650">
     <Grid>
         <Grid.ColumnDefinitions>
@@ -14,15 +15,15 @@
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
-            <RowDefinition Height="*" />
             <RowDefinition Height="auto" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Menu Grid.Row="4" Grid.ColumnSpan="3">
+        <Menu Grid.Row="0" Grid.ColumnSpan="3">
             <MenuItem Header="Файл">
                 <MenuItem Header="Выход" />
             </MenuItem>
         </Menu>
-        <Grid Grid.Column="0" Grid.Row="0" >
+        <Grid Grid.Column="0" Grid.Row="1" >
             <Grid.RowDefinitions>
                 <RowDefinition MinHeight="60" />
                 <RowDefinition MinHeight="60" />
@@ -34,8 +35,8 @@
             <indicators:CurrentValueIndicator Grid.Column="0" Grid.Row="2" Value="{Binding NextPoint}" Title="Следующее измерение" Unit="мВ" />
             <indicators:CurrentValueIndicator Grid.Column="0" Grid.Row="3" Value="{Binding Resistance}" Title="Сопротивление" Unit="Ом" />
         </Grid>
-        <GridSplitter Grid.Column="0" Grid.Row="1" Height="3" VerticalAlignment="Center" HorizontalAlignment="Stretch" />
-        <Grid Grid.Column="0" Grid.Row="2">
+        <GridSplitter Grid.Column="0" Grid.Row="2" Height="3" VerticalAlignment="Center" HorizontalAlignment="Stretch" />
+        <Grid Grid.Column="0" Grid.Row="3">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
                 <ColumnDefinition />
@@ -43,7 +44,14 @@
             <Button Grid.Column="0" Content="Старт" Command="{Binding Start}" />
             <Button Grid.Column="1" Content="Стоп" Command="{Binding Stop}" />
         </Grid>
-        <ListView Grid.Row="3" Grid.Column="0" ItemsSource="{Binding StepSettings}" >
+        <ListView Grid.Row="4" Grid.Column="0" x:Name="StepsList" ItemsSource="{Binding StepSettings}" SelectionMode="Single" >
+            <ListView.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Добавить" Command="{Binding AddStep}" />
+                    <MenuItem Header="Редактировать" Command="{Binding EditStep}" CommandParameter="{Binding Parent.PlacementTarget.SelectedItem, RelativeSource={RelativeSource Self}}" />
+                    <MenuItem Header="Удалить" Command="{Binding DeleteStep}" CommandParameter="{Binding Parent.PlacementTarget.SelectedItem, RelativeSource={RelativeSource Self}}" />
+                </ContextMenu>
+            </ListView.ContextMenu>
             <ListView.View>
                 <GridView>
                     <GridViewColumn DisplayMemberBinding="{Binding Path=From, StringFormat='{}{0:0.000}'}">С</GridViewColumn>
@@ -53,8 +61,15 @@
                 </GridView>
             </ListView.View>
         </ListView>
-        <GridSplitter Grid.Column="1" Grid.Row="0" Width="3" HorizontalAlignment="Center" />
-        <ListView Grid.Row="0" Grid.Column="2" Grid.RowSpan="4" ItemsSource="{Binding MeasuredValuesCollection}">
+        <GridSplitter Grid.Column="1" Grid.Row="1" Width="3" HorizontalAlignment="Center" />
+        <ListView Grid.Row="1" Grid.Column="2" Grid.RowSpan="4" ItemsSource="{Binding MeasuredValuesCollection}">
+            <ListView.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Добавить" />
+                    <MenuItem Header="Редактировать" />
+                    <MenuItem Header="Удалить" />
+                </ContextMenu>
+            </ListView.ContextMenu>
             <ListView.View>
                 <GridView>
                     <GridViewColumn DisplayMemberBinding="{Binding Date}">Дата и время</GridViewColumn>

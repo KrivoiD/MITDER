@@ -11,21 +11,13 @@ namespace Core
     /// </summary>
 	public class StepSettings : IMeasurementSettings
 	{
-		double _from = 0;
 		double _pointRange = 0.05;
 		double _step = 0.1;
 
 		/// <summary>
 		/// Значение напряжения в мВ для начала измерения
 		/// </summary>
-		public double From
-		{
-			get { return _from; }
-			set
-			{
-				_from = value;
-			}
-		}
+		public double From { get; set; }
 
 		/// <summary>
 		/// Значение напряжения в мВ для окончания измерения
