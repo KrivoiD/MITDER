@@ -5,6 +5,9 @@ using System.Text;
 
 namespace Core.Interfaces
 {
+	/// <summary>
+	/// Интерфейс, имеющий параметры этапа измерения
+	/// </summary>
 	public interface IMeasurementSettings
 	{
 		/// <summary>
