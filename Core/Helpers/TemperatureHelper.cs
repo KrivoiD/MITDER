@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Core
+namespace Core.Helpers
 {
 	/// <summary>
 	/// Вспомогательный класс, следящий за температурой и указывающий в нужный момент на необходимость измерения сопротивления,
