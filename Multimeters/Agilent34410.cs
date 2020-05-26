@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-#if WithoutDevice
+using System.Diagnostics;
+#if !WithoutDevice
 using Ivi.Visa.Interop;
 using Agilent.Agilent34410.Interop;
 #endif
@@ -12,7 +13,7 @@ namespace Multimeters
 {
     public class Agilent34410 : IVoltageMeasurable, IResistanceMeasurable
     {
-#if WithoutDevice
+#if !WithoutDevices
         private IAgilent34410 _driver;
 #endif
         private string _resourceName;
@@ -85,10 +86,10 @@ namespace Multimeters
             catch (Exception e)
             {
                 System.Diagnostics.Debug.WriteLine(e);
+                _driver.Close();
             }
             finally
             {
-                _driver.Close();
             }
         }
 #endif
@@ -106,13 +107,24 @@ namespace Multimeters
         /// </summary>
         /// <param name="range">Диапазон измерения в Вольтах. Указывает верхнее измеряемое значение.</param>
         /// <returns></returns>
-        public double GetVoltage(double range = 0.01)
+        public double GetVoltage(double range = 0.1)
         {
 #if WithoutDevices
             lastVoltageValue += Direction * valueStep + rand.NextDouble() / 100000;
             return  lastVoltageValue;
 #else
-            return _driver.Voltage.DCVoltage.Measure(range, Agilent34410ResolutionEnum.Agilent34410ResolutionDefault);
+            try
+            {
+                var result = _driver.Voltage.DCVoltage.Measure(range, Agilent34410ResolutionEnum.Agilent34410ResolutionDefault);
+                Trace.TraceInformation("Agilent => Получено напряжение " + result.ToString("0.000000") + "В");
+                return result;
+
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError("Agilent => При получении напряжения возникло исключение: " + ex.Message + "\n\t\t" + ex.StackTrace);
+            }
+            return double.NaN;
 #endif
         }
 
@@ -127,7 +139,18 @@ namespace Multimeters
             lastResistanceValue += rand.NextDouble() * 10 - 3;
             return lastResistanceValue;
 #else
-            return _driver.Resistance.Measure(range, Agilent34410ResolutionEnum.Agilent34410ResolutionDefault);
+            try
+            {
+                var result = _driver.Resistance.Measure(range, Agilent34410ResolutionEnum.Agilent34410ResolutionDefault);
+                Trace.TraceInformation("Agilent => Получено сопротивление " + result.ToString("0.000000") + "Ом");
+                return result;
+
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError("Agilent => При получении сопротивления возникло исключение: " + ex.Message + "\n\t\t" + ex.StackTrace);
+            }
+            return double.NaN;
 #endif
         }
 

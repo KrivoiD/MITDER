@@ -1,4 +1,6 @@
-﻿using MITDER.ViewModelClasses;
+﻿using Microsoft.Win32;
+
+using MITDER.ViewModelClasses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -145,6 +147,20 @@ namespace MITDER
 			window.DialogResult = isAccept;
 			ObjectsMapping.Remove(viewModel);
 			window.Close();
+		}
+
+		public static bool? ShowSaveDialog(out string filename)
+		{
+			var dialog = new SaveFileDialog() {
+				CreatePrompt = false,
+				Filter = "Все файлы|*.*|Файл данных|*.dat|Тестовый файл|*txt",
+				FilterIndex = 1,
+				OverwritePrompt = true,
+				Title = "Укажите каталог и название файла для сохранения данных"
+			};
+			var result = dialog.ShowDialog();
+			filename = dialog.FileName;
+			return result;
 		}
 	}
 }

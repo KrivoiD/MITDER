@@ -25,6 +25,7 @@ namespace Core
         System.Timers.Timer _timer;
         IVoltageMeasurable _topThermocouple = null;
         IVoltageMeasurable _bottomThermocouple = null;
+        IVoltageMeasurable _thermoEDF = null;
         IResistanceMeasurable _resistance = null;
 
         /// <summary>
@@ -69,10 +70,21 @@ namespace Core
         public double Resistance { get; set; }
 
         /// <summary>
+        /// Последнее измеренное значение термоЭДС
+        /// </summary>
+        public double ThermoEDF { get; set; }
+
+        /// <summary>
         /// Указывает, производить ли измерения сопротивления в заданном интервале [<see cref="MeasurementCore.From"/>;<see cref="MeasurementCore.To"/>]
         /// с заданным шагом <see cref="MeasurementCore.Step"/>.
         /// </summary>
         public bool IsResistanceMeasured { get; set; }
+        
+        /// <summary>
+        /// Указывает, производить ли измерения термоЭДС в заданном интервале [<see cref="MeasurementCore.From"/>;<see cref="MeasurementCore.To"/>]
+        /// с заданным шагом <see cref="MeasurementCore.Step"/>.
+        /// </summary>
+        public bool IsThermoEDFMeasured { get; set; }
 
         /// <summary>
         /// Указывает, запущен ли процесс измерения.
@@ -115,13 +127,9 @@ namespace Core
             if (collection.SelectedItem == null)
                 return;
 #if WithoutDevices
+			//изменяет направление симуляции измерений
             switch (collection.SelectedItem.Type)
             {
-                //TODO: необходимо ли проверять на два этих типа?
-                case StepType.NotAssigned:
-                case StepType.Done:
-                    return;
-                case StepType.Waiting:
                 case StepType.Heating:
                     _bottomThermocouple.Direction = 1;
                     _topThermocouple.Direction = 1;
@@ -151,6 +159,8 @@ namespace Core
             _topThermocouple = topThermocouple;
             _bottomThermocouple = bottomThermocouple;
             _resistance = resistance;
+            //Прибор, измеряющий сопротивление, измеряет еще и термоЭДС
+            _thermoEDF = _resistance as IVoltageMeasurable;
             _timer.Start();
         }
 
@@ -178,11 +188,12 @@ namespace Core
             }
             if (_tempHelper.IsMeasureResistance(BottomTemperature))
                 MeasureResistanceIfNeed();
+
             Next = _tempHelper.NextTemperature;
         }
 
         /// <summary>
-        /// Проверяет, нужно ли измерить сопротивление при текущих значениях температуры и заданных параметрах
+        /// Проверяет, нужно ли измерить сопротивление и термоЭДС при текущих значениях температуры и заданных параметрах
         /// </summary>
         private void MeasureResistanceIfNeed()
         {
@@ -195,6 +206,25 @@ namespace Core
             var range = Math.Pow(10, digitNumber);
 
             MeasureResistance(range);
+
+            if(IsThermoEDFMeasured)
+			{
+                //определяем диапазон измеряемого значения для омметра
+                integer = (int)ThermoEDF;
+                digitNumber = integer.ToString().Length;
+                range = Math.Pow(10, digitNumber);
+
+                MeasureThermoEDF(range);
+			}
+
+            if (MeasuredResistance != null)
+                MeasuredResistance.Invoke(new MeasuredValues(DateTime.Now)
+                {
+                    TopTemperature = this.TopTemperature,
+                    BottomTemperature = this.BottomTemperature,
+                    Resistance = this.Resistance,
+                    ThermoEDF = this.ThermoEDF
+                });
         }
 
         /// <summary>
@@ -209,12 +239,24 @@ namespace Core
             if (!_resistance.IsInitialized)
                 return double.NaN;
             Resistance = _resistance.GetResistance(range);
-            if (MeasuredResistance != null)
-                MeasuredResistance.Invoke(new MeasuredValues(DateTime.Now) { 
-                                                TopTemperature = this.TopTemperature, 
-                                                BottomTemperature = this.BottomTemperature, 
-                                                Resistance = this.Resistance });
+            
             return Resistance;
+        }
+
+        /// <summary>
+        /// Возвращает измерянное сопротивление в указанном диапазоне.
+        /// Если прибор не инициализирован, то возвращает <see cref="Double.NaN"/>
+        /// и не генерируется событие <see cref="MeasurementCore.MeasuredResistance"/>
+        /// </summary>
+        /// <param name="range">Диапазон для измеряемого значения</param>
+        /// <returns>Измерянное сопротивление</returns>
+        public double MeasureThermoEDF(double range)
+        {
+            if (!_thermoEDF.IsInitialized)
+                return double.NaN;
+            ThermoEDF = _thermoEDF.GetVoltage(range);
+
+            return ThermoEDF;
         }
 
         /// <summary>

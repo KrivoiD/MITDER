@@ -41,6 +41,10 @@ namespace Core
 		/// </summary>
 		public double Resistance { get; set; }
 		/// <summary>
+		/// Значение термоЭДС в Ом
+		/// </summary>
+		public double ThermoEDF { get; set; }
+		/// <summary>
 		/// Дата и время измерения
 		/// </summary>
 		public DateTime Date { get; private set; }
@@ -60,7 +64,7 @@ namespace Core
 		/// <returns></returns>
 		public override string ToString()
 		{
-			return string.Format(CultureInfo.InvariantCulture, "{0:N4}\t{1:N4}\t{2}", new object[] { BottomTemperature, TopTemperature, Resistance });
+			return string.Format(CultureInfo.InvariantCulture, "{0:N4}\t{1:N4}\t{2}\t{3}", new object[] { BottomTemperature, TopTemperature, Resistance, ThermoEDF });
 		}
 	}
 }

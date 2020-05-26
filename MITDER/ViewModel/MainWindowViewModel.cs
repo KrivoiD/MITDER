@@ -9,6 +9,7 @@ using Core;
 using MITDER.ViewModelClasses;
 using System.Collections.ObjectModel;
 using Core.Helpers;
+using MITDER.Properties;
 
 namespace MITDER.ViewModel
 {
@@ -16,8 +17,8 @@ namespace MITDER.ViewModel
 	{
 		#region Properties
 
-		Agilent34410 _bottomThermocuple = null;
-		Agilent34410 _topThermocuple = null;
+		PristV7_78 _bottomThermocuple = null;
+		PristV7_78 _topThermocuple = null;
 		Agilent34410 _resistanceDevice = null;
 		MeasurementCore _core = null;
 
@@ -43,6 +44,17 @@ namespace MITDER.ViewModel
 		public double NextPoint {
 			get { return _nextPoint; }
 			set { RaisePropertyChanged("NextPoint", ref _nextPoint, value); }
+		}
+
+		public bool IsMeasureThermoEDF { 
+			get { return _core.IsThermoEDFMeasured; }
+			set
+			{
+				_core.IsThermoEDFMeasured = value;
+				if (!value)
+					_core.ThermoEDF = 0;
+				OnPropertyChanged("IsMeasureThermoEDF");
+			} 
 		}
 
 		/// <summary>
@@ -200,13 +212,13 @@ namespace MITDER.ViewModel
 				|| string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["ResistanceVISA"]))
 				throw new ApplicationException("Не указаны VISA-адреса в app.config.");
 
-			_bottomThermocuple = new Agilent34410(ConfigurationManager.AppSettings["BottomVISA"]);
-			_topThermocuple = new Agilent34410(ConfigurationManager.AppSettings["TopVISA"]);
+			_bottomThermocuple = new PristV7_78(ConfigurationManager.AppSettings["BottomVISA"]);
+			_topThermocuple = new PristV7_78(ConfigurationManager.AppSettings["TopVISA"]);
 			_resistanceDevice = new Agilent34410(ConfigurationManager.AppSettings["ResistanceVISA"]);
 
 			MeasuredValuesCollection = new ObservableCollection<MeasuredValues>();
 
-			_saver = new SaveHelper<MeasuredValues>(MeasuredValuesCollection, @"D:\1.txt");
+			_saver = new SaveHelper<MeasuredValues>(MeasuredValuesCollection, Settings.Default.SavedFilePath);
 			_core = new MeasurementCore(_topThermocuple, _bottomThermocuple, _resistanceDevice);
 
 			_core.MeasurementSteps.Add(new StepSettings()
