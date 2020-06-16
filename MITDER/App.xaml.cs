@@ -1,13 +1,13 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Windows;
 
+using Extensions;
+
+using MITDER.Properties;
 using MITDER.View;
 using MITDER.ViewModel;
-using MITDER.Properties;
-
-using NLog;
-using System.Diagnostics;
 
 namespace MITDER
 {
@@ -16,19 +16,16 @@ namespace MITDER
 	/// </summary>
 	public partial class App : Application
 	{
-		public Logger Log { get; private set; } = LogManager.GetCurrentClassLogger();
-
 		public App()
 		{
 			AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
-			System.Diagnostics.Trace.Listeners.Add(new NLogTraceListener());
+			string logFilePath = GetLogFilePath();
+			Logger.Initialize(logFilePath);
 		}
 
 		private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
 		{
-			Log.Fatal(e.ExceptionObject as Exception, "Необработанное исключение.");
-			Log.Fatal("Приложение аварийно завершается.");
-			LogManager.Flush();
+			Logger.Fatal("Приложение аварийно завершается.", e.ExceptionObject as Exception);
 			Settings.Default["IsLastCrashed"] = true;
 			Settings.Default.Save();
 			this.Shutdown(-1);
@@ -36,7 +33,8 @@ namespace MITDER
 
 		protected override void OnStartup(StartupEventArgs e)
 		{
-			Log.Info("Приложение MITDER запустилось.");
+			Logger.WriteLine("-------------------------------------------------------------------");
+			Logger.Info("Приложение MITDER запустилось.");
 
 			var isLastCrashed = Settings.Default.IsLastCrashed;
 			var savedFilePath = Settings.Default.SavedFilePath;
@@ -58,23 +56,14 @@ namespace MITDER
 			}
 			else
 			{
-				Log.Info("Пользователь не указал файл сохранения. Приложение закрывается.");
-				LogManager.Flush();
+				Logger.Warn("Пользователь не указал файл сохранения.");
 				this.Shutdown(0);
 				return;
 			}
 
-			//try
-			//{
-				WindowService.AddMapping<MainWindowViewModel, MainWindow>();
-				WindowService.AddMapping<StepSettingsViewModel, StepSettingsView>();
-				WindowService.ShowMainWindow<MainWindowViewModel>();
-				//base.OnStartup(e);
-			//}
-			//catch (Exception ex)
-			//{
-			//	this.OnUnhandledException(this, new UnhandledExceptionEventArgs(ex, true));
-			//}
+			WindowService.AddMapping<MainWindowViewModel, MainWindow>();
+			WindowService.AddMapping<StepSettingsViewModel, StepSettingsView>();
+			WindowService.ShowMainWindow<MainWindowViewModel>();
 		}
 
 		protected override void OnExit(ExitEventArgs e)
@@ -82,6 +71,8 @@ namespace MITDER
 			Settings.Default["IsLastCrashed"] = false;
 			Settings.Default["SavedFilePath"] = string.Empty;
 			Settings.Default.Save();
+			Logger.Info("Приложение завершилось.");
+			Logger.Close();
 			base.OnExit(e);
 		}
 
@@ -91,6 +82,16 @@ namespace MITDER
 			string fName = Path.GetFileNameWithoutExtension(filename);
 			string fExt = Path.GetExtension(filename);
 			return Path.Combine(fDir, String.Concat(fName, suffix, fExt));
+		}
+
+		private static string GetLogFilePath()
+		{
+			var appDirectory = Directory.GetCurrentDirectory();
+			var logPath = Path.Combine(appDirectory, "logs");
+			if (!Directory.Exists(logPath))
+				Directory.CreateDirectory(logPath);
+			var logFilePath = Path.Combine(logPath, DateTime.Now.ToString("yyyy-MM-dd-HH") + ".log");
+			return logFilePath;
 		}
 	}
 }

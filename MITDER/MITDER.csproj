@@ -12,9 +12,6 @@
     <XamlDebuggingInformation>True</XamlDebuggingInformation>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\packages\NLog.4.7.2\lib\net40-client\NLog.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Data" />
@@ -83,13 +80,6 @@
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
-    <Content Include="NLog.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <None Include="NLog.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>PublicSettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -100,6 +90,10 @@
     <ProjectReference Include="..\Core\Core.csproj">
       <Project>{2c5eac7f-ca6b-4e21-873a-009b7a912013}</Project>
       <Name>Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Extensions\Extensions.csproj">
+      <Project>{c037c0a0-fd6f-43e3-9684-eb3b94b44751}</Project>
+      <Name>Extensions</Name>
     </ProjectReference>
     <ProjectReference Include="..\Indicators\Indicators.csproj">
       <Project>{ADF3E301-C191-40DA-B59D-0D0B42A037F7}</Project>
