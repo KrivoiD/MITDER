@@ -8,6 +8,8 @@ using Ivi.Visa.Interop;
 using Agilent.Agilent34410.Interop;
 #endif
 using Core.Interfaces;
+using Extensions;
+using NationalInstruments.Visa;
 
 namespace Multimeters
 {
@@ -29,7 +31,8 @@ namespace Multimeters
 #if WithoutDevices
                 return true;
 #else
-                return _driver.Initialized;
+				return true;
+				//return _driver.Initialized;
 #endif
             }
         }
@@ -57,40 +60,54 @@ namespace Multimeters
         public Agilent34410(string resource)
         {
             _resourceName = resource;
+			_name = "Agilent 34410A";
 #if !WithoutDevices
             InitializeDevice();
 #endif
         }
 
 #if !WithoutDevices
+		private UsbSession _session;
         /// <summary>
         /// Инициализирует устройство перед работой
         /// </summary>
         private void InitializeDevice()
         {
-            _driver = new Agilent34410Class();
-            try
-            {
-                // Setup IVI-defined initialization options
-                string standardInitOptions =
-                    "Cache=true, InterchangeCheck=false, QueryInstrStatus=true, RangeCheck=true, RecordCoercions=false, Simulate=false";
+			//_driver = new Agilent34410Class();
+			//try
+			//{
+			//    // Setup IVI-defined initialization options
+			//    string standardInitOptions =
+			//        "Cache=true, InterchangeCheck=false, QueryInstrStatus=true, RangeCheck=true, RecordCoercions=false, Simulate=false";
 
-                _driver.Initialize(_resourceName, false, false, standardInitOptions);
+			//    _driver.Initialize(_resourceName, false, false, standardInitOptions);
 
-                // Set up the DMM for a single reading
-                _driver.Trigger.TriggerSource = Agilent34410TriggerSourceEnum.Agilent34410TriggerSourceImmediate;
-                _driver.Trigger.TriggerCount = 5;
-                //_driver.Trigger.TriggerDelay = 1;
-                _driver.Trigger.SampleCount = 1;
-            }
-            catch (Exception e)
-            {
-                System.Diagnostics.Debug.WriteLine(e);
-                _driver.Close();
-            }
-            finally
-            {
-            }
+			//    // Set up the DMM for a single reading
+			//    _driver.Trigger.TriggerSource = Agilent34410TriggerSourceEnum.Agilent34410TriggerSourceImmediate;
+			//    _driver.Trigger.TriggerCount = 5;
+			//    //_driver.Trigger.TriggerDelay = 1;
+			//    _driver.Trigger.SampleCount = 1;
+			//}
+			//catch (Exception e)
+			//{
+			//    System.Diagnostics.Debug.WriteLine(e);
+			//    _driver.Close();
+			//}
+			//finally
+			//{
+			//}
+			_session = new UsbSession(ResourceName);
+			//Очищает прибор от ошибок
+			_session.FormattedIO.WriteLine("*CLS");
+
+			//Переводит в режим дистанционного управления. Все кнопки не работают, кроме МУ (ручное управление)
+			//_session.FormattedIO.WriteLine("SYSTEM:REMOTE");
+			//Устанавливает вид работы
+			//_session.FormattedIO.WriteLine("FUNCTION \"VOLTAGE:DC\"");
+			////Устанавливаем предел в 100 мВ и разрешение 0,1 мкВ
+			//_session.FormattedIO.WriteLine("CONFIGURE:VOLTAGE:DC 0.1,1e-7");
+
+			_session.FormattedIO.FlushWrite(true);
         }
 #endif
 
@@ -113,17 +130,40 @@ namespace Multimeters
             lastVoltageValue += Direction * valueStep + rand.NextDouble() / 100000;
             return  lastVoltageValue;
 #else
-            try
-            {
-                var result = _driver.Voltage.DCVoltage.Measure(range, Agilent34410ResolutionEnum.Agilent34410ResolutionDefault);
-                Trace.TraceInformation("Agilent => Получено напряжение " + result.ToString("0.000000") + "В");
+			//try
+			//{
+			//    var result = _driver.Voltage.DCVoltage.Measure(range, Agilent34410ResolutionEnum.Agilent34410ResolutionDefault);
+			//    Trace.TraceInformation("Agilent => Получено напряжение " + result.ToString("0.000000") + "В");
+			//    return result;
+
+			//}
+			//catch (Exception ex)
+			//{
+			//    Trace.TraceError("Agilent => При получении напряжения возникло исключение: " + ex.Message + "\n\t\t" + ex.StackTrace);
+			//}
+			//return double.NaN;
+
+			try
+			{
+				_session.FormattedIO.WriteLine("CONFIGURE:VOLTAGE:DC " + range.ToString("0.000"));
+                _session.FormattedIO.PrintfAndFlush("READ?");
+				var result = _session.FormattedIO.ReadLineDouble();
+				Logger.Error(_name + " => Получено напряжение " + result.ToString("0.000000") + "В");
                 return result;
 
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError("Agilent => При получении напряжения возникло исключение: " + ex.Message + "\n\t\t" + ex.StackTrace);
-            }
+			}
+			catch (TimeoutException ex)
+			{
+                _session.FormattedIO.PrintfAndFlush("SYSTEM:ERROR?");
+				var error = _session.FormattedIO.ReadString();
+				Logger.Error(_name + " => При получении напряжения возникло TimeoutException: " + ex.Message + "\n\t\tОшибка по прибору: " + error + "\n\t\tStackTrace" + ex.StackTrace);
+			}
+			catch (Exception ex)
+			{
+				_session.FormattedIO.PrintfAndFlush("SYSTEM:ERROR?");
+				var error = _session.FormattedIO.ReadString();
+				Logger.Error(_name + " => При получении напряжения возникло исключение: " + ex.Message + "\n\t\tОшибка по прибору: " + error + "\n\t\tStackTrace" + ex.StackTrace);
+			}
             return double.NaN;
 #endif
         }
@@ -133,24 +173,48 @@ namespace Multimeters
         /// </summary>
         /// <param name="range">Диапазон измерения в Омах. Указывает верхнее измеряемое значение.</param>
         /// <returns></returns>
-        public double GetResistance(double range)
+        public double GetResistance(double range = 100)
         {
 #if WithoutDevices
             lastResistanceValue += rand.NextDouble() * 10 - 3;
             return lastResistanceValue;
 #else
-            try
-            {
-                var result = _driver.Resistance.Measure(range, Agilent34410ResolutionEnum.Agilent34410ResolutionDefault);
-                Trace.TraceInformation("Agilent => Получено сопротивление " + result.ToString("0.000000") + "Ом");
-                return result;
+			//try
+			//{
+			//    var result = _driver.Resistance.Measure(range, Agilent34410ResolutionEnum.Agilent34410ResolutionDefault);
+			//    Trace.TraceInformation("Agilent => Получено сопротивление " + result.ToString("0.000000") + "Ом");
+			//    return result;
 
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError("Agilent => При получении сопротивления возникло исключение: " + ex.Message + "\n\t\t" + ex.StackTrace);
-            }
-            return double.NaN;
+			//}
+			//catch (Exception ex)
+			//{
+			//    Trace.TraceError("Agilent => При получении сопротивления возникло исключение: " + ex.Message + "\n\t\t" + ex.StackTrace);
+			//}
+			//return double.NaN;
+			try
+			{
+				if (range < 100)
+					range = 100;
+				_session.FormattedIO.WriteLine("CONFIGURE:RESISTANCE " + range.ToString("0"));
+				_session.FormattedIO.PrintfAndFlush("READ?");
+				var result = _session.FormattedIO.ReadLineDouble();
+				Trace.TraceInformation(_name + " => Получено сопротивления " + result.ToString("0.000000") + "Ом");
+				return result;
+
+			}
+			catch (TimeoutException ex)
+			{
+				_session.FormattedIO.PrintfAndFlush("SYSTEM:ERROR?");
+				var error = _session.FormattedIO.ReadString();
+				Trace.TraceError(_name + " => При получении сопротивления возникло TimeoutException: " + ex.Message + "\n\t\tОшибка по прибору: " + error + "\n\t\tStackTrace" + ex.StackTrace);
+			}
+			catch (Exception ex)
+			{
+				_session.FormattedIO.PrintfAndFlush("SYSTEM:ERROR?");
+				var error = _session.FormattedIO.ReadString();
+				Trace.TraceError(_name + " => При получении сопротивления возникло исключение: " + ex.Message + "\n\t\tОшибка по прибору: " + error + "\n\t\tStackTrace" + ex.StackTrace);
+			}
+			return double.NaN;
 #endif
         }
 

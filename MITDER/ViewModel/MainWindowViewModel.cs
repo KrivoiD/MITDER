@@ -155,9 +155,9 @@ namespace MITDER.ViewModel
 		/// </summary>
 		private void EditStepSettings(object obj)
 		{
-			if (!(obj is StepSettings step))
+			if (!(obj is StepSettings))
 				return;
-			var stepViewModel = new StepSettingsViewModel(step);
+			var stepViewModel = new StepSettingsViewModel(obj as StepSettings);
 			if (WindowService.ShowDialog(stepViewModel) ?? false)
 			{
 				//TODO: Обновить данные без изменения свойства StepSettings
@@ -183,9 +183,9 @@ namespace MITDER.ViewModel
 		/// </summary>
 		private void DeleteStepSettings(object obj)
 		{
-			if (!(obj is StepSettings step))
+			if (!(obj is StepSettings))
 				return;
-			StepSettings.Remove(step);
+			StepSettings.Remove(obj as StepSettings);
 		}
 
 		/// <summary>
@@ -193,8 +193,9 @@ namespace MITDER.ViewModel
 		/// </summary>
 		private bool CanDeleteStepSettings(object obj)
 		{
-			if (!(obj is StepSettings step))
+			if (!(obj is StepSettings))
 				return false;
+			var step = obj as StepSettings;
 			if (StepSettings.SelectedItem != step && StepSettings.Contains(step))
 				return true;
 			return false;
@@ -224,27 +225,12 @@ namespace MITDER.ViewModel
 			_core.MeasurementSteps.Add(new StepSettings()
 			{
 				From = -5.6,
-				To = -0.2,
+				To = 40,
 				Step = 0.2,
 				PointRange = 0.01,
 				Type = StepType.Heating
 			});
-			_core.MeasurementSteps.Add(new StepSettings()
-			{
-				From = -0.2,
-				To = 2,
-				Step = 0.1,
-				PointRange = 0.01,
-				Type = StepType.Heating
-			});
-			_core.MeasurementSteps.Add(new StepSettings()
-			{
-				From = 2,
-				To = -5.6,
-				Step = 0.2,
-				PointRange = 0.01,
-				Type = StepType.Cooling
-			});
+			
 
 			_core.MeasuredVoltage += _core_MeasuredVoltages;
 			_core.MeasuredResistance += _core_MeasuredResistance;

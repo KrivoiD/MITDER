@@ -6,18 +6,24 @@ using NationalInstruments.Visa;
 
 #endif
 using Core.Interfaces;
+using Extensions;
 
 namespace Multimeters
 {
 	public class PristV7_78 : IVoltageMeasurable, IResistanceMeasurable
 	{
-		public bool IsInitialized => true;
+		public bool IsInitialized {get; private set; }
 		public string ResourceName { get; protected set; }
-
+		/// <summary>
+		/// Удобное название устройства. Назначается пользователем.
+		/// </summary>
+		public string Name { get; set; }
 		private UsbSession _session;
 		public PristV7_78(string resource)
 		{
 			ResourceName = resource;
+			IsInitialized = true;
+			Name = "PristV7/78";
 #if !WithoutDevices
 			InitializeDevice();
 #endif
@@ -51,9 +57,9 @@ namespace Multimeters
 #else
             try
 			{
-                _session.FormattedIO.PrintfAndFlush($"READ?");
+                _session.FormattedIO.PrintfAndFlush("READ?");
 				var result = _session.FormattedIO.ReadLineDouble();
-				Trace.TraceInformation("PristV7_78 => Получено напряжение " + result.ToString("0.000000") + "В");
+				//Logger.Info(Name + "  => Получено напряжение " + result.ToString("0.000000") + "В");
                 return result;
 
 			}
@@ -61,13 +67,13 @@ namespace Multimeters
 			{
                 _session.FormattedIO.PrintfAndFlush("SYSTEM:ERROR?");
 				var error = _session.FormattedIO.ReadString();
-				Trace.TraceError("PristV7_78 => При получении напряжения возникло TimeoutException: " + ex.Message + "\n\t\tОшибка по прибору: " + error + "\n\t\tStackTrace" + ex.StackTrace);
+				Logger.Info(Name + " => При получении напряжения возникло TimeoutException: " + ex.Message + "\n\t\tОшибка по прибору: " + error + "\n\t\tStackTrace" + ex.StackTrace);
 			}
 			catch (Exception ex)
 			{
 				_session.FormattedIO.PrintfAndFlush("SYSTEM:ERROR?");
 				var error = _session.FormattedIO.ReadString();
-				Trace.TraceError("PristV7_78 => При получении напряжения возникло исключение: " + ex.Message + "\n\t\tОшибка по прибору: " + error + "\n\t\tStackTrace" + ex.StackTrace);
+				Logger.Info(Name + " => При получении напряжения возникло исключение: " + ex.Message + "\n\t\tОшибка по прибору: " + error + "\n\t\tStackTrace" + ex.StackTrace);
 			}
             return double.NaN;
             ////_session.FormattedIO.PrintfAndFlush($"MEASURE:VOLTAGE:DC? {range.ToString("0.#", CultureInfo.InvariantCulture)},1e-7");
