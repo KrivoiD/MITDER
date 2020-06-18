@@ -4,75 +4,71 @@ using System.Linq;
 using System.Text;
 using System.Diagnostics;
 #if !WithoutDevice
-using Ivi.Visa.Interop;
-using Agilent.Agilent34410.Interop;
+using NationalInstruments.Visa;
 #endif
 using Core.Interfaces;
 using Extensions;
-using NationalInstruments.Visa;
 
 namespace Multimeters
 {
-    public class Agilent34410 : IVoltageMeasurable, IResistanceMeasurable
-    {
-#if !WithoutDevices
-        private IAgilent34410 _driver;
-#endif
-        private string _resourceName;
-        private string _name;
+	public class Agilent34410 : IVoltageMeasurable, IResistanceMeasurable
+	{
+		private string _resourceName;
+		private string _name;
 
-        /// <summary>
-        /// Указывает, инициализировано ли устройство.
-        /// </summary>
-        public bool IsInitialized
-        {
-            get
-            {
+		/// <summary>
+		/// Указывает, инициализировано ли устройство.
+		/// </summary>
+		public bool IsInitialized
+		{
+			get
+			{
 #if WithoutDevices
                 return true;
 #else
 				return true;
 				//return _driver.Initialized;
 #endif
-            }
-        }
+			}
+		}
 
-        /// <summary>
-        /// Строка, содержащая VISA-адрес устройства.
-        /// </summary>
-        public string ResourceName {
-            get { return _resourceName; }
-        }
+		/// <summary>
+		/// Строка, содержащая VISA-адрес устройства.
+		/// </summary>
+		public string ResourceName
+		{
+			get { return _resourceName; }
+		}
 
-        /// <summary>
-        /// Удобное название устройства. Назначается пользователем.
-        /// </summary>
-        public string Name
-        {
-            get { return _name; }
-            set { _name = value; }
-        }
+		/// <summary>
+		/// Удобное название устройства. Назначается пользователем.
+		/// </summary>
+		public string Name
+		{
+			get { return _name; }
+			set { _name = value; }
+		}
 
-        /// <summary>
-        /// Конструктор класса
-        /// </summary>
-        /// <param name="resource">Строка, содержащая VISA-адрес устройства</param>
-        public Agilent34410(string resource)
-        {
-            _resourceName = resource;
+		/// <summary>
+		/// Конструктор класса
+		/// </summary>
+		/// <param name="resource">Строка, содержащая VISA-адрес устройства</param>
+		public Agilent34410(string resource)
+		{
+			_resourceName = resource;
 			_name = "Agilent 34410A";
 #if !WithoutDevices
-            InitializeDevice();
+			InitializeDevice();
 #endif
-        }
+		}
 
 #if !WithoutDevices
 		private UsbSession _session;
-        /// <summary>
-        /// Инициализирует устройство перед работой
-        /// </summary>
-        private void InitializeDevice()
-        {
+		/// <summary>
+		/// Инициализирует устройство перед работой
+		/// </summary>
+		private void InitializeDevice()
+		{
 			//_driver = new Agilent34410Class();
 			//try
 			//{
@@ -108,7 +104,7 @@ namespace Multimeters
 			//_session.FormattedIO.WriteLine("CONFIGURE:VOLTAGE:DC 0.1,1e-7");
 
 			_session.FormattedIO.FlushWrite(true);
-        }
+		}
 #endif
 
 #if WithoutDevices
@@ -119,13 +115,13 @@ namespace Multimeters
         public int Direction { get; set; } = 1;
 #endif
 
-        /// <summary>
-        /// Возвращает текущее значение напряжения.
-        /// </summary>
-        /// <param name="range">Диапазон измерения в Вольтах. Указывает верхнее измеряемое значение.</param>
-        /// <returns></returns>
-        public double GetVoltage(double range = 0.1)
-        {
+		/// <summary>
+		/// Возвращает текущее значение напряжения.
+		/// </summary>
+		/// <param name="range">Диапазон измерения в Вольтах. Указывает верхнее измеряемое значение.</param>
+		/// <returns></returns>
+		public double GetVoltage(double range = 0.1)
+		{
 #if WithoutDevices
             lastVoltageValue += Direction * valueStep + rand.NextDouble() / 100000;
             return  lastVoltageValue;
@@ -146,15 +142,15 @@ namespace Multimeters
 			try
 			{
 				_session.FormattedIO.WriteLine("CONFIGURE:VOLTAGE:DC " + range.ToString("0.000"));
-                _session.FormattedIO.PrintfAndFlush("READ?");
+				_session.FormattedIO.PrintfAndFlush("READ?");
 				var result = _session.FormattedIO.ReadLineDouble();
 				Logger.Error(_name + " => Получено напряжение " + result.ToString("0.000000") + "В");
-                return result;
+				return result;
 
 			}
 			catch (TimeoutException ex)
 			{
-                _session.FormattedIO.PrintfAndFlush("SYSTEM:ERROR?");
+				_session.FormattedIO.PrintfAndFlush("SYSTEM:ERROR?");
 				var error = _session.FormattedIO.ReadString();
 				Logger.Error(_name + " => При получении напряжения возникло TimeoutException: " + ex.Message + "\n\t\tОшибка по прибору: " + error + "\n\t\tStackTrace" + ex.StackTrace);
 			}
@@ -164,17 +160,17 @@ namespace Multimeters
 				var error = _session.FormattedIO.ReadString();
 				Logger.Error(_name + " => При получении напряжения возникло исключение: " + ex.Message + "\n\t\tОшибка по прибору: " + error + "\n\t\tStackTrace" + ex.StackTrace);
 			}
-            return double.NaN;
+			return double.NaN;
 #endif
-        }
+		}
 
-        /// <summary>
-        /// Возвращает текущее значение сопротивления.
-        /// </summary>
-        /// <param name="range">Диапазон измерения в Омах. Указывает верхнее измеряемое значение.</param>
-        /// <returns></returns>
-        public double GetResistance(double range = 100)
-        {
+		/// <summary>
+		/// Возвращает текущее значение сопротивления.
+		/// </summary>
+		/// <param name="range">Диапазон измерения в Омах. Указывает верхнее измеряемое значение.</param>
+		/// <returns></returns>
+		public double GetResistance(double range = 100)
+		{
 #if WithoutDevices
             lastResistanceValue += rand.NextDouble() * 10 - 3;
             return lastResistanceValue;
@@ -216,7 +212,7 @@ namespace Multimeters
 			}
 			return double.NaN;
 #endif
-        }
+		}
 
-    }
+	}
 }
