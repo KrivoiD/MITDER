@@ -162,5 +162,33 @@ namespace MITDER
 			filename = dialog.FileName;
 			return result;
 		}
+
+		/// <summary>
+		/// Выводит окно с сообщением для пользователя.
+		/// </summary>
+		/// <param name="message">Текст сообщения</param>
+		/// <param name="caption">Строка заглавия</param>
+		/// <param name="isError">Указывает, является ли сообщение сообщением об ошибке. Если true, то отображается знак ошибки, иначе знак информации.</param>
+		/// <returns>Если true, то пользователь нажал кнопку OK</returns>
+		public static bool ShowMessage(string message, string caption, bool isError = false)
+		{
+			var result = MessageBox.Show(message, caption, MessageBoxButton.OK, isError ? MessageBoxImage.Error : MessageBoxImage.Information, MessageBoxResult.OK);
+			return result == MessageBoxResult.OK;
+		}
+
+		/// <summary>
+		/// Выводит окно с вопросом с кнопками Да/Нет или ОК/Отмена
+		/// </summary>
+		/// <param name="question">Текст вопроса</param>
+		/// <param name="caption">Строка заглавия</param>
+		/// <param name="isYesNoButtons">Определяет кнопки. Если true, то отображаются Да/Нет, иначе ОК/Отмена</param>
+		/// <returns>Если true, то пользователь нажал кнопку ОК/Да. Если false, то пользователь нажал Отмена/Нет. Если же null, то ни одна кнопка не нажата.</returns>
+		public static bool? ShowQuestion(string question, string caption, bool isYesNoButtons = false)
+		{
+			var result = MessageBox.Show(question, caption, isYesNoButtons ? MessageBoxButton.YesNo : MessageBoxButton.OKCancel, MessageBoxImage.Question, MessageBoxResult.None);
+			return result == MessageBoxResult.None ? (bool?)null
+													: isYesNoButtons ? result == MessageBoxResult.Yes
+																	: result == MessageBoxResult.OK;
+		}
 	}
 }
