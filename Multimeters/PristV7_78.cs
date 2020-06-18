@@ -6,13 +6,13 @@ using NationalInstruments.Visa;
 
 #endif
 using Core.Interfaces;
-using Extensions;
+using Services;
 
 namespace Multimeters
 {
 	public class PristV7_78 : IVoltageMeasurable, IResistanceMeasurable
 	{
-		public bool IsInitialized {get; private set; }
+		public bool IsInitialized { get; private set; }
 		public string ResourceName { get; protected set; }
 		/// <summary>
 		/// Удобное название устройства. Назначается пользователем.
@@ -55,17 +55,17 @@ namespace Multimeters
 			lastVoltageValue += Direction * valueStep + rand.NextDouble() / 100000;
 			return lastVoltageValue;
 #else
-            try
+			try
 			{
-                _session.FormattedIO.PrintfAndFlush("READ?");
+				_session.FormattedIO.PrintfAndFlush("READ?");
 				var result = _session.FormattedIO.ReadLineDouble();
 				//Logger.Info(Name + "  => Получено напряжение " + result.ToString("0.000000") + "В");
-                return result;
+				return result;
 
 			}
 			catch (TimeoutException ex)
 			{
-                _session.FormattedIO.PrintfAndFlush("SYSTEM:ERROR?");
+				_session.FormattedIO.PrintfAndFlush("SYSTEM:ERROR?");
 				var error = _session.FormattedIO.ReadString();
 				Logger.Info(Name + " => При получении напряжения возникло TimeoutException: " + ex.Message + "\n\t\tОшибка по прибору: " + error + "\n\t\tStackTrace" + ex.StackTrace);
 			}
@@ -75,8 +75,8 @@ namespace Multimeters
 				var error = _session.FormattedIO.ReadString();
 				Logger.Info(Name + " => При получении напряжения возникло исключение: " + ex.Message + "\n\t\tОшибка по прибору: " + error + "\n\t\tStackTrace" + ex.StackTrace);
 			}
-            return double.NaN;
-            ////_session.FormattedIO.PrintfAndFlush($"MEASURE:VOLTAGE:DC? {range.ToString("0.#", CultureInfo.InvariantCulture)},1e-7");
+			return double.NaN;
+			////_session.FormattedIO.PrintfAndFlush($"MEASURE:VOLTAGE:DC? {range.ToString("0.#", CultureInfo.InvariantCulture)},1e-7");
 #endif
 		}
 

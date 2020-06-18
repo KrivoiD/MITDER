@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
-namespace Extensions
+namespace Services
 {
 	public static class Logger
 	{
@@ -59,7 +59,7 @@ namespace Extensions
 			Trace.Flush();
 		}
 
-		public static void WriteLine(string customMessage)
+		public static void WriteLine(string customMessage = "")
 		{
 			Trace.WriteLine(customMessage);
 			Trace.Flush();

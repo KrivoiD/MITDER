@@ -35,11 +35,11 @@
       <Project>{2C5EAC7F-CA6B-4E21-873A-009B7A912013}</Project>
       <Name>Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Extensions\Extensions.csproj">
+    <ProjectReference Include="..\Extensions\Services.csproj">
       <Project>{c037c0a0-fd6f-43e3-9684-eb3b94b44751}</Project>
-      <Name>Extensions</Name>
+      <Name>Services</Name>
     </ProjectReference>
-  </ItemGroup>    
+  </ItemGroup>
   <Import Project="..\Configurations.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

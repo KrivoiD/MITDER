@@ -23,7 +23,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{
 		Libraries\NationalInstruments.Visa.xml = Libraries\NationalInstruments.Visa.xml
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extensions", "Extensions\Extensions.csproj", "{C037C0A0-FD6F-43E3-9684-EB3B94B44751}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services", "Extensions\Services.csproj", "{C037C0A0-FD6F-43E3-9684-EB3B94B44751}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

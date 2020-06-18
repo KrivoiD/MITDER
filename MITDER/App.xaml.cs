@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows;
 
-using Extensions;
+using Services;
 
 using MITDER.Properties;
 using MITDER.View;
@@ -25,15 +25,17 @@ namespace MITDER
 
 		private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
 		{
-			Logger.Fatal("Приложение аварийно завершается.", e.ExceptionObject as Exception);
+			Logger.Fatal(e.ExceptionObject as Exception);
+			WindowService.ShowMessage("Приложение аварийно завершается.\nСмотрите файл логов", "Аварийное завершение", true);
 			Settings.Default["IsLastCrashed"] = true;
 			Settings.Default.Save();
+			Logger.Info("Приложение завершилось.");
 			this.Shutdown(-1);
 		}
 
 		protected override void OnStartup(StartupEventArgs e)
 		{
-			Logger.WriteLine("-------------------------------------------------------------------");
+			Logger.WriteLine("\n\n-------------------------------------------------------------------");
 			Logger.Info("Приложение MITDER запустилось.");
 
 			var isLastCrashed = Settings.Default.IsLastCrashed;

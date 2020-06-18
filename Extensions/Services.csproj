@@ -4,8 +4,8 @@
     <ProjectGuid>{C037C0A0-FD6F-43E3-9684-EB3B94B44751}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Extensions</RootNamespace>
-    <AssemblyName>Extensions</AssemblyName>
+    <RootNamespace>Services</RootNamespace>
+    <AssemblyName>Services</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />

@@ -7,7 +7,7 @@ using System.Diagnostics;
 using NationalInstruments.Visa;
 #endif
 using Core.Interfaces;
-using Extensions;
+using Services;
 
 namespace Multimeters
 {
