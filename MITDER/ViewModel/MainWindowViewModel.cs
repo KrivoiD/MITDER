@@ -10,6 +10,7 @@ using MITDER.ViewModelClasses;
 using System.Collections.ObjectModel;
 using Core.Helpers;
 using MITDER.Properties;
+using Services;
 
 namespace MITDER.ViewModel
 {
@@ -211,11 +212,22 @@ namespace MITDER.ViewModel
 			if (string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["BottomVISA"])
 				|| string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["TopVISA"])
 				|| string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["ResistanceVISA"]))
+			{
+				WindowService.ShowMessage("Укажите значения VISA-адресов в app.config с ключами BottomVISA, TopVISA, ResistanceVISA.", "Проблемы с настройками", true);
 				throw new ApplicationException("Не указаны VISA-адреса в app.config.");
-
-			_bottomThermocuple = new PristV7_78(ConfigurationManager.AppSettings["BottomVISA"]);
-			_topThermocuple = new PristV7_78(ConfigurationManager.AppSettings["TopVISA"]);
-			_resistanceDevice = new Agilent34410(ConfigurationManager.AppSettings["ResistanceVISA"]);
+			}
+			try
+			{
+				_bottomThermocuple = new PristV7_78(ConfigurationManager.AppSettings["BottomVISA"]);
+				_topThermocuple = new PristV7_78(ConfigurationManager.AppSettings["TopVISA"]);
+				_resistanceDevice = new Agilent34410(ConfigurationManager.AppSettings["ResistanceVISA"]);
+			}
+			catch (Exception ex)
+			{
+				WindowService.ShowMessage("Проверьте подключение и работоспособность приборов" + Environment.NewLine + ex.Message, "Ошибка при инициализации приборов.", true);
+				Logger.Error(ex.ToString());
+				throw ex;
+			}
 
 			MeasuredValuesCollection = new ObservableCollection<MeasuredValues>();
 
