@@ -202,13 +202,13 @@ namespace Multimeters
 			{
 				_session.FormattedIO.PrintfAndFlush("SYSTEM:ERROR?");
 				var error = _session.FormattedIO.ReadString();
-				Trace.TraceError(_name + " => При получении сопротивления возникло TimeoutException: " + ex.Message + "\n\t\tОшибка по прибору: " + error + "\n\t\tStackTrace" + ex.StackTrace);
+				Logger.Error(_name + " => При получении сопротивления возникло TimeoutException: " + ex.Message + "\n\t\tОшибка по прибору: " + error + "\n\t\tStackTrace" + ex.StackTrace);
 			}
 			catch (Exception ex)
 			{
 				_session.FormattedIO.PrintfAndFlush("SYSTEM:ERROR?");
 				var error = _session.FormattedIO.ReadString();
-				Trace.TraceError(_name + " => При получении сопротивления возникло исключение: " + ex.Message + "\n\t\tОшибка по прибору: " + error + "\n\t\tStackTrace" + ex.StackTrace);
+				Logger.Error(_name + " => При получении сопротивления возникло исключение: " + ex.Message + "\n\t\tОшибка по прибору: " + error + "\n\t\tStackTrace" + ex.StackTrace);
 			}
 			return double.NaN;
 #endif

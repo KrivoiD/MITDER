@@ -224,7 +224,7 @@ namespace MITDER.ViewModel
 			}
 			catch (Exception ex)
 			{
-				WindowService.ShowMessage("Проверьте подключение и работоспособность приборов" + Environment.NewLine + ex.Message, "Ошибка при инициализации приборов.", true);
+				WindowService.ShowMessage("Проверьте подключение и работоспособность приборов." + Environment.NewLine + ex.Message, "Ошибка при инициализации приборов.", true);
 				Logger.Error(ex.ToString());
 				throw ex;
 			}
