@@ -191,7 +191,7 @@ namespace Multimeters
 			{
 				if (range < 100)
 					range = 100;
-				_session.FormattedIO.WriteLine("CONFIGURE:RESISTANCE " + range.ToString("0"));
+				_session.FormattedIO.WriteLine("CONFIGURE:FRESISTANCE " + range.ToString("0"));
 				_session.FormattedIO.PrintfAndFlush("READ?");
 				var result = _session.FormattedIO.ReadLineDouble();
 				Trace.TraceInformation(_name + " => Получено сопротивления " + result.ToString("0.000000") + "Ом");
