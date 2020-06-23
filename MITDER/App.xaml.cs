@@ -29,13 +29,13 @@ namespace MITDER
 			WindowService.ShowMessage("Приложение аварийно завершается.\nСмотрите файл логов", "Аварийное завершение", true);
 			Settings.Default["IsLastCrashed"] = true;
 			Settings.Default.Save();
-			Logger.Info("Приложение завершилось.");
+			Logger.Info("Приложение завершилось.\n\n");
 			this.Shutdown(-1);
 		}
 
 		protected override void OnStartup(StartupEventArgs e)
 		{
-			Logger.WriteLine("\n\n-------------------------------------------------------------------");
+			Logger.WriteLine("------------------------------------------------------------------------------------------------");
 			Logger.Info("Приложение MITDER запустилось.");
 
 			var isLastCrashed = Settings.Default.IsLastCrashed;
@@ -73,7 +73,7 @@ namespace MITDER
 			Settings.Default["IsLastCrashed"] = false;
 			Settings.Default["SavedFilePath"] = string.Empty;
 			Settings.Default.Save();
-			Logger.Info("Приложение завершилось.");
+			Logger.Info("Приложение завершилось.\n\n");
 			Logger.Close();
 			base.OnExit(e);
 		}
