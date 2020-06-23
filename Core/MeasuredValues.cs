@@ -55,7 +55,7 @@ namespace Core
 		/// <returns></returns>
 		public string GetHeader()
 		{
-			return string.Format(CultureInfo.InvariantCulture, "BottomTemperature\tTopTemperature\tResistance");
+			return string.Format(CultureInfo.InvariantCulture, "BottomTemperature\tTopTemperature\tResistance\tThermoEDF");
 		}
 
 		/// <summary>
