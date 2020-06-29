@@ -39,7 +39,11 @@ namespace Multimeters
 		Random rand = new Random((int)DateTime.Now.Ticks);
 		double lastVoltageValue = -0.0058;
 		public double valueStep = 0.00001;
-		public int Direction { get; set; } = 1;
+		private int _direction = 1;
+		public int Direction {
+			get { return _direction; }
+			set { _direction = value; } 
+		}
 #endif
 		public double GetVoltage(double range = 0.1)
 		{
@@ -67,13 +71,13 @@ namespace Multimeters
 			{
 				_session.FormattedIO.PrintfAndFlush("SYSTEM:ERROR?");
 				var error = _session.FormattedIO.ReadString();
-				Logger.Info(Name + " => При получении напряжения возникло TimeoutException: " + ex.Message + "\n\t\tОшибка по прибору: " + error + "\n\t\tStackTrace" + ex.StackTrace);
+				Logger.Warn(Name + " => При получении напряжения возникло TimeoutException: " + ex.Message + "\n\t\tОшибка по прибору: " + error + "\n\t\tStackTrace" + ex.StackTrace);
 			}
 			catch (Exception ex)
 			{
 				_session.FormattedIO.PrintfAndFlush("SYSTEM:ERROR?");
 				var error = _session.FormattedIO.ReadString();
-				Logger.Info(Name + " => При получении напряжения возникло исключение: " + ex.Message + "\n\t\tОшибка по прибору: " + error + "\n\t\tStackTrace" + ex.StackTrace);
+				Logger.Error(Name + " => При получении напряжения возникло исключение: " + ex.Message + "\n\t\tОшибка по прибору: " + error + "\n\t\tStackTrace" + ex.StackTrace);
 			}
 			return double.NaN;
 			////_session.FormattedIO.PrintfAndFlush($"MEASURE:VOLTAGE:DC? {range.ToString("0.#", CultureInfo.InvariantCulture)},1e-7");

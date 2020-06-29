@@ -11,7 +11,7 @@ namespace Core
     /// </summary>
 	public class StepSettings : IMeasurementSettings
 	{
-		double _pointRange = 0.05;
+		double _pointRange = 0.010;
 		double _step = 0.1;
 
 		/// <summary>
@@ -49,8 +49,8 @@ namespace Core
 			get { return _pointRange; }
 			set
 			{
-				if (value < 0.010)
-					value = 0.010;
+				if (value < 0.005)
+					value = 0.005;
 				if (value > 0.1)
 					value = 0.1;
 				_pointRange = value;

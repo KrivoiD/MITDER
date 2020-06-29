@@ -112,7 +112,12 @@ namespace Multimeters
         double lastVoltageValue = -0.0058;
         double lastResistanceValue = 10;
         public double valueStep = 0.00001;
-        public int Direction { get; set; } = 1;
+		private int _direction = 1;
+		public int Direction
+		{
+			get { return _direction; }
+			set { _direction = value; }
+		}
 #endif
 
 		/// <summary>
@@ -144,7 +149,7 @@ namespace Multimeters
 				_session.FormattedIO.WriteLine("CONFIGURE:VOLTAGE:DC " + range.ToString("0.000"));
 				_session.FormattedIO.PrintfAndFlush("READ?");
 				var result = _session.FormattedIO.ReadLineDouble();
-				Logger.Error(_name + " => Получено напряжение " + result.ToString("0.000000") + "В");
+				Logger.Info(_name + " => Получено напряжение " + result.ToString("0.000000") + "В");
 				return result;
 
 			}
@@ -152,7 +157,7 @@ namespace Multimeters
 			{
 				_session.FormattedIO.PrintfAndFlush("SYSTEM:ERROR?");
 				var error = _session.FormattedIO.ReadString();
-				Logger.Error(_name + " => При получении напряжения возникло TimeoutException: " + ex.Message + "\n\t\tОшибка по прибору: " + error + "\n\t\tStackTrace" + ex.StackTrace);
+				Logger.Warn(_name + " => При получении напряжения возникло TimeoutException: " + ex.Message + "\n\t\tОшибка по прибору: " + error + "\n\t\tStackTrace" + ex.StackTrace);
 			}
 			catch (Exception ex)
 			{
@@ -194,7 +199,7 @@ namespace Multimeters
 				_session.FormattedIO.WriteLine("CONFIGURE:FRESISTANCE " + range.ToString("0"));
 				_session.FormattedIO.PrintfAndFlush("READ?");
 				var result = _session.FormattedIO.ReadLineDouble();
-				Trace.TraceInformation(_name + " => Получено сопротивления " + result.ToString("0.000000") + "Ом");
+				Logger.Error(_name + " => Получено сопротивления " + result.ToString("0.000000") + "Ом");
 				return result;
 
 			}

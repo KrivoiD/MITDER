@@ -11,7 +11,9 @@ namespace Services
 	/// </summary>
 	public static class Logger
 	{
-		private static string _now = DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss.ffff");
+		private static string _now { 
+			get { return DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss.ffff"); } 
+		}
 
 		/// <summary>
 		/// Инициализирует файловый приемник трассировки для коллекции <see cref="System.Diagnostics.Trace.Listeners"/>

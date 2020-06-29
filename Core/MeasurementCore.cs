@@ -209,7 +209,7 @@ namespace Core
 
             if(IsThermoEDFMeasured)
 			{
-                //определяем диапазон измеряемого значения для омметра
+                //определяем диапазон измеряемого значения для вольтметра
                 integer = (int)ThermoEDF;
                 digitNumber = integer.ToString().Length;
                 range = Math.Pow(10, digitNumber);
@@ -244,17 +244,16 @@ namespace Core
         }
 
         /// <summary>
-        /// Возвращает измерянное сопротивление в указанном диапазоне.
+        /// Возвращает измерянное термоЭДС в указанном диапазоне.
         /// Если прибор не инициализирован, то возвращает <see cref="Double.NaN"/>
-        /// и не генерируется событие <see cref="MeasurementCore.MeasuredResistance"/>
         /// </summary>
         /// <param name="range">Диапазон для измеряемого значения</param>
-        /// <returns>Измерянное сопротивление</returns>
+        /// <returns>Измерянное термоЭДС в мВ</returns>
         public double MeasureThermoEDF(double range)
         {
             if (!_thermoEDF.IsInitialized)
                 return double.NaN;
-            ThermoEDF = _thermoEDF.GetVoltage(range);
+            ThermoEDF = _thermoEDF.GetVoltage(range) * 1000;
 
             return ThermoEDF;
         }

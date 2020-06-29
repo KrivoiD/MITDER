@@ -4,7 +4,7 @@
         xmlns:local="clr-namespace:MITDER.ViewModel"
         xmlns:indicators="clr-namespace:Indicators;assembly=Indicators"
         DataContext="{x:Type local:MainWindowViewModel}"
-        Title="MainWindow" Height="500" Width="650">
+        Title="MainWindow" Height="500" Width="750">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto" />
@@ -30,11 +30,13 @@
                 <RowDefinition MinHeight="60" />
                 <RowDefinition MinHeight="60" />
                 <RowDefinition MinHeight="60" />
+				<RowDefinition MinHeight="60" />
             </Grid.RowDefinitions>
             <indicators:CurrentValueIndicator Grid.Column="0" Grid.Row="0" Value="{Binding TopTemperature}" Title="Верхняя термопара" Unit="мВ" />
             <indicators:CurrentValueIndicator Grid.Column="0" Grid.Row="1" Value="{Binding BottomTemperature}" Title="Нижняя термопара" Unit="мВ" />
             <indicators:CurrentValueIndicator Grid.Column="0" Grid.Row="2" Value="{Binding NextPoint}" Title="Следующее измерение" Unit="мВ" />
             <indicators:CurrentValueIndicator Grid.Column="0" Grid.Row="3" Value="{Binding Resistance}" Title="Сопротивление" Unit="Ом" />
+			<indicators:CurrentValueIndicator Grid.Column="0" Grid.Row="4" Value="{Binding ThermoEDF}" Title="ТермоЭДС" Unit="мВ" />
         </Grid>
         <GridSplitter Grid.Column="0" Grid.Row="2" Height="3" VerticalAlignment="Center" HorizontalAlignment="Stretch" />
         <CheckBox Grid.Row="3" IsChecked="{Binding IsMeasureThermoEDF}" Content="Измерять термоЭДС?" />

@@ -41,7 +41,7 @@ namespace Core
 		/// </summary>
 		public double Resistance { get; set; }
 		/// <summary>
-		/// Значение термоЭДС в Ом
+		/// Значение термоЭДС в мВ
 		/// </summary>
 		public double ThermoEDF { get; set; }
 		/// <summary>
@@ -55,7 +55,7 @@ namespace Core
 		/// <returns></returns>
 		public string GetHeader()
 		{
-			return string.Format(CultureInfo.InvariantCulture, "BottomTemperature\tTopTemperature\tResistance\tThermoEDF");
+			return string.Format(CultureInfo.InvariantCulture, "BottomTemperature\tTopTemperature\tResistance\tThermoEDF(mV)");
 		}
 
 		/// <summary>
