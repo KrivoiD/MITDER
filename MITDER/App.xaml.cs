@@ -92,7 +92,7 @@ namespace MITDER
 			var logPath = Path.Combine(appDirectory, "logs");
 			if (!Directory.Exists(logPath))
 				Directory.CreateDirectory(logPath);
-			var logFilePath = Path.Combine(logPath, DateTime.Now.ToString("yyyy-MM-dd-HH") + ".log");
+			var logFilePath = Path.Combine(logPath, DateTime.Now.ToString("yyyy-MM-dd") + ".log");
 			return logFilePath;
 		}
 	}
