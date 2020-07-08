@@ -149,7 +149,7 @@ namespace Multimeters
 				_session.FormattedIO.WriteLine("CONFIGURE:VOLTAGE:DC " + range.ToString("0.000"));
 				_session.FormattedIO.PrintfAndFlush("READ?");
 				var result = _session.FormattedIO.ReadLineDouble();
-				Logger.Info(_name + " => Получено напряжение " + result.ToString("0.000000") + "В");
+				Logger.Info(_name + " => Получено напряжение " + result.ToString("0.00000000") + "В");
 				return result;
 
 			}
@@ -199,7 +199,7 @@ namespace Multimeters
 				_session.FormattedIO.WriteLine("CONFIGURE:FRESISTANCE " + range.ToString("0"));
 				_session.FormattedIO.PrintfAndFlush("READ?");
 				var result = _session.FormattedIO.ReadLineDouble();
-				Logger.Error(_name + " => Получено сопротивления " + result.ToString("0.000000") + "Ом");
+				Logger.Info(_name + " => Получено сопротивления " + result.ToString("0.000000") + "Ом");
 				return result;
 
 			}

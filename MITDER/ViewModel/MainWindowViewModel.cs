@@ -269,6 +269,7 @@ namespace MITDER.ViewModel
 
 		private void _core_MeasuredResistance(MeasuredValues value)
 		{
+			Logger.Info("Данные измерения: " + value.ToString());
 			App.Current.Dispatcher.BeginInvoke(new Action(() =>
 			{
 				Resistance = value.Resistance;
