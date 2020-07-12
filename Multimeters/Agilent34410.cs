@@ -62,8 +62,8 @@ namespace Multimeters
 #endif
 		}
 
-#if !WithoutDevices
 		private UsbSession _session;
+#if !WithoutDevices
 		/// <summary>
 		/// Инициализирует устройство перед работой
 		/// </summary>

@@ -8,6 +8,8 @@ using System.Timers;
 using Core.Helpers;
 using Core.Interfaces;
 
+using UsbRelayNet.RelayLib;
+
 namespace Core
 {
     /// <summary>
@@ -27,6 +29,7 @@ namespace Core
         IVoltageMeasurable _bottomThermocouple = null;
         IVoltageMeasurable _thermoEDF = null;
         IResistanceMeasurable _resistance = null;
+        Relay _relay = null;
 
         /// <summary>
         /// Интервал (в миллисекундах) измерения напряжения на верхней и нижней термопарах, контролирующих температуру.
@@ -68,6 +71,11 @@ namespace Core
         /// Последнее измеренное значение сопротивления
         /// </summary>
         public double Resistance { get; set; }
+
+        /// <summary>
+        /// Последнее измеренное значение сопротивления при протекании обратного тока
+        /// </summary>
+        public double ReverseResistance { get; set; }
 
         /// <summary>
         /// Последнее измеренное значение термоЭДС
@@ -151,20 +159,37 @@ namespace Core
         /// <param name="resistance">Устройство, снимающее сопротивление с образца</param>
         /// <param name="settings">Параметры измерения</param>
         public MeasurementCore(IVoltageMeasurable topThermocouple, IVoltageMeasurable bottomThermocouple, IResistanceMeasurable resistance) : this()
-        {
-            if (topThermocouple == null || bottomThermocouple == null || resistance == null)
-                throw new ArgumentNullException();
-            if (!topThermocouple.IsInitialized || !bottomThermocouple.IsInitialized || !resistance.IsInitialized)
-                throw new InvalidOperationException("Должны быть инициализированы все устройства.");
-            _topThermocouple = topThermocouple;
-            _bottomThermocouple = bottomThermocouple;
-            _resistance = resistance;
-            //Прибор, измеряющий сопротивление, измеряет еще и термоЭДС
-            _thermoEDF = _resistance as IVoltageMeasurable;
-            _timer.Start();
-        }
+		{
+			if (topThermocouple == null || bottomThermocouple == null || resistance == null)
+				throw new ArgumentNullException();
+			if (!topThermocouple.IsInitialized || !bottomThermocouple.IsInitialized || !resistance.IsInitialized)
+				throw new InvalidOperationException("Должны быть инициализированы все устройства.");
+			InitializeUsbRelay();
 
-        void _timer_Elapsed(object sender, ElapsedEventArgs e)
+			_topThermocouple = topThermocouple;
+			_bottomThermocouple = bottomThermocouple;
+			_resistance = resistance;
+			//Прибор, измеряющий сопротивление, измеряет еще и термоЭДС
+			_thermoEDF = _resistance as IVoltageMeasurable;
+			_timer.Start();
+		}
+
+		private void InitializeUsbRelay()
+		{
+			var relayEnumerator = new RelaysEnumerator();
+			var relays = relayEnumerator.CollectInfo().ToList();
+			if (relays.Count == 0)
+				throw new InvalidOperationException("Ожидалось одно USB-реле. Проверьте подключение USB-реле.");
+			if (relays.Count > 1)
+				throw new Exception("Ожидалось одно USB-реле, а не " + relays.Count().ToString());
+			_relay = new Relay(relays.Single());
+            if(_relay.ChannelsCount < 2)
+                throw new Exception("Ожидалось USB-реле хотя бы с двумя каналами");
+            if (!_relay.IsOpened)
+			    _relay.Open();
+		}
+
+		void _timer_Elapsed(object sender, ElapsedEventArgs e)
         {
                 MeasureTemperatureVoltages();
         }
@@ -223,6 +248,7 @@ namespace Core
                     TopTemperature = this.TopTemperature,
                     BottomTemperature = this.BottomTemperature,
                     Resistance = this.Resistance,
+                    ReverseResistance = this.ReverseResistance,
                     ThermoEDF = this.ThermoEDF
                 });
         }
@@ -239,6 +265,9 @@ namespace Core
             if (!_resistance.IsInitialized)
                 return double.NaN;
             Resistance = _resistance.GetResistance(range);
+            _relay.WriteChannels(true);
+            ReverseResistance = _resistance.GetResistance(range);
+            _relay.WriteChannels(false);
             
             return Resistance;
         }
@@ -274,6 +303,8 @@ namespace Core
                 _timer.Stop();
             _timer.Elapsed -= _timer_Elapsed;
             _timer.Dispose();
+            if(_relay.IsOpened)
+                _relay.Close();
             //ожидает полного освобождения ресурсов _timer;
             _manualResetEvent.WaitOne();
         }

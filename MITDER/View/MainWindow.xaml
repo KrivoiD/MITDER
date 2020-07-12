@@ -4,7 +4,7 @@
         xmlns:local="clr-namespace:MITDER.ViewModel"
         xmlns:indicators="clr-namespace:Indicators;assembly=Indicators"
         DataContext="{x:Type local:MainWindowViewModel}"
-        Title="MainWindow" Height="500" Width="750">
+        Title="MainWindow" Height="600" Width="900">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto" />
@@ -31,12 +31,14 @@
                 <RowDefinition MinHeight="60" />
                 <RowDefinition MinHeight="60" />
 				<RowDefinition MinHeight="60" />
+				<RowDefinition MinHeight="60" />
             </Grid.RowDefinitions>
             <indicators:CurrentValueIndicator Grid.Column="0" Grid.Row="0" Value="{Binding TopTemperature}" Title="Верхняя термопара" Unit="мВ" />
             <indicators:CurrentValueIndicator Grid.Column="0" Grid.Row="1" Value="{Binding BottomTemperature}" Title="Нижняя термопара" Unit="мВ" />
             <indicators:CurrentValueIndicator Grid.Column="0" Grid.Row="2" Value="{Binding NextPoint}" Title="Следующее измерение" Unit="мВ" />
             <indicators:CurrentValueIndicator Grid.Column="0" Grid.Row="3" Value="{Binding Resistance}" Title="Сопротивление" Unit="Ом" />
-			<indicators:CurrentValueIndicator Grid.Column="0" Grid.Row="4" Value="{Binding ThermoEDF}" Title="ТермоЭДС" Unit="мВ" />
+            <indicators:CurrentValueIndicator Grid.Column="0" Grid.Row="4" Value="{Binding ReverseResistance}" Title="Обратное сопротивление" Unit="Ом" />
+			<indicators:CurrentValueIndicator Grid.Column="0" Grid.Row="5" Value="{Binding ThermoEDF}" Title="ТермоЭДС" Unit="мВ" />
         </Grid>
         <GridSplitter Grid.Column="0" Grid.Row="2" Height="3" VerticalAlignment="Center" HorizontalAlignment="Stretch" />
         <CheckBox Grid.Row="3" IsChecked="{Binding IsMeasureThermoEDF}" Content="Измерять термоЭДС?" />
@@ -80,6 +82,7 @@
                     <GridViewColumn DisplayMemberBinding="{Binding Path=BottomTemperature, StringFormat='{}{0:0.000}'}">Нижняя термопара</GridViewColumn>
                     <GridViewColumn DisplayMemberBinding="{Binding Path=TopTemperature, StringFormat='{}{0:0.000}'}">Верхняя термопара</GridViewColumn>
                     <GridViewColumn DisplayMemberBinding="{Binding Path=Resistance, StringFormat='{}{0:0.00000}'}">Сопротивление</GridViewColumn>
+                    <GridViewColumn DisplayMemberBinding="{Binding Path=ReverseResistance, StringFormat='{}{0:0.00000}'}">Обратное сопротивление</GridViewColumn>
                     <GridViewColumn DisplayMemberBinding="{Binding Path=ThermoEDF, StringFormat='{}{0:0.00000}'}">ТермоЭДС</GridViewColumn>
                 </GridView>
             </ListView.View>

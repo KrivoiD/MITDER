@@ -41,6 +41,10 @@ namespace Core
 		/// </summary>
 		public double Resistance { get; set; }
 		/// <summary>
+		/// Значение сопротивления в Ом при обратном токе
+		/// </summary>
+		public double ReverseResistance { get; set; }
+		/// <summary>
 		/// Значение термоЭДС в мВ
 		/// </summary>
 		public double ThermoEDF { get; set; }
@@ -55,7 +59,7 @@ namespace Core
 		/// <returns></returns>
 		public string GetHeader()
 		{
-			return string.Format(CultureInfo.InvariantCulture, "BottomTemperature\tTopTemperature\tResistance\tThermoEDF(mV)");
+			return string.Format(CultureInfo.InvariantCulture, "BottomTemperature\tTopTemperature\tResistance\tReverseResistance\tThermoEDF(mV)");
 		}
 
 		/// <summary>
@@ -64,7 +68,7 @@ namespace Core
 		/// <returns></returns>
 		public override string ToString()
 		{
-			return string.Format(CultureInfo.InvariantCulture, "{0:N4}\t{1:N4}\t{2}\t{3}", new object[] { BottomTemperature, TopTemperature, Resistance, ThermoEDF });
+			return string.Format(CultureInfo.InvariantCulture, "{0:N4}\t{1:N4}\t{2}\t{3}\t{4}", new object[] { BottomTemperature, TopTemperature, Resistance, ReverseResistance, ThermoEDF });
 		}
 	}
 }

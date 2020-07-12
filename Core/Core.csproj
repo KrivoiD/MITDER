@@ -30,7 +30,12 @@
     <Compile Include="Helpers\TemperatureHelper.cs" />
   </ItemGroup>
   <Import Project="..\Configurations.targets" />
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\UsbRelayNet\UsbRelayNet.csproj">
+      <Project>{69029457-a599-493c-83e8-0241cde6a234}</Project>
+      <Name>UsbRelayNet</Name>
+    </ProjectReference>
+  </ItemGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

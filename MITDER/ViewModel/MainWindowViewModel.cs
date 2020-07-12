@@ -41,6 +41,12 @@ namespace MITDER.ViewModel
 			set { RaisePropertyChanged("Resistance", ref _resistanceValue, value); }
 		}
 
+		private double _reverseResistanceValue;
+		public double ReverseResistance {
+			get { return _reverseResistanceValue; }
+			set { RaisePropertyChanged("ReverseResistance", ref _reverseResistanceValue, value); }
+		}
+
 		private double _thermoEDF;
 		public double ThermoEDF
 		{
@@ -273,6 +279,7 @@ namespace MITDER.ViewModel
 			App.Current.Dispatcher.BeginInvoke(new Action(() =>
 			{
 				Resistance = value.Resistance;
+				ReverseResistance = value.ReverseResistance;
 				ThermoEDF = value.ThermoEDF;
 				if (MeasuredValuesCollection != null)
 					MeasuredValuesCollection.Insert(0, value);

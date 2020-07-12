@@ -25,6 +25,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services", "Extensions\Services.csproj", "{C037C0A0-FD6F-43E3-9684-EB3B94B44751}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UsbRelayNet", "UsbRelayNet\UsbRelayNet.csproj", "{69029457-A599-493C-83E8-0241CDE6A234}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -123,6 +125,24 @@ Global
 		{C037C0A0-FD6F-43E3-9684-EB3B94B44751}.WithoutDevices|Mixed Platforms.Build.0 = WithoutDevices|Any CPU
 		{C037C0A0-FD6F-43E3-9684-EB3B94B44751}.WithoutDevices|x86.ActiveCfg = Release|Any CPU
 		{C037C0A0-FD6F-43E3-9684-EB3B94B44751}.WithoutDevices|x86.Build.0 = Release|Any CPU
+		{69029457-A599-493C-83E8-0241CDE6A234}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69029457-A599-493C-83E8-0241CDE6A234}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69029457-A599-493C-83E8-0241CDE6A234}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{69029457-A599-493C-83E8-0241CDE6A234}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{69029457-A599-493C-83E8-0241CDE6A234}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{69029457-A599-493C-83E8-0241CDE6A234}.Debug|x86.Build.0 = Debug|Any CPU
+		{69029457-A599-493C-83E8-0241CDE6A234}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69029457-A599-493C-83E8-0241CDE6A234}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69029457-A599-493C-83E8-0241CDE6A234}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{69029457-A599-493C-83E8-0241CDE6A234}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{69029457-A599-493C-83E8-0241CDE6A234}.Release|x86.ActiveCfg = Release|Any CPU
+		{69029457-A599-493C-83E8-0241CDE6A234}.Release|x86.Build.0 = Release|Any CPU
+		{69029457-A599-493C-83E8-0241CDE6A234}.WithoutDevices|Any CPU.ActiveCfg = Release|Any CPU
+		{69029457-A599-493C-83E8-0241CDE6A234}.WithoutDevices|Any CPU.Build.0 = Release|Any CPU
+		{69029457-A599-493C-83E8-0241CDE6A234}.WithoutDevices|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{69029457-A599-493C-83E8-0241CDE6A234}.WithoutDevices|Mixed Platforms.Build.0 = Release|Any CPU
+		{69029457-A599-493C-83E8-0241CDE6A234}.WithoutDevices|x86.ActiveCfg = Release|Any CPU
+		{69029457-A599-493C-83E8-0241CDE6A234}.WithoutDevices|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
