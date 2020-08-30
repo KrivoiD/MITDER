@@ -155,14 +155,12 @@ namespace Multimeters
 			}
 			catch (TimeoutException ex)
 			{
-				_session.FormattedIO.PrintfAndFlush("SYSTEM:ERROR?");
-				var error = _session.FormattedIO.ReadString();
+				var error = SessionHelper.GetErrorsResult(_session);
 				Logger.Warn(_name + " => При получении напряжения возникло TimeoutException: " + ex.Message + "\n\t\tОшибка по прибору: " + error + "\n\t\tStackTrace" + ex.StackTrace);
 			}
 			catch (Exception ex)
 			{
-				_session.FormattedIO.PrintfAndFlush("SYSTEM:ERROR?");
-				var error = _session.FormattedIO.ReadString();
+				var error = SessionHelper.GetErrorsResult(_session);
 				Logger.Error(_name + " => При получении напряжения возникло исключение: " + ex.Message + "\n\t\tОшибка по прибору: " + error + "\n\t\tStackTrace" + ex.StackTrace);
 			}
 			return double.NaN;
@@ -205,40 +203,16 @@ namespace Multimeters
 			}
 			catch (TimeoutException ex)
 			{
-				var error = GetErrorsResult();
+				var error = SessionHelper.GetErrorsResult(_session);
 				Logger.Error(_name + " => При получении сопротивления возникло TimeoutException: " + ex.Message + "\n\t\tОшибка по прибору: " + error + "\n\t\tStackTrace" + ex.StackTrace);
 			}
 			catch (Exception ex)
 			{
-				var error = GetErrorsResult();
+				var error = SessionHelper.GetErrorsResult(_session);
 				Logger.Error(_name + " => При получении сопротивления возникло исключение: " + ex.Message + "\n\t\tОшибка по прибору: " + error + "\n\t\tStackTrace" + ex.StackTrace);
 			}
 			return double.NaN;
 #endif
 		}
-
-		public List<string> GetErrors()
-		{
-			var errors = new List<string>(4);
-			var error = string.Empty;
-			do
-			{
-				_session.FormattedIO.PrintfAndFlush("SYSTEM:ERROR?");
-				error = _session.FormattedIO.ReadString();
-				errors.Add(error);
-			} while (!error.Contains("No error"));
-			//удаляем последнию запись, которая указывает, что отсутствуют ошибки
-			errors.RemoveAt(errors.Count - 1);
-			return errors;
-		}
-
-		public string GetErrorsResult()
-		{
-			var errorResult = string.Empty;
-			foreach (var error in GetErrors())
-				errorResult += error;
-			return errorResult;
-		}
-
 	}
 }

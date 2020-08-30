@@ -95,7 +95,7 @@ namespace Core
 		/// Указывает, производить ли измерения термоЭДС в заданном интервале [<see cref="MeasurementCore.From"/>;<see cref="MeasurementCore.To"/>]
 		/// с заданным шагом <see cref="MeasurementCore.Step"/>.
 		/// </summary>
-		public bool IsThermoEDFMeasured { get; set; }
+		public bool IsMeasureThermoEDF { get; set; }
 
 		/// <summary>
 		/// Указывает, запущен ли процесс измерения.
@@ -133,6 +133,7 @@ namespace Core
 			_timer = new System.Timers.Timer(200);
 			_timer.AutoReset = true;
 			_timer.Elapsed += _timer_Elapsed;
+			_temperatureRate = new MovableAverage(10);
 		}
 
 #if WithoutDevices
@@ -211,7 +212,9 @@ namespace Core
 				TopTemperature = _topThermocouple.GetVoltage(0.1) * 1000;
 			if (!_bottomThermocouple.IsInitialized)
 				return;
+			var oldBottomTemperature = BottomTemperature;
 			BottomTemperature = _bottomThermocouple.GetVoltage(0.1) * 1000;
+			_temperatureRate.AddValue(BottomTemperature - oldBottomTemperature);
 			if (MeasuredVoltage != null)
 			{
 				MeasuredVoltage.Invoke(new MeasuredValues(DateTime.Now) { TopTemperature = this.TopTemperature, BottomTemperature = this.BottomTemperature });
@@ -237,7 +240,7 @@ namespace Core
 
 			MeasureResistance(range);
 
-			if (IsThermoEDFMeasured)
+			if (IsMeasureThermoEDF)
 			{
 				//определяем диапазон измеряемого значения для вольтметра
 				integer = (int)ThermoEDF;

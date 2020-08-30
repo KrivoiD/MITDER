@@ -64,18 +64,18 @@ namespace Multimeters
 			{
 				_session.FormattedIO.PrintfAndFlush("READ?");
 				var result = _session.FormattedIO.ReadLineDouble();
-				//Logger.Info(Name + "  => Получено напряжение " + result.ToString("0.000000") + "В");
+				//Logger.Info(Name + " => Получено напряжение " + result.ToString("0.000000") + "В");
 				return result;
 
 			}
 			catch (TimeoutException ex)
 			{
-				var error = GetErrorsResult();
+				var error = SessionHelper.GetErrorsResult(_session);
 				Logger.Warn(Name + " => При получении напряжения возникло TimeoutException: " + ex.Message + "\n\t\tОшибка по прибору: " + error + "\n\t\tStackTrace" + ex.StackTrace);
 			}
 			catch (Exception ex)
 			{
-				var error = GetErrorsResult();
+				var error = SessionHelper.GetErrorsResult(_session);
 				Logger.Error(Name + " => При получении напряжения возникло исключение: " + ex.Message + "\n\t\tОшибка по прибору: " + error + "\n\t\tStackTrace" + ex.StackTrace);
 			}
 			return double.NaN;
@@ -98,29 +98,6 @@ namespace Multimeters
 
 			_session.FormattedIO.FlushWrite(true);
 
-		}
-
-		public List<string> GetErrors()
-		{
-			var errors = new List<string>(4);
-			var error = string.Empty;
-			do
-			{
-				_session.FormattedIO.PrintfAndFlush("SYSTEM:ERROR?");
-				error = _session.FormattedIO.ReadString();
-				errors.Add(error);
-			} while (!error.Contains("No error"));
-			//удаляем последнию запись, которая указывает, что отсутствуют ошибки
-			errors.RemoveAt(errors.Count - 1);
-			return errors;
-		}
-
-		public string GetErrorsResult()
-		{
-			var errorResult = string.Empty;
-			foreach (var error in GetErrors())
-				errorResult += error;
-			return errorResult;
 		}
 	}
 }

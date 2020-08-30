@@ -55,8 +55,8 @@ namespace Core.Helpers
 					foreach (var item in e.NewItems)
 					{
 						_streamWriter.WriteLine(item.ToString());
-						_streamWriter.Flush();
 					}
+					_streamWriter.Flush();
 					break;
 				case System.Collections.Specialized.NotifyCollectionChangedAction.Remove:
 					break;

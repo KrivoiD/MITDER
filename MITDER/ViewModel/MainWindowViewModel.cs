@@ -61,10 +61,10 @@ namespace MITDER.ViewModel
 		}
 
 		public bool IsMeasureThermoEDF { 
-			get { return _core.IsThermoEDFMeasured; }
+			get { return _core.IsMeasureThermoEDF; }
 			set
 			{
-				_core.IsThermoEDFMeasured = value;
+				_core.IsMeasureThermoEDF = value;
 				if (!value)
 					_core.ThermoEDF = 0;
 				OnPropertyChanged("IsMeasureThermoEDF");

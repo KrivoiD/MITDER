@@ -18,6 +18,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IMeasurementSettings.cs" />
+    <Compile Include="IPowerSupply.cs" />
     <Compile Include="IResistanceMeasurable.cs" />
     <Compile Include="ISavingHeader.cs" />
     <Compile Include="IVoltageMeasurable.cs" />
