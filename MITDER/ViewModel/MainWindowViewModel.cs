@@ -237,15 +237,23 @@ namespace MITDER.ViewModel
 			}
 			catch (Exception ex)
 			{
-				WindowService.ShowMessage("Проверьте подключение и работоспособность приборов." + Environment.NewLine + ex.Message, "Ошибка при инициализации приборов.", true);
+				WindowService.ShowMessage("Проверьте подключения и работоспособность приборов." + Environment.NewLine + ex.Message, "Ошибка при инициализации приборов.", true);
 				Logger.Error(ex.ToString());
 				throw ex;
 			}
 
 			MeasuredValuesCollection = new ObservableCollection<MeasuredValues>();
-
-			_saver = new SaveHelper<MeasuredValues>(MeasuredValuesCollection, Settings.Default.SavedFilePath);
-			_core = new MeasurementCore(_topThermocuple, _bottomThermocuple, _resistanceDevice);
+			try
+			{
+				_saver = new SaveHelper<MeasuredValues>(MeasuredValuesCollection, Settings.Default.SavedFilePath);
+				_core = new MeasurementCore(_topThermocuple, _bottomThermocuple, _resistanceDevice);
+			}
+			catch (Exception ex)
+			{
+				WindowService.ShowMessage("Проверьте подключения и работоспособность приборов." + Environment.NewLine + ex.Message, "Ошибка при инициализации приборов.", true);
+				Logger.Error(ex.ToString());
+				throw ex;
+			}			
 
 			_core.MeasurementSteps.Add(new StepSettings()
 			{
