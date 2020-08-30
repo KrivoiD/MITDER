@@ -164,8 +164,9 @@ namespace Core
 				throw new ArgumentNullException();
 			if (!topThermocouple.IsInitialized || !bottomThermocouple.IsInitialized || !resistance.IsInitialized)
 				throw new InvalidOperationException("Должны быть инициализированы все устройства.");
-			InitializeUsbRelay();
-
+#if !WithoutDevices
+            InitializeUsbRelay();
+#endif
 			_topThermocouple = topThermocouple;
 			_bottomThermocouple = bottomThermocouple;
 			_resistance = resistance;
@@ -265,9 +266,13 @@ namespace Core
             if (!_resistance.IsInitialized)
                 return double.NaN;
             Resistance = _resistance.GetResistance(range);
+#if !WithoutDevices
             _relay.WriteChannels(true);
+#endif
             ReverseResistance = _resistance.GetResistance(range);
+#if !WithoutDevices
             _relay.WriteChannels(false);
+#endif
             
             return Resistance;
         }
@@ -303,8 +308,10 @@ namespace Core
                 _timer.Stop();
             _timer.Elapsed -= _timer_Elapsed;
             _timer.Dispose();
+#if !WithoutDevices
             if(_relay.IsOpened)
                 _relay.Close();
+#endif
             //ожидает полного освобождения ресурсов _timer;
             _manualResetEvent.WaitOne();
         }
