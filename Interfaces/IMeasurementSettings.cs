@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Core.Interfaces
+namespace Interfaces
 {
 	/// <summary>
 	/// Интерфейс, имеющий параметры этапа измерения

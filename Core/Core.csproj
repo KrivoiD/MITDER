@@ -19,12 +19,8 @@
   <ItemGroup>
     <Compile Include="Helpers\MovableAverage.cs" />
     <Compile Include="Helpers\SaveHelper.cs" />
-    <Compile Include="Interfaces\ISavingHeader.cs" />
-    <Compile Include="Interfaces\IMeasurementSettings.cs" />
     <Compile Include="MeasuredValues.cs" />
     <Compile Include="MeasurementCore.cs" />
-    <Compile Include="Interfaces\IResistanceMeasurable.cs" />
-    <Compile Include="Interfaces\IVoltageMeasurable.cs" />
     <Compile Include="CollectionWithSelectedItem.cs" />
     <Compile Include="StepSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -32,6 +28,10 @@
   </ItemGroup>
   <Import Project="..\Configurations.targets" />
   <ItemGroup>
+    <ProjectReference Include="..\Interfaces\Interfaces.csproj">
+      <Project>{9d6d49bf-4956-42f2-b915-f18a068d3023}</Project>
+      <Name>Interfaces</Name>
+    </ProjectReference>
     <ProjectReference Include="..\UsbRelayNet\UsbRelayNet.csproj">
       <Project>{69029457-a599-493c-83e8-0241cde6a234}</Project>
       <Name>UsbRelayNet</Name>

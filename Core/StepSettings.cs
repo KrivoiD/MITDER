@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Core.Interfaces;
+
+using Interfaces;
 
 namespace Core
 {
-    /// <summary>
-    /// Класс для описания этапа измерения.
-    /// </summary>
+	/// <summary>
+	/// Класс для описания этапа измерения.
+	/// </summary>
 	public class StepSettings : IMeasurementSettings
 	{
 		double _pointRange = 0.010;

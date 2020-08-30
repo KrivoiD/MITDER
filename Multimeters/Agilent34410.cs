@@ -6,7 +6,7 @@ using System.Diagnostics;
 #if !WithoutDevice
 using NationalInstruments.Visa;
 #endif
-using Core.Interfaces;
+using Interfaces;
 using Services;
 
 namespace Multimeters

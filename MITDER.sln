@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services", "Extensions\Serv
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UsbRelayNet", "UsbRelayNet\UsbRelayNet.csproj", "{69029457-A599-493C-83E8-0241CDE6A234}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Interfaces", "Interfaces\Interfaces.csproj", "{9D6D49BF-4956-42F2-B915-F18A068D3023}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -143,6 +145,24 @@ Global
 		{69029457-A599-493C-83E8-0241CDE6A234}.WithoutDevices|Mixed Platforms.Build.0 = Release|Any CPU
 		{69029457-A599-493C-83E8-0241CDE6A234}.WithoutDevices|x86.ActiveCfg = Release|Any CPU
 		{69029457-A599-493C-83E8-0241CDE6A234}.WithoutDevices|x86.Build.0 = Release|Any CPU
+		{9D6D49BF-4956-42F2-B915-F18A068D3023}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D6D49BF-4956-42F2-B915-F18A068D3023}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D6D49BF-4956-42F2-B915-F18A068D3023}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{9D6D49BF-4956-42F2-B915-F18A068D3023}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{9D6D49BF-4956-42F2-B915-F18A068D3023}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9D6D49BF-4956-42F2-B915-F18A068D3023}.Debug|x86.Build.0 = Debug|Any CPU
+		{9D6D49BF-4956-42F2-B915-F18A068D3023}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D6D49BF-4956-42F2-B915-F18A068D3023}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D6D49BF-4956-42F2-B915-F18A068D3023}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{9D6D49BF-4956-42F2-B915-F18A068D3023}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{9D6D49BF-4956-42F2-B915-F18A068D3023}.Release|x86.ActiveCfg = Release|Any CPU
+		{9D6D49BF-4956-42F2-B915-F18A068D3023}.Release|x86.Build.0 = Release|Any CPU
+		{9D6D49BF-4956-42F2-B915-F18A068D3023}.WithoutDevices|Any CPU.ActiveCfg = Release|Any CPU
+		{9D6D49BF-4956-42F2-B915-F18A068D3023}.WithoutDevices|Any CPU.Build.0 = Release|Any CPU
+		{9D6D49BF-4956-42F2-B915-F18A068D3023}.WithoutDevices|Mixed Platforms.ActiveCfg = WithoutDevices|Any CPU
+		{9D6D49BF-4956-42F2-B915-F18A068D3023}.WithoutDevices|Mixed Platforms.Build.0 = WithoutDevices|Any CPU
+		{9D6D49BF-4956-42F2-B915-F18A068D3023}.WithoutDevices|x86.ActiveCfg = Release|Any CPU
+		{9D6D49BF-4956-42F2-B915-F18A068D3023}.WithoutDevices|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Core.Interfaces
+namespace Interfaces
 {
 	/// <summary>
 	/// Наследники интерфеса указывают, что необходимо при сохранении в файл записать строку с названиями колонок.

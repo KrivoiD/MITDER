@@ -1,4 +1,5 @@
-﻿using Core.Interfaces;
+﻿using Interfaces;
+
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -45,7 +46,7 @@ namespace Core
 		/// </summary>
 		public double ReverseResistance { get; set; }
 		/// <summary>
-		/// Значение термоЭДС в мВ
+		/// Значение термоЭДС в мкВ
 		/// </summary>
 		public double ThermoEDF { get; set; }
 		/// <summary>

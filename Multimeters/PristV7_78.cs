@@ -5,7 +5,7 @@ using System.Diagnostics;
 using NationalInstruments.Visa;
 
 #endif
-using Core.Interfaces;
+using Interfaces;
 using Services;
 using System.Collections.Generic;
 
@@ -71,7 +71,7 @@ namespace Multimeters
 			catch (TimeoutException ex)
 			{
 				var error = GetErrorsResult();
-				Logger.Warn(Name + " => При получении напряжения возникло TimeoutException: " + ex.Message + "\n\t\tОшибка по прибору: " + error + "\n\t\tStackTrace" + ex.StackTrace);				
+				Logger.Warn(Name + " => При получении напряжения возникло TimeoutException: " + ex.Message + "\n\t\tОшибка по прибору: " + error + "\n\t\tStackTrace" + ex.StackTrace);
 			}
 			catch (Exception ex)
 			{

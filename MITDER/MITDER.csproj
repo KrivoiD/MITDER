@@ -99,6 +99,10 @@
       <Project>{ADF3E301-C191-40DA-B59D-0D0B42A037F7}</Project>
       <Name>Indicators</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Interfaces\Interfaces.csproj">
+      <Project>{9d6d49bf-4956-42f2-b915-f18a068d3023}</Project>
+      <Name>Interfaces</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Multimeters\Multimeters.csproj">
       <Project>{BABBF6A5-53FA-4EF8-AA86-DD1082172C56}</Project>
       <Name>Multimeters</Name>

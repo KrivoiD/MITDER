@@ -39,6 +39,10 @@
       <Project>{c037c0a0-fd6f-43e3-9684-eb3b94b44751}</Project>
       <Name>Services</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Interfaces\Interfaces.csproj">
+      <Project>{9d6d49bf-4956-42f2-b915-f18a068d3023}</Project>
+      <Name>Interfaces</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="..\Configurations.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
