@@ -17,6 +17,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers\MovableAverage.cs" />
     <Compile Include="Helpers\SaveHelper.cs" />
     <Compile Include="Interfaces\ISavingHeader.cs" />
     <Compile Include="Interfaces\IMeasurementSettings.cs" />
