@@ -42,7 +42,6 @@
     <Compile Include="View\StepSettingsView.xaml.cs">
       <DependentUpon>StepSettingsView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="WindowService.cs" />
     <Compile Include="ViewModelClasses\RelayCommand.cs" />
     <Compile Include="ViewModelClasses\ViewModelBase.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />

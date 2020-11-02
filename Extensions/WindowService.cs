@@ -1,13 +1,12 @@
 ﻿using Microsoft.Win32;
 
-using MITDER.ViewModelClasses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows;
 
-namespace MITDER
+namespace Services
 {
 	/// <summary>
 	/// Сервесный класс для установления связи между представлением (ViewModel) и отображением (View).
@@ -15,12 +14,12 @@ namespace MITDER
 	public static class WindowService
 	{
 		private static Dictionary<Type, Type> TypeMapping;
-		private static Dictionary<ViewModelBase, Window> ObjectsMapping;
+		private static Dictionary<object, Window> ObjectsMapping;
 
 		static WindowService()
 		{
 			TypeMapping = new Dictionary<Type, Type>();
-			ObjectsMapping = new Dictionary<ViewModelBase, Window>();
+			ObjectsMapping = new Dictionary<object, Window>();
 		}
 
 		/// <summary>
@@ -29,7 +28,7 @@ namespace MITDER
 		/// </summary>
 		/// <typeparam name="TViewModel"></typeparam>
 		/// <typeparam name="TView"></typeparam>
-		public static void AddMapping<TViewModel, TView>() where TViewModel : ViewModelBase where TView : Window
+		public static void AddMapping<TViewModel, TView>() where TViewModel : new() where TView : Window
 		{
 			var viewModelType = typeof(TViewModel);
 			var viewType = typeof(TView);
@@ -42,7 +41,7 @@ namespace MITDER
 		/// Создает и отображает ассоциированную View с ViewModel по указанному типу ViewModel
 		/// </summary>
 		/// <typeparam name="TViewModel"></typeparam>
-		public static void ShowWindow<TViewModel>() where TViewModel : ViewModelBase
+		public static void ShowWindow<TViewModel>() where TViewModel : new()
 		{
 			var viewModelType = typeof(TViewModel);
 			if (!TypeMapping.ContainsKey(viewModelType))
@@ -56,14 +55,14 @@ namespace MITDER
 		/// Дополнительно устанавливает в <see cref="Application.MainWindow"/> созданную View.
 		/// </summary>
 		/// <typeparam name="TViewModel"></typeparam>
-		public static void ShowMainWindow<TViewModel>() where TViewModel : ViewModelBase
+		public static void ShowMainWindow<TViewModel>() where TViewModel : new()
 		{
 			var viewModelType = typeof(TViewModel);
 			if (!TypeMapping.ContainsKey(viewModelType))
 				throw new InvalidOperationException("Для класса " + viewModelType.FullName + " не задан класс отображения.");
 
 			var window = CreateWindow(typeof(TViewModel));
-			App.Current.MainWindow = window;
+			Application.Current.MainWindow = window;
 			window.Show();
 		}
 
@@ -72,7 +71,7 @@ namespace MITDER
 		/// </summary>
 		/// <typeparam name="TViewModel"></typeparam>
 		/// <param name="viewModel"></param>
-		public static void ShowWindow<TViewModel>(TViewModel viewModel) where TViewModel : ViewModelBase
+		public static void ShowWindow<TViewModel>(TViewModel viewModel) where TViewModel : new()
 		{
 			if (viewModel == null)
 				throw new ArgumentNullException();
@@ -89,7 +88,7 @@ namespace MITDER
 		/// Создает и отображает ассоциированную View с ViewModel по указанному типу ViewModel виде диалога
 		/// </summary>
 		/// <typeparam name="TViewModel"></typeparam>
-		public static bool? ShowDialog<TViewModel>() where TViewModel : ViewModelBase
+		public static bool? ShowDialog<TViewModel>() where TViewModel : new()
 		{
 			var viewModelType = typeof(TViewModel);
 			if (!TypeMapping.ContainsKey(viewModelType))
@@ -103,7 +102,7 @@ namespace MITDER
 		/// </summary>
 		/// <typeparam name="TViewModel"></typeparam>
 		/// <param name="viewModel"></param>
-		public static bool? ShowDialog<TViewModel>(TViewModel viewModel) where TViewModel : ViewModelBase
+		public static bool? ShowDialog<TViewModel>(TViewModel viewModel) where TViewModel : new()
 		{
 			if (viewModel == null)
 				throw new ArgumentNullException();
@@ -122,10 +121,10 @@ namespace MITDER
 		/// </summary>
 		/// <param name="viewModelType"></param>
 		/// <param name="viewModel"></param>
-		private static Window CreateWindow(Type viewModelType, ViewModelBase viewModel = null)
+		private static Window CreateWindow(Type viewModelType, object viewModel = null)
 		{
 			var window = Activator.CreateInstance(TypeMapping[viewModelType]) as Window;
-			viewModel = viewModel ?? Activator.CreateInstance(viewModelType) as ViewModelBase;
+			viewModel = viewModel ?? Activator.CreateInstance(viewModelType);
 			window.DataContext = viewModel;
 			ObjectsMapping.Add(viewModel, window);
 			return window;
@@ -136,7 +135,7 @@ namespace MITDER
 		/// </summary>
 		/// <param name="viewModel"></param>
 		/// <param name="isAccept"></param>
-		public static void CloseWindow(ViewModelBase viewModel, bool isAccept = false)
+		public static void CloseWindow(object viewModel, bool isAccept = false)
 		{
 			if (viewModel == null)
 				throw new ArgumentNullException();
