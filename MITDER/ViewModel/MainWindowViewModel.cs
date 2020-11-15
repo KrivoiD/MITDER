@@ -11,6 +11,7 @@ using System.Collections.ObjectModel;
 using Core.Helpers;
 using MITDER.Properties;
 using Services;
+using MITDER.Core;
 
 namespace MITDER.ViewModel
 {

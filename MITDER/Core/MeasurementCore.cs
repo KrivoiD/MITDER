@@ -6,13 +6,14 @@ using System.Text;
 using System.Threading;
 using System.Timers;
 
+using Core;
 using Core.Helpers;
 
 using Interfaces;
 
 using UsbRelayNet.RelayLib;
 
-namespace Core
+namespace MITDER.Core
 {
 	/// <summary>
 	/// Делегат метода, обрабатывающий события <see cref="MeasurementCore.MeasuredVoltage" /> и <see cref="MeasurementCore.MeasuredResistance" /> 

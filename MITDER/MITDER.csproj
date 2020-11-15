@@ -35,6 +35,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Core\MeasurementCore.cs" />
     <Compile Include="ViewModel\StepSettingsViewModel.cs" />
     <Compile Include="View\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -106,7 +107,12 @@
       <Project>{BABBF6A5-53FA-4EF8-AA86-DD1082172C56}</Project>
       <Name>Multimeters</Name>
     </ProjectReference>
+    <ProjectReference Include="..\UsbRelayNet\UsbRelayNet.csproj">
+      <Project>{69029457-A599-493C-83E8-0241CDE6A234}</Project>
+      <Name>UsbRelayNet</Name>
+    </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

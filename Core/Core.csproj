@@ -21,7 +21,6 @@
     <Compile Include="Helpers\PowerHelper.cs" />
     <Compile Include="Helpers\SaveHelper.cs" />
     <Compile Include="MeasuredValues.cs" />
-    <Compile Include="MeasurementCore.cs" />
     <Compile Include="CollectionWithSelectedItem.cs" />
     <Compile Include="StepSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
