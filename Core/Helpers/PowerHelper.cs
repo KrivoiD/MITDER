@@ -12,7 +12,7 @@ namespace Core.Helpers
 	/// </summary>
 	public class PowerHelper
 	{
-		private int _interval;
+		private double _interval;
 		private MovableAverage _rateList;
 		private double _rate;
 
@@ -55,7 +55,7 @@ namespace Core.Helpers
 		/// </summary>
 		/// <param name="lastValuesAmount">Количество последних показаний, используемых для расчета средней скорости изменения температуры</param>
 		/// <param name="interval">Интервал измерений показаний температур, в секундах</param>
-		public PowerHelper(int lastValuesAmount, int interval)
+		public PowerHelper(int lastValuesAmount, double interval)
 		{
 			TemperatureRate = 0.002;
 			RateRangeStability = 0.0005;
@@ -73,9 +73,9 @@ namespace Core.Helpers
 		/// Возвращает коэффициент, указывающий на изменение питания.
 		/// </summary>
 		/// <returns>
-		///       1 - необходимо увеличить питание
-		/// <br />0 - оставить без изменений
-		/// <br />-1 - необходимо уменьшить питание</returns>
+		///  1 - необходимо увеличить питание<br /> 
+		///  0 - оставить без изменений<br />
+		/// -1 - необходимо уменьшить питание</returns>
 		public int GetPowerChangingDirection()
 		{
 			if (_rate < TemperatureRate - RateRangeStability)
