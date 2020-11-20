@@ -5,11 +5,11 @@ using System.Windows;
 
 using Services;
 
-using MITDER.Properties;
-using MITDER.View;
-using MITDER.ViewModel;
+using Refm.Properties;
+using Refm.View;
+using Refm.ViewModel;
 
-namespace MITDER
+namespace Refm
 {
 	/// <summary>
 	/// Interaction logic for App.xaml

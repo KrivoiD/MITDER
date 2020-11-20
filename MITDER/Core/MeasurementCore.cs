@@ -13,7 +13,7 @@ using Interfaces;
 
 using UsbRelayNet.RelayLib;
 
-namespace MITDER.Core
+namespace Refm.Core
 {
 	/// <summary>
 	/// Делегат метода, обрабатывающий события <see cref="MeasurementCore.MeasuredVoltage" /> и <see cref="MeasurementCore.MeasuredResistance" /> 

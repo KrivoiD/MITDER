@@ -11,10 +11,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using MITDER.ViewModel;
-using MITDER.ViewModelClasses;
+using Refm.ViewModel;
+using Refm.ViewModelClasses;
 
-namespace MITDER.View
+namespace Refm.View
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

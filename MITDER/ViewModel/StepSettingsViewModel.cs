@@ -1,5 +1,5 @@
 ﻿using Core;
-using MITDER.ViewModelClasses;
+using Refm.ViewModelClasses;
 
 using Services;
 
@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace MITDER.ViewModel
+namespace Refm.ViewModel
 {
 	public class StepSettingsViewModel : ViewModelBase
 	{

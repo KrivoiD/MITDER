@@ -6,14 +6,14 @@ using System.ComponentModel;
 using Multimeters;
 using System.Configuration;
 using Core;
-using MITDER.ViewModelClasses;
+using Refm.ViewModelClasses;
 using System.Collections.ObjectModel;
 using Core.Helpers;
-using MITDER.Properties;
+using Refm.Properties;
 using Services;
-using MITDER.Core;
+using Refm.Core;
 
-namespace MITDER.ViewModel
+namespace Refm.ViewModel
 {
 	public class MainWindowViewModel : ViewModelBase
 	{

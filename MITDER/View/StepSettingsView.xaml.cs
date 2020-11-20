@@ -11,7 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace MITDER.View
+namespace Refm.View
 {
 	/// <summary>
 	/// Interaction logic for StepSettingsView.xaml
