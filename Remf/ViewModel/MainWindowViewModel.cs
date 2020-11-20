@@ -6,7 +6,7 @@ using System.ComponentModel;
 using Multimeters;
 using System.Configuration;
 using Core;
-using Remf.ViewModelClasses;
+using Core.ViewModel;
 using System.Collections.ObjectModel;
 using Core.Helpers;
 using Remf.Properties;
@@ -25,25 +25,29 @@ namespace Remf.ViewModel
 		MeasurementCore _core = null;
 
 		private double _bottomTemperature;
-		public double BottomTemperature {
+		public double BottomTemperature
+		{
 			get { return _bottomTemperature; }
 			set { RaisePropertyChanged("BottomTemperature", ref _bottomTemperature, value); }
 		}
 
 		private double _topTemperature;
-		public double TopTemperature {
+		public double TopTemperature
+		{
 			get { return _topTemperature; }
 			set { RaisePropertyChanged("TopTemperature", ref _topTemperature, value); }
 		}
 
 		private double _resistanceValue;
-		public double Resistance {
+		public double Resistance
+		{
 			get { return _resistanceValue; }
 			set { RaisePropertyChanged("Resistance", ref _resistanceValue, value); }
 		}
 
 		private double _reverseResistanceValue;
-		public double ReverseResistance {
+		public double ReverseResistance
+		{
 			get { return _reverseResistanceValue; }
 			set { RaisePropertyChanged("ReverseResistance", ref _reverseResistanceValue, value); }
 		}
@@ -56,12 +60,14 @@ namespace Remf.ViewModel
 		}
 
 		private double _nextPoint;
-		public double NextPoint {
+		public double NextPoint
+		{
 			get { return _nextPoint; }
 			set { RaisePropertyChanged("NextPoint", ref _nextPoint, value); }
 		}
 
-		public bool IsMeasureThermoEDF { 
+		public bool IsMeasureThermoEDF
+		{
 			get { return _core.IsMeasureThermoEDF; }
 			set
 			{
@@ -69,7 +75,7 @@ namespace Remf.ViewModel
 				if (!value)
 					_core.ThermoEDF = 0;
 				OnPropertyChanged("IsMeasureThermoEDF");
-			} 
+			}
 		}
 
 		/// <summary>
@@ -80,7 +86,8 @@ namespace Remf.ViewModel
 		/// <summary>
 		/// Коллекция, содержащая настройки этапов измерения.
 		/// </summary>
-		public WSICollection<StepSettings> StepSettings {
+		public WSICollection<StepSettings> StepSettings
+		{
 			get { return _stepSettings; }
 			set { RaisePropertyChanged("StepSettings", ref _stepSettings, value); }
 		}
@@ -93,7 +100,8 @@ namespace Remf.ViewModel
 		/// <summary>
 		/// Комманда запуска измерения сопротивления
 		/// </summary>
-		public RelayCommand Start {
+		public RelayCommand Start
+		{
 			get { return new RelayCommand(StartMeasurements, CanStartMeasurements); }
 		}
 
@@ -118,7 +126,8 @@ namespace Remf.ViewModel
 		#endregion //Start command
 
 		#region Stop command
-		public RelayCommand Stop {
+		public RelayCommand Stop
+		{
 			get { return new RelayCommand(StopMeasurements); }
 		}
 
@@ -137,7 +146,8 @@ namespace Remf.ViewModel
 		/// <summary>
 		/// Комманда добавления нового этапа
 		/// </summary>
-		public RelayCommand AddStep {
+		public RelayCommand AddStep
+		{
 			get { return new RelayCommand(AddStepSettings); }
 		}
 
@@ -161,7 +171,8 @@ namespace Remf.ViewModel
 		/// <summary>
 		/// Комманда редактирования указанного этапа
 		/// </summary>
-		public RelayCommand EditStep {
+		public RelayCommand EditStep
+		{
 			get { return new RelayCommand(EditStepSettings); }
 		}
 
@@ -189,7 +200,8 @@ namespace Remf.ViewModel
 		/// <summary>
 		/// Комманда удаления указанного этапа
 		/// </summary>
-		public RelayCommand DeleteStep {
+		public RelayCommand DeleteStep
+		{
 			get { return new RelayCommand(DeleteStepSettings, CanDeleteStepSettings); }
 		}
 
@@ -254,7 +266,7 @@ namespace Remf.ViewModel
 				WindowService.ShowMessage("Проверьте подключения и работоспособность приборов." + Environment.NewLine + ex.Message, "Ошибка при инициализации приборов.", true);
 				Logger.Error(ex.ToString());
 				throw ex;
-			}			
+			}
 
 			_core.MeasurementSteps.Add(new StepSettings()
 			{
@@ -264,7 +276,7 @@ namespace Remf.ViewModel
 				PointRange = 0.01,
 				Type = StepType.Heating
 			});
-			
+
 
 			_core.MeasuredVoltage += _core_MeasuredVoltages;
 			_core.MeasuredResistance += _core_MeasuredResistance;

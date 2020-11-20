@@ -1,5 +1,5 @@
 ﻿using Core;
-using Remf.ViewModelClasses;
+using Core.ViewModel;
 
 using Services;
 
@@ -14,19 +14,23 @@ namespace Remf.ViewModel
 	{
 		public StepSettings StepSettigs { get; set; }
 
-		public double From {
-			get{ return StepSettigs.From; }
+		public double From
+		{
+			get { return StepSettigs.From; }
 			set { StepSettigs.From = value; }
 		}
-		public double To {
+		public double To
+		{
 			get { return StepSettigs.To; }
 			set { StepSettigs.To = value; }
 		}
-		public double Step {
+		public double Step
+		{
 			get { return StepSettigs.Step; }
 			set { StepSettigs.Step = value; }
 		}
-		public StepType Type {
+		public StepType Type
+		{
 			get { return StepSettigs.Type; }
 			set { StepSettigs.Type = value; }
 		}
@@ -34,7 +38,8 @@ namespace Remf.ViewModel
 		/// <summary>
 		/// Комманда сохранения, указывающая на закрытиие окна
 		/// </summary>
-		public RelayCommand Save {
+		public RelayCommand Save
+		{
 			get { return new RelayCommand(SaveStepSettings); }
 		}
 
@@ -59,7 +64,7 @@ namespace Remf.ViewModel
 
 		public override void Dispose()
 		{
-			
+
 		}
 	}
 }
