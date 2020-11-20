@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Refm.Properties {
+namespace Remf.Properties {
     using System;
     
     

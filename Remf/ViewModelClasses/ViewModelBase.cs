@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.ComponentModel;
 
-namespace Refm.ViewModelClasses
+namespace Remf.ViewModelClasses
 {
 	public abstract class ViewModelBase : INotifyPropertyChanged, IDisposable
 	{

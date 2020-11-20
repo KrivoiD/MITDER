@@ -5,11 +5,11 @@ using System.Windows;
 
 using Services;
 
-using Refm.Properties;
-using Refm.View;
-using Refm.ViewModel;
+using Remf.Properties;
+using Remf.View;
+using Remf.ViewModel;
 
-namespace Refm
+namespace Remf
 {
 	/// <summary>
 	/// Interaction logic for App.xaml

@@ -1,5 +1,5 @@
 ﻿using Core;
-using Refm.ViewModelClasses;
+using Remf.ViewModelClasses;
 
 using Services;
 
@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Refm.ViewModel
+namespace Remf.ViewModel
 {
 	public class StepSettingsViewModel : ViewModelBase
 	{

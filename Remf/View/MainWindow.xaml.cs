@@ -11,10 +11,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Refm.ViewModel;
-using Refm.ViewModelClasses;
+using Remf.ViewModel;
+using Remf.ViewModelClasses;
 
-namespace Refm.View
+namespace Remf.View
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

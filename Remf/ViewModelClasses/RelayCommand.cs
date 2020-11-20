@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Input;
 
-namespace Refm.ViewModelClasses
+namespace Remf.ViewModelClasses
 {
     public class RelayCommand : ICommand
     {

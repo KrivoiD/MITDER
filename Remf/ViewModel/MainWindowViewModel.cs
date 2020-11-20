@@ -6,14 +6,14 @@ using System.ComponentModel;
 using Multimeters;
 using System.Configuration;
 using Core;
-using Refm.ViewModelClasses;
+using Remf.ViewModelClasses;
 using System.Collections.ObjectModel;
 using Core.Helpers;
-using Refm.Properties;
+using Remf.Properties;
 using Services;
-using Refm.Core;
+using Remf.Core;
 
-namespace Refm.ViewModel
+namespace Remf.ViewModel
 {
 	public class MainWindowViewModel : ViewModelBase
 	{

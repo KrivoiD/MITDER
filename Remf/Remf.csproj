@@ -5,8 +5,8 @@
     <ProjectGuid>{CFC3ADD6-916C-4FB5-83A5-5E7A77B94F06}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MITDER</RootNamespace>
-    <AssemblyName>MITDER</AssemblyName>
+    <RootNamespace>Remf</RootNamespace>
+    <AssemblyName>Remf</AssemblyName>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <XamlDebuggingInformation>True</XamlDebuggingInformation>
