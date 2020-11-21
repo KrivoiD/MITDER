@@ -36,7 +36,7 @@ namespace Remf
 		protected override void OnStartup(StartupEventArgs e)
 		{
 			Logger.WriteLine("------------------------------------------------------------------------------------------------");
-			Logger.Info("Приложение MITDER запустилось.");
+			Logger.Info("Приложение Remf запустилось.");
 
 			var isLastCrashed = Settings.Default.IsLastCrashed;
 			var savedFilePath = Settings.Default.SavedFilePath;
