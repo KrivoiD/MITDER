@@ -35,6 +35,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Core\MeasuredValues.cs" />
     <Compile Include="Core\MeasurementCore.cs" />
     <Compile Include="ViewModel\StepSettingsViewModel.cs" />
     <Compile Include="View\MainWindow.xaml.cs">

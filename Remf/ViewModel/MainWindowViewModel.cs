@@ -112,6 +112,7 @@ namespace Remf.ViewModel
 		{
 			_core.IsMeasurementStarted = true;
 			_core.IsResistanceMeasured = true;
+			//измерение запускается, когда индекс этапа измерения не равен -1.
 			if (_core.MeasurementSteps.SelectedIndex == -1)
 				_core.MeasurementSteps.ChangeSelection();
 		}

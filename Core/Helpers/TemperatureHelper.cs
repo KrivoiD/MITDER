@@ -93,7 +93,7 @@ namespace Core.Helpers
 		/// при необходимости расчитывает следующую точку для измерений.
 		/// </summary>
 		/// <param name="temperature"></param>
-		public bool IsMeasureResistance(double temperature)
+		public bool IsTakeMeasurement(double temperature)
 		{
 			var isMeasure = false;
 			CurrentTemperature = temperature;

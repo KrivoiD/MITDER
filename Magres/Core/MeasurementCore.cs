@@ -26,10 +26,9 @@ namespace Magres.Core
 
 		//таймер для обновления данных с устройств
 		System.Timers.Timer _timer;
-		IVoltageMeasurable _topThermocouple = null;
-		IVoltageMeasurable _bottomThermocouple = null;
-		IVoltageMeasurable _thermoEDF = null;
-		IResistanceMeasurable _resistance = null;
+		IVoltageMeasurable _thermocouple = null;
+		IVoltageMeasurable _voltage = null;
+		//IResistanceMeasurable _resistance = null;
 		MovableAverage _temperatureRate = null;
 
 		/// <summary>
@@ -59,14 +58,9 @@ namespace Magres.Core
 		public double Next { get; set; }
 
 		/// <summary>
-		/// Температура верхней термопары в мВ
+		/// Температура термопары в мВ
 		/// </summary>
-		public double TopTemperature { get; private set; }
-
-		/// <summary>
-		/// Температура нижней термопары в мВ
-		/// </summary>
-		public double BottomTemperature { get; private set; }
+		public double Temperature { get; private set; }
 
 		/// <summary>
 		/// Последнее измеренное значение сопротивления
@@ -74,26 +68,15 @@ namespace Magres.Core
 		public double Resistance { get; set; }
 
 		/// <summary>
-		/// Последнее измеренное значение сопротивления при протекании обратного тока
+		/// Последнее измеренное значение напряжения
 		/// </summary>
-		public double ReverseResistance { get; set; }
-
-		/// <summary>
-		/// Последнее измеренное значение термоЭДС в мкВ
-		/// </summary>
-		public double ThermoEDF { get; set; }
+		public double Voltage { get; set; }
 
 		/// <summary>
 		/// Указывает, производить ли измерения сопротивления в заданном интервале [<see cref="MeasurementCore.From"/>;<see cref="MeasurementCore.To"/>]
 		/// с заданным шагом <see cref="MeasurementCore.Step"/>.
 		/// </summary>
 		public bool IsResistanceMeasured { get; set; }
-
-		/// <summary>
-		/// Указывает, производить ли измерения термоЭДС в заданном интервале [<see cref="MeasurementCore.From"/>;<see cref="MeasurementCore.To"/>]
-		/// с заданным шагом <see cref="MeasurementCore.Step"/>.
-		/// </summary>
-		public bool IsMeasureThermoEDF { get; set; }
 
 		/// <summary>
 		/// Указывает, запущен ли процесс измерения.
@@ -143,12 +126,10 @@ namespace Magres.Core
 			switch (collection.SelectedItem.Type)
 			{
 				case StepType.Heating:
-					_bottomThermocouple.Direction = 1;
-					_topThermocouple.Direction = 1;
+					_thermocouple.Direction = 1;
 					break;
 				case StepType.Cooling:
-					_bottomThermocouple.Direction = -1;
-					_topThermocouple.Direction = -1;
+					_thermocouple.Direction = -1;
 					break;
 			}
 		}
@@ -161,18 +142,17 @@ namespace Magres.Core
 		/// <param name="bottomThermocouple">Устройство, снимающее показания с нижней термопары</param>
 		/// <param name="resistance">Устройство, снимающее сопротивление с образца</param>
 		/// <param name="settings">Параметры измерения</param>
-		public MeasurementCore(IVoltageMeasurable topThermocouple, IVoltageMeasurable bottomThermocouple, IResistanceMeasurable resistance) : this()
+		public MeasurementCore(IVoltageMeasurable topThermocouple, IVoltageMeasurable bottomThermocouple/*, IResistanceMeasurable resistance*/) : this()
 		{
-			if (topThermocouple == null || bottomThermocouple == null || resistance == null)
+			if (topThermocouple == null || bottomThermocouple == null /*|| resistance == null*/)
 				throw new ArgumentNullException();
-			if (!topThermocouple.IsInitialized || !bottomThermocouple.IsInitialized || !resistance.IsInitialized)
+			if (!topThermocouple.IsInitialized || !bottomThermocouple.IsInitialized /*|| !resistance.IsInitialized*/)
 				throw new InvalidOperationException("Должны быть инициализированы все устройства.");
 
-			_topThermocouple = topThermocouple;
-			_bottomThermocouple = bottomThermocouple;
-			_resistance = resistance;
-			//Прибор, измеряющий сопротивление, измеряет еще и термоЭДС
-			_thermoEDF = _resistance as IVoltageMeasurable;
+			_thermocouple = topThermocouple;
+			_voltage = bottomThermocouple;
+			//_resistance = resistance;
+			
 			_timer.Start();
 		}
 
@@ -182,26 +162,24 @@ namespace Magres.Core
 		}
 
 		/// <summary>
-		/// Однократно измеряет напряжение на верхней и нижней термопарах.
+		/// Однократно измеряет напряжение на термопаре.
 		/// После измерения генерирует событие <see cref="MeasurementCore.MeasuredVoltage()"/>.
-		/// Если устройство, считывающее показания с нижней термопары, не инициализировано, то событие не генерируется.
-		/// Значения напряжения в <see cref="MeasurementCore.TopTemperature"/> и <see cref="MeasurementCore.BottomTemperature"/> соответственно
+		/// Если устройство, считывающее показания с термопары, не инициализировано, то событие не генерируется.
+		/// Значения напряжения в <see cref="MeasurementCore.TopTemperature"/> и <see cref="MeasurementCore.Temperature"/> соответственно
 		/// </summary>
 		public void MeasureTemperatureVoltages()
 		{
-			if (_topThermocouple.IsInitialized)
-				TopTemperature = _topThermocouple.GetVoltage(0.1) * 1000;
-			if (!_bottomThermocouple.IsInitialized)
+			if (!_thermocouple.IsInitialized)
 				return;
-			var oldBottomTemperature = BottomTemperature;
-			BottomTemperature = _bottomThermocouple.GetVoltage(0.1) * 1000;
-			_temperatureRate.AddValue(BottomTemperature - oldBottomTemperature);
+			var oldTemperature = Temperature;
+			Temperature = _voltage.GetVoltage(0.1) * 1000;
+			_temperatureRate.AddValue(Temperature - oldTemperature);
 			if (MeasuredVoltage != null)
 			{
-				MeasuredVoltage.Invoke(new MeasuredValues(DateTime.Now) { TopTemperature = this.TopTemperature, BottomTemperature = this.BottomTemperature });
+				MeasuredVoltage.Invoke(new MeasuredValues(DateTime.Now) { Temperature = this.Temperature });
 			}
-			if (_tempHelper.IsMeasureResistance(BottomTemperature))
-				MeasureResistanceIfNeed();
+			if ( _tempHelper.IsTakeMeasurement(Temperature))
+				TakeMeasurement();
 
 			Next = _tempHelper.NextTemperature;
 		}
@@ -209,36 +187,25 @@ namespace Magres.Core
 		/// <summary>
 		/// Проверяет, нужно ли измерить сопротивление и термоЭДС при текущих значениях температуры и заданных параметрах
 		/// </summary>
-		private void MeasureResistanceIfNeed()
+		private void TakeMeasurement()
 		{
 			if (!IsResistanceMeasured)
 				return;
 
-			//определяем диапазон измеряемого значения для омметра
-			var integer = (int)Resistance;
+			//определяем диапазон измеряемого значения
+			var integer = Math.Ceiling(Voltage) == 0 ? 1000 : Math.Ceiling(Voltage);
 			var digitNumber = integer.ToString().Length;
 			var range = Math.Pow(10, digitNumber);
+			MeasureVoltage(range);
 
-			MeasureResistance(range);
-
-			if (IsMeasureThermoEDF)
-			{
-				//определяем диапазон измеряемого значения для вольтметра
-				integer = (int)ThermoEDF;
-				digitNumber = integer.ToString().Length;
-				range = Math.Pow(10, digitNumber);
-
-				MeasureThermoEDF(range);
-			}
+			//MeasureResistance(range);
 
 			if (MeasuredResistance != null)
 				MeasuredResistance.Invoke(new MeasuredValues(DateTime.Now)
 				{
-					TopTemperature = this.TopTemperature,
-					BottomTemperature = this.BottomTemperature,
-					Resistance = this.Resistance,
-					ReverseResistance = this.ReverseResistance,
-					ThermoEDF = this.ThermoEDF
+					Temperature = this.Temperature,
+					Voltage = this.Voltage,
+					//Resistance = this.Resistance
 				});
 		}
 
@@ -249,29 +216,28 @@ namespace Magres.Core
 		/// </summary>
 		/// <param name="range">Диапазон для измеряемого значения</param>
 		/// <returns>Измерянное сопротивление</returns>
-		public double MeasureResistance(double range)
-		{
-			if (!_resistance.IsInitialized)
-				return double.NaN;
-			Resistance = _resistance.GetResistance(range);
-			ReverseResistance = _resistance.GetResistance(range);
+		//public double MeasureResistance(double range)
+		//{
+		//	if (!_resistance.IsInitialized)
+		//		return double.NaN;
+		//	Resistance = _resistance.GetResistance(range);
 
-			return Resistance;
-		}
+		//	return Resistance;
+		//}
 
 		/// <summary>
-		/// Возвращает измерянное термоЭДС в указанном диапазоне.
+		/// Возвращает измерянное напряжение в указанном диапазоне.
 		/// Если прибор не инициализирован, то возвращает <see cref="Double.NaN"/>
 		/// </summary>
 		/// <param name="range">Диапазон для измеряемого значения</param>
-		/// <returns>Измерянное термоЭДС в мВ</returns>
-		public double MeasureThermoEDF(double range)
+		/// <returns>Измерянное термоЭДС в В</returns>
+		public double MeasureVoltage(double range)
 		{
-			if (!_thermoEDF.IsInitialized)
+			if (!_voltage.IsInitialized)
 				return double.NaN;
-			ThermoEDF = _thermoEDF.GetVoltage(range) * 1e6;
+			Voltage = _voltage.GetVoltage(range);
 
-			return ThermoEDF;
+			return Voltage;
 		}
 
 		/// <summary>

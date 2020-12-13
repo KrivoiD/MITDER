@@ -27,7 +27,24 @@ namespace Magres.ViewModel
 		public double Temperature
 		{
 			get { return _temperature; }
-			set { RaisePropertyChanged("TopTemperature", ref _temperature, value); }
+			set { RaisePropertyChanged("Temperature", ref _temperature, value); }
+		}
+
+		private double _voltage;
+		public double Voltage
+		{
+			get { return _voltage; }
+			set { RaisePropertyChanged("Voltage", ref _voltage, value); }
+		}
+
+		private double _currency;
+		public double Currency
+		{
+			get { return _currency; }
+			set
+			{
+				RaisePropertyChanged("Currency", ref _currency, value);
+			}
 		}
 
 		private double _resistanceValue;
@@ -201,17 +218,17 @@ namespace Magres.ViewModel
 		private SaveHelper<MeasuredValues> _saver;
 		public MainWindowViewModel()
 		{
-			if (string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["BottomVISA"])
-				|| string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["TopVISA"])
-				|| string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["ResistanceVISA"]))
+			if (string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["ThermocoupleVISA"])
+				|| string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["VoltageVISA"])
+				/*|| string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["ResistanceVISA"])*/)
 			{
 				WindowService.ShowMessage("Укажите значения VISA-адресов в app.config с ключами BottomVISA, TopVISA, ResistanceVISA.", "Проблемы с настройками", true);
 				throw new ApplicationException("Не указаны VISA-адреса в app.config.");
 			}
 			try
 			{
-				_thermocuple = new PristV7_78(ConfigurationManager.AppSettings["TopVISA"]);
-				_voltageDevice = new Agilent34410(ConfigurationManager.AppSettings["ResistanceVISA"]);
+				_thermocuple = new PristV7_78(ConfigurationManager.AppSettings["ThermocoupleVISA"]);
+				_voltageDevice = new Agilent34410(ConfigurationManager.AppSettings["VoltageVISA"]);
 			}
 			catch (Exception ex)
 			{
@@ -224,7 +241,7 @@ namespace Magres.ViewModel
 			try
 			{
 				_saver = new SaveHelper<MeasuredValues>(MeasuredValuesCollection, Settings.Default.SavedFilePath);
-				_core = new MeasurementCore(_thermocuple, _bottomThermocuple, _voltageDevice);
+				_core = new MeasurementCore(_thermocuple, _voltageDevice);
 			}
 			catch (Exception ex)
 			{
@@ -237,7 +254,7 @@ namespace Magres.ViewModel
 			{
 				From = -5.6,
 				To = 40,
-				Step = 0.2,
+				Step = 0.015,
 				PointRange = 0.01,
 				Type = StepType.Heating
 			});
@@ -253,8 +270,7 @@ namespace Magres.ViewModel
 		{
 			App.Current.Dispatcher.BeginInvoke(new Action(() =>
 			{
-				BottomTemperature = value.BottomTemperature;
-				Temperature = value.TopTemperature;
+				Temperature = value.Temperature;
 				NextPoint = _core.Next;
 			}));
 		}
@@ -264,9 +280,10 @@ namespace Magres.ViewModel
 			Logger.Info("Данные измерения: " + value.ToString());
 			App.Current.Dispatcher.BeginInvoke(new Action(() =>
 			{
+				Voltage = value.Voltage;
+				value.Currency = Currency;
+				value.Resistance = Currency == 0 ? 0 : Voltage / Currency;
 				Resistance = value.Resistance;
-				ReverseResistance = value.ReverseResistance;
-				ThermoEDF = value.ThermoEDF;
 				if (MeasuredValuesCollection != null)
 					MeasuredValuesCollection.Insert(0, value);
 			}));

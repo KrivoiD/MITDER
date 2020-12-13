@@ -220,7 +220,7 @@ namespace Remf.Core
 			{
 				MeasuredVoltage.Invoke(new MeasuredValues(DateTime.Now) { TopTemperature = this.TopTemperature, BottomTemperature = this.BottomTemperature });
 			}
-			if (_tempHelper.IsMeasureResistance(BottomTemperature))
+			if (_tempHelper.IsTakeMeasurement(BottomTemperature))
 				MeasureResistanceIfNeed();
 
 			Next = _tempHelper.NextTemperature;

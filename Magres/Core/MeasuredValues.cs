@@ -6,10 +6,10 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 
-namespace Core
+namespace Magres.Core
 {
 	/// <summary>
-	/// Класс, хранящий значения напряжений и сопротивления одного измерения.
+	/// Класс, хранящий значения напряжений или сопротивления одного измерения.
 	/// </summary>
 	public class MeasuredValues : ISavingHeader
 	{
@@ -30,25 +30,21 @@ namespace Core
 		}
 
 		/// <summary>
-		/// Значение напряжения в мВ на верхней термопаре.
+		/// Значение напряжения в мВ на термопаре.
 		/// </summary>
-		public double TopTemperature { get; set; }
+		public double Temperature { get; set; }
 		/// <summary>
-		/// Значение напряжения в мВ на нижней термопаре.
+		/// Значение напряжения в В на образце.
 		/// </summary>
-		public double BottomTemperature { get; set; }
+		public double Voltage { get; set; }
+		/// <summary>
+		/// Значение сопротивления в А
+		/// </summary>
+		public double Currency { get; set; }
 		/// <summary>
 		/// Значение сопротивления в Ом
 		/// </summary>
 		public double Resistance { get; set; }
-		/// <summary>
-		/// Значение сопротивления в Ом при обратном токе
-		/// </summary>
-		public double ReverseResistance { get; set; }
-		/// <summary>
-		/// Значение термоЭДС в мкВ
-		/// </summary>
-		public double ThermoEDF { get; set; }
 		/// <summary>
 		/// Дата и время измерения
 		/// </summary>
@@ -60,7 +56,7 @@ namespace Core
 		/// <returns></returns>
 		public string GetHeader()
 		{
-			return string.Format(CultureInfo.InvariantCulture, "BottomTemperature\tTopTemperature\tResistance\tReverseResistance\tThermoEDF(mV)");
+			return string.Format(CultureInfo.InvariantCulture, "Temperature\tVoltage\tResistance");
 		}
 
 		/// <summary>
@@ -69,7 +65,7 @@ namespace Core
 		/// <returns></returns>
 		public override string ToString()
 		{
-			return string.Format(CultureInfo.InvariantCulture, "{0:N4}\t{1:N4}\t{2}\t{3}\t{4}", new object[] { BottomTemperature, TopTemperature, Resistance, ReverseResistance, ThermoEDF });
+			return string.Format(CultureInfo.InvariantCulture, "{0:N4}\t{1}\t{2}", new object[] { Temperature, Voltage, Resistance });
 		}
 	}
 }
