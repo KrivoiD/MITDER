@@ -30,6 +30,7 @@
     <Compile Include="Agilent34410.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SessionHelper.cs" />
+    <Compile Include="Uni_T_UT804.cs" />
     <Compile Include="Visa32Wrapper.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -235,7 +235,7 @@ namespace Remf.Core
 				return;
 
 			//определяем диапазон измеряемого значения для омметра
-			var integer = (int)Resistance;
+			var integer = Math.Ceiling(Resistance) != 0 ? Math.Ceiling(Resistance) : 1_000_000;
 			var digitNumber = integer.ToString().Length;
 			var range = Math.Pow(10, digitNumber);
 
@@ -244,11 +244,11 @@ namespace Remf.Core
 			if (IsMeasureThermoEDF)
 			{
 				//определяем диапазон измеряемого значения для вольтметра
-				integer = (int)ThermoEDF;
-				digitNumber = integer.ToString().Length;
-				range = Math.Pow(10, digitNumber);
+				//integer = (int)ThermoEDF;
+				//digitNumber = integer.ToString().Length;
+				//range = Math.Pow(10, digitNumber);
 
-				MeasureThermoEDF(range);
+				MeasureThermoEDF(0.1);
 			}
 
 			if (MeasuredResistance != null)

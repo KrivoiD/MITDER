@@ -138,19 +138,19 @@ namespace Magres.Core
 		/// <summary>
 		/// Конструктор класса
 		/// </summary>
-		/// <param name="topThermocouple">Устройство, снимающее показания с верхней термопары</param>
-		/// <param name="bottomThermocouple">Устройство, снимающее показания с нижней термопары</param>
+		/// <param name="thermocouple">Устройство, снимающее показания с верхней термопары</param>
+		/// <param name="voltage">Устройство, снимающее показания с нижней термопары</param>
 		/// <param name="resistance">Устройство, снимающее сопротивление с образца</param>
 		/// <param name="settings">Параметры измерения</param>
-		public MeasurementCore(IVoltageMeasurable topThermocouple, IVoltageMeasurable bottomThermocouple/*, IResistanceMeasurable resistance*/) : this()
+		public MeasurementCore(IVoltageMeasurable thermocouple, IVoltageMeasurable voltage/*, IResistanceMeasurable resistance*/) : this()
 		{
-			if (topThermocouple == null || bottomThermocouple == null /*|| resistance == null*/)
+			if (thermocouple == null || voltage == null /*|| resistance == null*/)
 				throw new ArgumentNullException();
-			if (!topThermocouple.IsInitialized || !bottomThermocouple.IsInitialized /*|| !resistance.IsInitialized*/)
+			if (!thermocouple.IsInitialized || !voltage.IsInitialized /*|| !resistance.IsInitialized*/)
 				throw new InvalidOperationException("Должны быть инициализированы все устройства.");
 
-			_thermocouple = topThermocouple;
-			_voltage = bottomThermocouple;
+			_thermocouple = thermocouple;
+			_voltage = voltage;
 			//_resistance = resistance;
 			
 			_timer.Start();
@@ -172,7 +172,7 @@ namespace Magres.Core
 			if (!_thermocouple.IsInitialized)
 				return;
 			var oldTemperature = Temperature;
-			Temperature = _voltage.GetVoltage(0.1) * 1000;
+			Temperature = _thermocouple.GetVoltage(0.1) * 1000;
 			_temperatureRate.AddValue(Temperature - oldTemperature);
 			if (MeasuredVoltage != null)
 			{
@@ -193,7 +193,7 @@ namespace Magres.Core
 				return;
 
 			//определяем диапазон измеряемого значения
-			var integer = Math.Ceiling(Voltage) == 0 ? 1000 : Math.Ceiling(Voltage);
+			var integer = Math.Ceiling(Voltage) == 0 ? 1 : Math.Ceiling(Voltage);
 			var digitNumber = integer.ToString().Length;
 			var range = Math.Pow(10, digitNumber);
 			MeasureVoltage(range);

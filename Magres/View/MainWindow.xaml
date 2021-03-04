@@ -33,7 +33,7 @@
             </Grid.RowDefinitions>
             <indicators:CurrentValueIndicator Grid.Column="0" Grid.Row="0" Value="{Binding Temperature}" Title="Термопара" Unit="мВ" />
             <indicators:CurrentValueIndicator Grid.Column="0" Grid.Row="1" Value="{Binding NextPoint}" Title="Следующее измерение" Unit="мВ" />
-            <indicators:CurrentValueIndicator Grid.Column="0" Grid.Row="2" Value="{Binding Voltage}" Title="Напряжение" Unit="В" />
+            <indicators:CurrentValueIndicator Grid.Column="0" Grid.Row="2" Value="{Binding Voltage}" Title="Напряжение" Unit="мВ"  />
             <indicators:CurrentValueIndicator Grid.Column="0" Grid.Row="3" Value="{Binding Resistance}" Title="Сопротивление" Unit="Ом" />
         </Grid>
         <GridSplitter Grid.Column="0" Grid.Row="2" Height="3" VerticalAlignment="Center" HorizontalAlignment="Stretch" />
@@ -82,11 +82,11 @@
             </ListView.ItemContainerStyle>
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Width="70" DisplayMemberBinding="{Binding Date, StringFormat={}hh:mm:ss, ConverterCulture=ru-RU}">Время</GridViewColumn>
+                    <GridViewColumn Width="70" DisplayMemberBinding="{Binding Date, StringFormat={}HH:mm:ss, ConverterCulture=ru-RU}">Время</GridViewColumn>
                     <GridViewColumn Width="90" DisplayMemberBinding="{Binding Path=Temperature, StringFormat='{}{0:0.000}'}">Термопара, мВ</GridViewColumn>
-                    <GridViewColumn Width="90" DisplayMemberBinding="{Binding Path=Voltage, StringFormat='{}{0:0.000}'}">Напряжение, В</GridViewColumn>
-                    <GridViewColumn Width="90" DisplayMemberBinding="{Binding Path=Currency, StringFormat='{}{0:0.000}'}">Ток, А</GridViewColumn>
-                    <GridViewColumn Width="100" DisplayMemberBinding="{Binding Path=Resistance, StringFormat='{}{0:0.00000}'}">R, Ом</GridViewColumn>
+                    <GridViewColumn Width="90" DisplayMemberBinding="{Binding Path=Voltage, StringFormat='{}{0:0.0000000}'}">Напряжение, В</GridViewColumn>
+                    <GridViewColumn Width="90" DisplayMemberBinding="{Binding Path=Currency, StringFormat='{}{0:0.0000}'}">Ток, А</GridViewColumn>
+                    <GridViewColumn Width="100" DisplayMemberBinding="{Binding Path=Resistance, StringFormat='{}{0:0.0000000}'}">R, Ом</GridViewColumn>
                 </GridView>
             </ListView.View>
         </ListView>

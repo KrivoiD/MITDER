@@ -56,7 +56,7 @@ namespace Magres.Core
 		/// <returns></returns>
 		public string GetHeader()
 		{
-			return string.Format(CultureInfo.InvariantCulture, "Temperature\tVoltage\tResistance");
+			return string.Format(CultureInfo.InvariantCulture, "Date\tTemperature\tCurrency\tVoltage\tResistance");
 		}
 
 		/// <summary>
@@ -65,7 +65,7 @@ namespace Magres.Core
 		/// <returns></returns>
 		public override string ToString()
 		{
-			return string.Format(CultureInfo.InvariantCulture, "{0:N4}\t{1}\t{2}", new object[] { Temperature, Voltage, Resistance });
+			return string.Format(CultureInfo.InvariantCulture, "{0:HH:mm:ss}\t{1:N4}\t{2}\t{3}\t{4}", new object[] { Date, Temperature, Currency, Voltage, Resistance });
 		}
 	}
 }

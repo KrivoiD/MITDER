@@ -47,7 +47,7 @@ namespace Multimeters
 #if !WithoutDevices
 			try
 			{
-				var curr = currency.ToString("0.00");
+				var curr = value.ToString("0.00");
 				_session.FormattedIO.PrintfAndFlush("CURRent " + curr);
 				Logger.Info(Name + " => Установлено значение тока " + curr + "А");
 			}
@@ -111,6 +111,7 @@ namespace Multimeters
 				return false;
 			}
 #endif
+			return false;
 		}
 	}
 }

@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 using UsbRelayNet.Win32;
 
 namespace UsbRelayNet.HidLib {
-    internal sealed class HidDevice : IDisposable {
+    public sealed class HidDevice : IDisposable {
         private IntPtr _handle;
 
         public HidDevice() {

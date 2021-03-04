@@ -280,9 +280,9 @@ namespace Magres.ViewModel
 			Logger.Info("Данные измерения: " + value.ToString());
 			App.Current.Dispatcher.BeginInvoke(new Action(() =>
 			{
-				Voltage = value.Voltage;
+				Voltage = value.Voltage * 1000;
 				value.Currency = Currency;
-				value.Resistance = Currency == 0 ? 0 : Voltage / Currency;
+				value.Resistance = Currency == 0 ? 0 : 2 * Math.PI * 0.004 * value.Voltage / Currency;
 				Resistance = value.Resistance;
 				if (MeasuredValuesCollection != null)
 					MeasuredValuesCollection.Insert(0, value);
