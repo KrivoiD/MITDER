@@ -47,7 +47,7 @@ namespace Multimeters
 #if !WithoutDevices
 			try
 			{
-				var curr = currency.ToString("0.00");
+				var curr = value.ToString("0.00");
 				_session.FormattedIO.PrintfAndFlush("CURRent " + curr);
 				Logger.Info(Name + " => Установлено значение тока " + curr + "А");
 			}
@@ -96,7 +96,7 @@ namespace Multimeters
 
 		public bool TurnPower(bool isOn)
 		{
-#if WithoutDevices
+#if !WithoutDevices
 			try
 			{
 				var state = isOn ? "ON" : "OFF";
@@ -110,6 +110,8 @@ namespace Multimeters
 				Logger.Error(Name + " => При установке значения тока возникло исключение: " + ex.Message + "\n\t\tОшибка по прибору: " + error + "\n\t\tStackTrace" + ex.StackTrace);
 				return false;
 			}
+#else
+			return false;
 #endif
 		}
 	}
