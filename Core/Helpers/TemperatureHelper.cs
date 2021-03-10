@@ -9,7 +9,7 @@ namespace Core.Helpers
 	/// Вспомогательный класс, следящий за температурой и указывающий в нужный момент на необходимость измерения сопротивления,
 	/// а также меняет на следующий этап измерения при достижении точки окончания действия текущего этапа.
 	/// </summary>
-	class TemperatureHelper
+	public class TemperatureHelper
 	{
 		/// <summary>
 		/// Коллекция, содержащая этапы измерения
@@ -93,7 +93,7 @@ namespace Core.Helpers
 		/// при необходимости расчитывает следующую точку для измерений.
 		/// </summary>
 		/// <param name="temperature"></param>
-		public bool IsMeasureResistance(double temperature)
+		public bool IsTakeMeasurement(double temperature)
 		{
 			var isMeasure = false;
 			CurrentTemperature = temperature;

@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using UsbRelayNet.Win32;
 
 namespace UsbRelayNet.HidLib {
-    internal class HidEnumerator {
+    public class HidEnumerator {
         public HidEnumerator() {
         }
 

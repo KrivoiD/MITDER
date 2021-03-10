@@ -113,6 +113,7 @@ namespace Multimeters
 #else
 			return false;
 #endif
+			return false;
 		}
 	}
 }

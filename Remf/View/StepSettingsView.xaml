@@ -1,0 +1,44 @@
+﻿<Window x:Class="Remf.View.StepSettingsView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Remf.ViewModel"
+        xmlns:System="clr-namespace:System;assembly=mscorlib"
+        xmlns:core="clr-namespace:Core;assembly=Core"
+        mc:Ignorable="d"
+        DataContext="{x:Type local:StepSettingsViewModel}"
+        Title="Параметры этапа измерения" 
+        Height="195" Width="200"
+        MaxHeight="200" MinHeight="190" MaxWidth="250" MinWidth="160" >
+    <Window.Resources>
+        <ObjectDataProvider x:Key="StepType" MethodName="GetValues" ObjectType="{x:Type System:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="core:StepType"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+    </Window.Resources>
+    <Grid >
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <TextBlock Grid.Column="0" Grid.Row="0" Text="Начало" Margin="5" />
+        <TextBox Grid.Column="1" Grid.Row="0" Text="{Binding Path=From}" Margin="5" />
+        <TextBlock Grid.Column="0" Grid.Row="1" Text="Окончание" Margin="5" />
+        <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding Path=To}" Margin="5" />
+        <TextBlock Grid.Column="0" Grid.Row="2" Text="Шаг" Margin="5" />
+        <TextBox Grid.Column="1" Grid.Row="2" Text="{Binding Path=Step}" Margin="5" />
+        <TextBlock Grid.Column="0" Grid.Row="3" Text="Тип" Margin="5" />
+        <ComboBox Grid.Column="1" Grid.Row="3" SelectedItem="{Binding Path=Type}" ItemsSource="{Binding Mode=OneWay, Source={StaticResource StepType}}" Margin="5" />
+
+        <Button Grid.Column="1" Grid.Row="4" Content="Сохранить" Margin="5" IsDefault="True" Command="{Binding Save}" />
+    </Grid>
+</Window>

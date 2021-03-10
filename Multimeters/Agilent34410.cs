@@ -146,7 +146,12 @@ namespace Multimeters
 
 			try
 			{
-				_session.FormattedIO.WriteLine("CONFIGURE:VOLTAGE:DC " + range.ToString("0.000"));
+				if (range == 0.1)
+					_session.FormattedIO.WriteLine("CONFIGURE:VOLTAGE:DC 0.1,1e-7");
+				else
+					_session.FormattedIO.WriteLine("CONFIGURE:VOLTAGE:DC " + range.ToString("0.0"));
+				_session.FormattedIO.WriteLine("SENSe:VOLTAGE:DC:IMPedance:AUTO 1");
+				_session.FormattedIO.WriteLine("SENSe:VOLTAGE:DC:NPLCycles 10");
 				_session.FormattedIO.PrintfAndFlush("READ?");
 				var result = _session.FormattedIO.ReadLineDouble();
 				Logger.Info(_name + " => Получено напряжение " + result.ToString("0.00000000") + "В");
