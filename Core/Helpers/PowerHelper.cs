@@ -12,17 +12,26 @@ namespace Core.Helpers
 	/// </summary>
 	public class PowerHelper
 	{
+		/// <summary>
+		/// Величина скорости изменения температуры по умолчанию в мВ/с
+		/// </summary>
+		public const double DEFAULT_TEMPERATURE_RATE = 0.002;
+		/// <summary>
+		/// Величина диапазона стабильности скорости по умолчанию в мВ/С
+		/// </summary>
+		public const double DEFAULT_RATE_STABILITY_RANGE = 0.0005;
+
 		private double _interval;
 		private MovableAverage _rateList;
 		private double _rate;
 
 		private double _lastTemperature;
 		private double _temperatureRate;
-		private double _rateRangeStability;
+		private double _rateStabilityRange;
 
 		/// <summary>
 		/// Необходимая скорость изменения температуры в мВ/с.
-		/// По умолчанию установлено 0,002 мВ/с, что примерно 180 град/час
+		/// <br /> По умолчанию установлено 0,002 мВ/с, что примерно 180 град/час
 		/// </summary>
 		public double TemperatureRate
 		{
@@ -39,14 +48,14 @@ namespace Core.Helpers
 		/// <br /> При попадании текущей скорости изменения температуры в диапазон (<see cref="TemperatureRate"/> +/- указанное значение) не приводит к изменению питания источником.
 		/// <br /> По умолчанию установлена 0,0005 мВ/с.
 		/// </summary>
-		public double RateRangeStability
+		public double RateStabilityRange
 		{
-			get { return _rateRangeStability; }
+			get { return _rateStabilityRange; }
 			set
 			{
 				if (value <= 0)
 					throw new ArgumentOutOfRangeException("Диапазон стабильности не может быть меньше либо равным нулю.");
-				_rateRangeStability = value;
+				_rateStabilityRange = value;
 			}
 		}
 
@@ -57,12 +66,16 @@ namespace Core.Helpers
 		/// <param name="interval">Интервал измерений показаний температур, в секундах</param>
 		public PowerHelper(int lastValuesAmount, double interval)
 		{
-			TemperatureRate = 0.002;
-			RateRangeStability = 0.0005;
+			TemperatureRate = DEFAULT_TEMPERATURE_RATE;
+			RateStabilityRange = DEFAULT_RATE_STABILITY_RANGE;
 			_interval = interval;
 			_rateList = new MovableAverage(lastValuesAmount);
 		}
 
+		/// <summary>
+		/// Добавляет новое значение температуры для вычисления скорости изменения
+		/// </summary>
+		/// <param name="bottom"></param>
 		public void AddCurrentTemperature(double bottom)
 		{
 			_rate = _rateList.AddValue((bottom - _lastTemperature) / _interval);
@@ -78,9 +91,9 @@ namespace Core.Helpers
 		/// -1 - необходимо уменьшить питание</returns>
 		public int GetPowerChangingDirection()
 		{
-			if (_rate < TemperatureRate - RateRangeStability)
+			if (_rate < TemperatureRate - RateStabilityRange)
 				return 1;
-			if (_rate > TemperatureRate + RateRangeStability)
+			if (_rate > TemperatureRate + RateStabilityRange)
 				return -1;
 			return 0;
 		}

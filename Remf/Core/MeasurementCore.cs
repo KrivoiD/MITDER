@@ -25,6 +25,14 @@ namespace Remf.Core
 	public class MeasurementCore : IDisposable
 	{
 		#region Properties and Variables
+		/// <summary>
+		/// Минимальный интервал между измерениями в мс
+		/// </summary>
+		public const int MIN_INTERVAL = 200;
+		/// <summary>
+		/// Максимальный интервал между измерениями в мс
+		/// </summary>
+		public const int MAX_INTERVAL = 10_000;
 
 		//таймер для обновления данных с устройств
 		System.Timers.Timer _timer;
@@ -32,8 +40,9 @@ namespace Remf.Core
 		IVoltageMeasurable _bottomThermocouple = null;
 		IVoltageMeasurable _thermoEDF = null;
 		IResistanceMeasurable _resistance = null;
+		IPowerSupply _gradPower = null;
 		Relay _relay = null;
-		MovableAverage _temperatureRate = null;
+		PowerHelper _powerHelper = null;
 
 		/// <summary>
 		/// Интервал (в миллисекундах) измерения напряжения на верхней и нижней термопарах, контролирующих температуру.
@@ -45,14 +54,15 @@ namespace Remf.Core
 			get { return _timer.Interval; }
 			set
 			{
-				if (value < 200)
-					value = 200;
-				if (value > 10000)
-					value = 10000;
+				if (value < MIN_INTERVAL)
+					value = MIN_INTERVAL;
+				if (value > MAX_INTERVAL)
+					value = MAX_INTERVAL;
 				if (_timer.Enabled)
 					_timer.Stop();
 				_timer.Interval = value;
 				_timer.Start();
+				_powerHelper = new PowerHelper(10, _timer.Interval / 1000);
 			}
 		}
 
@@ -131,10 +141,10 @@ namespace Remf.Core
 			MeasurementSteps.SelectedItemChanged += MeasurementSteps_SelectedItemChanged;
 #endif
 			_tempHelper = new TemperatureHelper(MeasurementSteps);
-			_timer = new System.Timers.Timer(200);
+			_timer = new System.Timers.Timer(MIN_INTERVAL);
 			_timer.AutoReset = true;
 			_timer.Elapsed += _timer_Elapsed;
-			_temperatureRate = new MovableAverage(10);
+			_powerHelper = new PowerHelper(10, MIN_INTERVAL / 1000);
 		}
 
 #if WithoutDevices
@@ -164,11 +174,12 @@ namespace Remf.Core
 		/// <param name="bottomThermocouple">Устройство, снимающее показания с нижней термопары</param>
 		/// <param name="resistance">Устройство, снимающее сопротивление с образца</param>
 		/// <param name="settings">Параметры измерения</param>
-		public MeasurementCore(IVoltageMeasurable topThermocouple, IVoltageMeasurable bottomThermocouple, IResistanceMeasurable resistance) : this()
+		public MeasurementCore(IVoltageMeasurable topThermocouple, IVoltageMeasurable bottomThermocouple, IResistanceMeasurable resistance, IPowerSupply gradPower) : this()
 		{
-			if (topThermocouple == null || bottomThermocouple == null || resistance == null)
+			if (topThermocouple == null || bottomThermocouple == null || resistance == null || gradPower == null)
 				throw new ArgumentNullException();
-			if (!topThermocouple.IsInitialized || !bottomThermocouple.IsInitialized || !resistance.IsInitialized)
+			if (!topThermocouple.IsInitialized || !bottomThermocouple.IsInitialized 
+				|| !resistance.IsInitialized || !gradPower.IsInitialized)
 				throw new InvalidOperationException("Должны быть инициализированы все устройства.");
 #if !WithoutDevices
             InitializeUsbRelay();
@@ -176,6 +187,7 @@ namespace Remf.Core
 			_topThermocouple = topThermocouple;
 			_bottomThermocouple = bottomThermocouple;
 			_resistance = resistance;
+			_gradPower = gradPower;
 			//Прибор, измеряющий сопротивление, измеряет еще и термоЭДС
 			_thermoEDF = _resistance as IVoltageMeasurable;
 			_timer.Start();
@@ -199,6 +211,12 @@ namespace Remf.Core
 		void _timer_Elapsed(object sender, ElapsedEventArgs e)
 		{
 			MeasureTemperatureVoltages();
+			AdjustGradientPower();
+		}
+
+		private void AdjustGradientPower()
+        {
+			_powerHelper.AddCurrentTemperature(BottomTemperature);
 		}
 
 		/// <summary>
@@ -213,9 +231,7 @@ namespace Remf.Core
 				TopTemperature = _topThermocouple.GetVoltage(0.1) * 1000;
 			if (!_bottomThermocouple.IsInitialized)
 				return;
-			var oldBottomTemperature = BottomTemperature;
 			BottomTemperature = _bottomThermocouple.GetVoltage(0.1) * 1000;
-			_temperatureRate.AddValue(BottomTemperature - oldBottomTemperature);
 			if (MeasuredVoltage != null)
 			{
 				MeasuredVoltage.Invoke(new MeasuredValues(DateTime.Now) { TopTemperature = this.TopTemperature, BottomTemperature = this.BottomTemperature });

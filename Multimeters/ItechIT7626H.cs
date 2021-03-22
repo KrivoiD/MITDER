@@ -110,8 +110,6 @@ namespace Multimeters
 				Logger.Error(Name + " => При установке значения тока возникло исключение: " + ex.Message + "\n\t\tОшибка по прибору: " + error + "\n\t\tStackTrace" + ex.StackTrace);
 				return false;
 			}
-#else
-			return false;
 #endif
 			return false;
 		}
