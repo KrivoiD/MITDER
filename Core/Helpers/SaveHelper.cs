@@ -1,5 +1,5 @@
 ﻿using Interfaces;
-
+using Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -32,7 +32,7 @@ namespace Core.Helpers
 				}
 				catch (Exception e)
 				{
-					Trace.TraceError(e.Message);
+					Logger.Error(e.Message);
 				}
 			}
 			_collection = collection;

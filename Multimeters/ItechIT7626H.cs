@@ -24,6 +24,8 @@ namespace Multimeters
 			Name = "Itech IT7626H";
 #if !WithoutDevices
 			InitializeDevice();
+#else
+			IsInitialized = true;
 #endif
 		}
 
@@ -40,6 +42,7 @@ namespace Multimeters
 
 			_session.FormattedIO.FlushWrite(true);
 
+			IsInitialized = true;
 		}
 
 		public void SetCurrent(double value)

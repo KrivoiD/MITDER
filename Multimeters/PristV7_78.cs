@@ -27,6 +27,8 @@ namespace Multimeters
 			Name = "PristV7/78";
 #if !WithoutDevices
 			InitializeDevice();
+#else
+			IsInitialized = true;
 #endif
 		}
 
@@ -98,6 +100,7 @@ namespace Multimeters
 
 			_session.FormattedIO.FlushWrite(true);
 
+			IsInitialized = true;
 		}
 	}
 }

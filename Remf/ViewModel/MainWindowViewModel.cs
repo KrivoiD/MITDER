@@ -22,6 +22,7 @@ namespace Remf.ViewModel
 		PristV7_78 _bottomThermocuple = null;
 		PristV7_78 _topThermocuple = null;
 		Agilent34410 _resistanceDevice = null;
+		ItechIT7626H _gradientDevice = null;
 		MeasurementCore _core = null;
 
 		private double _bottomTemperature;
@@ -110,7 +111,7 @@ namespace Remf.ViewModel
 		/// </summary>
 		private void StartMeasurements(object obj)
 		{
-			_core.IsMeasurementStarted = true;
+			_core.StartMesuarements();
 			_core.IsResistanceMeasured = true;
 			//измерение запускается, когда индекс этапа измерения не равен -1.
 			if (_core.MeasurementSteps.SelectedIndex == -1)
@@ -138,7 +139,7 @@ namespace Remf.ViewModel
 		private void StopMeasurements(object obj)
 		{
 			_core.IsResistanceMeasured = false;
-			_core.IsMeasurementStarted = false;
+			_core.StoptMesuarements();
 		}
 		#endregion //Stop command
 
@@ -238,9 +239,10 @@ namespace Remf.ViewModel
 		{
 			if (string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["BottomVISA"])
 				|| string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["TopVISA"])
-				|| string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["ResistanceVISA"]))
+				|| string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["ResistanceVISA"])
+				|| string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["GradientPowerVISA"]))
 			{
-				WindowService.ShowMessage("Укажите значения VISA-адресов в app.config с ключами BottomVISA, TopVISA, ResistanceVISA.", "Проблемы с настройками", true);
+				WindowService.ShowMessage("Укажите значения VISA-адресов устройств в app.config.", "Проблемы с настройками", true);
 				throw new ApplicationException("Не указаны VISA-адреса в app.config.");
 			}
 			try
@@ -248,6 +250,7 @@ namespace Remf.ViewModel
 				_bottomThermocuple = new PristV7_78(ConfigurationManager.AppSettings["BottomVISA"]);
 				_topThermocuple = new PristV7_78(ConfigurationManager.AppSettings["TopVISA"]);
 				_resistanceDevice = new Agilent34410(ConfigurationManager.AppSettings["ResistanceVISA"]);
+				_gradientDevice = new ItechIT7626H(ConfigurationManager.AppSettings["GradientPowerVISA"]);
 			}
 			catch (Exception ex)
 			{
@@ -260,7 +263,7 @@ namespace Remf.ViewModel
 			try
 			{
 				_saver = new SaveHelper<MeasuredValues>(MeasuredValuesCollection, Settings.Default.SavedFilePath);
-				_core = new MeasurementCore(_topThermocuple, _bottomThermocuple, _resistanceDevice);
+				_core = new MeasurementCore(_topThermocuple, _bottomThermocuple, _resistanceDevice, _gradientDevice);
 			}
 			catch (Exception ex)
 			{
@@ -313,7 +316,7 @@ namespace Remf.ViewModel
 			_saver.Dispose();
 			if (_core != null)
 			{
-				_core.IsMeasurementStarted = false;
+				_core.StoptMesuarements();
 				_core.IsResistanceMeasured = false;
 				_core.MeasuredVoltage -= _core_MeasuredVoltages;
 				_core.MeasuredResistance -= _core_MeasuredResistance;

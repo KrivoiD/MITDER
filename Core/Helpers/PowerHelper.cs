@@ -60,7 +60,7 @@ namespace Core.Helpers
 		}
 
 		/// <summary>
-		/// 
+		/// Конструктор
 		/// </summary>
 		/// <param name="lastValuesAmount">Количество последних показаний, используемых для расчета средней скорости изменения температуры</param>
 		/// <param name="interval">Интервал измерений показаний температур, в секундах</param>
@@ -75,11 +75,14 @@ namespace Core.Helpers
 		/// <summary>
 		/// Добавляет новое значение температуры для вычисления скорости изменения
 		/// </summary>
-		/// <param name="bottom"></param>
-		public void AddCurrentTemperature(double bottom)
+		/// <param name="value"></param>
+		/// <returns>Возвращает коэффициент, указывающий на изменение питания. 
+		/// Смотри <seealso cref="GetPowerChangingDirection()"/></returns>
+		public int AddCurrentTemperature(double value)
 		{
-			_rate = _rateList.AddValue((bottom - _lastTemperature) / _interval);
-			_lastTemperature = bottom;
+			_rate = _rateList.AddValue((value - _lastTemperature) / _interval);
+			_lastTemperature = value;
+			return GetPowerChangingDirection();
 		}
 
 		/// <summary>

@@ -31,6 +31,10 @@
   </ItemGroup>
   <Import Project="..\Configurations.targets" />
   <ItemGroup>
+    <ProjectReference Include="..\Extensions\Services.csproj">
+      <Project>{C037C0A0-FD6F-43E3-9684-EB3B94B44751}</Project>
+      <Name>Services</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Interfaces\Interfaces.csproj">
       <Project>{9d6d49bf-4956-42f2-b915-f18a068d3023}</Project>
       <Name>Interfaces</Name>

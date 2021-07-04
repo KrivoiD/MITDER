@@ -19,18 +19,7 @@ namespace Multimeters
 		/// <summary>
 		/// Указывает, инициализировано ли устройство.
 		/// </summary>
-		public bool IsInitialized
-		{
-			get
-			{
-#if WithoutDevices
-                return true;
-#else
-				return true;
-				//return _driver.Initialized;
-#endif
-			}
-		}
+		public bool IsInitialized { get; private set; }
 
 		/// <summary>
 		/// Строка, содержащая VISA-адрес устройства.
@@ -59,6 +48,8 @@ namespace Multimeters
 			_name = "Agilent 34410A";
 #if !WithoutDevices
 			InitializeDevice();
+#else
+			IsInitialized = true;
 #endif
 		}
 
@@ -104,14 +95,16 @@ namespace Multimeters
 			//_session.FormattedIO.WriteLine("CONFIGURE:VOLTAGE:DC 0.1,1e-7");
 
 			_session.FormattedIO.FlushWrite(true);
+
+			IsInitialized = true;
 		}
 #endif
 
 #if WithoutDevices
-        Random rand = new Random((int)DateTime.Now.Ticks);
-        double lastVoltageValue = -0.0058;
-        double lastResistanceValue = 10;
-        public double valueStep = 0.00001;
+		Random rand = new Random((int)DateTime.Now.Ticks);
+		double lastVoltageValue = -0.0058;
+		double lastResistanceValue = 10;
+		public double valueStep = 0.00001;
 		private int _direction = 1;
 		public int Direction
 		{
@@ -128,8 +121,8 @@ namespace Multimeters
 		public double GetVoltage(double range = 0.1)
 		{
 #if WithoutDevices
-            lastVoltageValue += Direction * valueStep + rand.NextDouble() / 100000;
-            return  lastVoltageValue;
+			lastVoltageValue += Direction * valueStep + rand.NextDouble() / 100000;
+			return lastVoltageValue;
 #else
 			//try
 			//{
@@ -180,8 +173,8 @@ namespace Multimeters
 		public double GetResistance(double range = 100)
 		{
 #if WithoutDevices
-            lastResistanceValue += rand.NextDouble() * 10 - 3;
-            return lastResistanceValue;
+			lastResistanceValue += rand.NextDouble() * 10 - 3;
+			return lastResistanceValue;
 #else
 			//try
 			//{

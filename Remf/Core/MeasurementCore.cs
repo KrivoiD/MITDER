@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -10,7 +11,7 @@ using Core;
 using Core.Helpers;
 
 using Interfaces;
-
+using Services;
 using UsbRelayNet.RelayLib;
 
 namespace Remf.Core
@@ -42,7 +43,7 @@ namespace Remf.Core
 		IResistanceMeasurable _resistance = null;
 		IPowerSupply _gradPower = null;
 		Relay _relay = null;
-		PowerHelper _powerHelper = null;
+		GradientHelper _gradHelper = null;
 
 		/// <summary>
 		/// Интервал (в миллисекундах) измерения напряжения на верхней и нижней термопарах, контролирующих температуру.
@@ -62,7 +63,6 @@ namespace Remf.Core
 					_timer.Stop();
 				_timer.Interval = value;
 				_timer.Start();
-				_powerHelper = new PowerHelper(10, _timer.Interval / 1000);
 			}
 		}
 
@@ -111,7 +111,7 @@ namespace Remf.Core
 		/// <summary>
 		/// Указывает, запущен ли процесс измерения.
 		/// </summary>
-		public bool IsMeasurementStarted { get; set; }
+		public bool IsMeasurementStarted { get; private set; }
 
 		/// <summary>
 		/// Событие измерения напряжения. Передает последнее измеренное напряжение с нижней термопары
@@ -132,6 +132,26 @@ namespace Remf.Core
 		/// </summary>
 		private TemperatureHelper _tempHelper;
 
+		private double _gradientCurrent;
+		/// <summary>
+		/// Сила тока на градиентной спирали.
+		/// </summary>
+		public double GradientCurrent
+		{
+			get => _gradientCurrent; 
+			private set => _gradientCurrent = value < 0 ? 0 : value;
+		}
+
+		private double _gradientVoltage = 220;
+		/// <summary>
+		/// Напряжение тока на градиентной спирали. По умолчанию 220 В.
+		/// </summary>
+		public double GradientVoltage
+		{
+			get => _gradientVoltage;
+			private set => _gradientVoltage = value < 0 ? 0 : value;
+		}
+
 		#endregion
 
 		private MeasurementCore()
@@ -144,7 +164,13 @@ namespace Remf.Core
 			_timer = new System.Timers.Timer(MIN_INTERVAL);
 			_timer.AutoReset = true;
 			_timer.Elapsed += _timer_Elapsed;
-			_powerHelper = new PowerHelper(10, MIN_INTERVAL / 1000);
+
+			if(!double.TryParse(ConfigurationManager.AppSettings["GradientSize"], out var gradSize))
+			{
+				WindowService.ShowMessage("В файле app.conf для ключа GradientSize ожидалось числовое значение.", "Неверные настройки", true);
+				throw new ArgumentException("Неверный формат значения для ключа настройки GradientSize. Указанное значение " + ConfigurationManager.AppSettings["GradientSize"]);
+			}
+			_gradHelper = new GradientHelper(gradSize);
 		}
 
 #if WithoutDevices
@@ -178,7 +204,7 @@ namespace Remf.Core
 		{
 			if (topThermocouple == null || bottomThermocouple == null || resistance == null || gradPower == null)
 				throw new ArgumentNullException();
-			if (!topThermocouple.IsInitialized || !bottomThermocouple.IsInitialized 
+			if (!topThermocouple.IsInitialized || !bottomThermocouple.IsInitialized
 				|| !resistance.IsInitialized || !gradPower.IsInitialized)
 				throw new InvalidOperationException("Должны быть инициализированы все устройства.");
 #if !WithoutDevices
@@ -190,6 +216,8 @@ namespace Remf.Core
 			_gradPower = gradPower;
 			//Прибор, измеряющий сопротивление, измеряет еще и термоЭДС
 			_thermoEDF = _resistance as IVoltageMeasurable;
+			//Задаем выходное напряжение на градиентную спираль
+			_gradPower.SetVoltage(GradientVoltage);
 			_timer.Start();
 		}
 
@@ -215,8 +243,14 @@ namespace Remf.Core
 		}
 
 		private void AdjustGradientPower()
-        {
-			_powerHelper.AddCurrentTemperature(BottomTemperature);
+		{
+			var direction = _gradHelper.GetPowerChangingDirection(BottomTemperature, TopTemperature);
+			if (IsMeasurementStarted && direction != 0)
+			{
+				GradientCurrent += direction * 0.01;
+				_gradPower.SetCurrent(GradientCurrent);
+
+			}
 		}
 
 		/// <summary>
@@ -236,8 +270,8 @@ namespace Remf.Core
 			{
 				MeasuredVoltage.Invoke(new MeasuredValues(DateTime.Now) { TopTemperature = this.TopTemperature, BottomTemperature = this.BottomTemperature });
 			}
-			if (_tempHelper.IsTakeMeasurement(BottomTemperature))
-				MeasureResistanceIfNeed();
+
+			MeasureResistanceIfNeed();
 
 			Next = _tempHelper.NextTemperature;
 		}
@@ -247,7 +281,7 @@ namespace Remf.Core
 		/// </summary>
 		private void MeasureResistanceIfNeed()
 		{
-			if (!IsResistanceMeasured)
+			if (!IsResistanceMeasured && !_tempHelper.IsTakeMeasurement(BottomTemperature))
 				return;
 
 			//определяем диапазон измеряемого значения для омметра
@@ -314,6 +348,34 @@ namespace Remf.Core
 			ThermoEDF = _thermoEDF.GetVoltage(range) * 1e6;
 
 			return ThermoEDF;
+		}
+
+		/// <summary>
+		/// Запускает процесс измерения сопротивления и термоЭДС
+		/// </summary>
+		/// <returns>Возвращает состояние процесса измерения <see cref="IsMeasurementStarted"/></returns>
+		public bool StartMesuarements()
+		{
+			return TurnMesuarements(true);
+		}
+
+		/// <summary>
+		/// Останавливает процесс измерения сопротивления и термоЭДС
+		/// </summary>
+		/// <returns>Возвращает состояние процесса измерения <see cref="IsMeasurementStarted"/></returns>
+		public bool StoptMesuarements()
+		{
+			return TurnMesuarements(false);
+		}
+
+		private bool TurnMesuarements(bool isOn)
+		{
+			if (_gradPower.IsInitialized)
+			{
+				_gradPower.TurnPower(isOn);
+			}
+
+			return IsMeasurementStarted = isOn;
 		}
 
 		/// <summary>
