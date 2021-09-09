@@ -84,6 +84,7 @@ namespace Multimeters
 			//{
 			//}
 			_session = new UsbSession(ResourceName);
+			
 			//Очищает прибор от ошибок
 			_session.FormattedIO.WriteLine("*CLS");
 
