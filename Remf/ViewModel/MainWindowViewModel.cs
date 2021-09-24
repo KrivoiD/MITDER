@@ -23,6 +23,7 @@ namespace Remf.ViewModel
 		PristV7_78 _topThermocuple = null;
 		Agilent34410 _resistanceDevice = null;
 		ItechIT7626H _gradientDevice = null;
+		ItechIT7626H _furnaceDevice = null;
 		MeasurementCore _core = null;
 
 		private double _bottomTemperature;
@@ -240,7 +241,8 @@ namespace Remf.ViewModel
 			if (string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["BottomVISA"])
 				|| string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["TopVISA"])
 				|| string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["ResistanceVISA"])
-				|| string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["GradientPowerVISA"]))
+				|| string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["GradientPowerVISA"])
+				|| string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["FurnacePowerVISA"]))
 			{
 				WindowService.ShowMessage("Укажите значения VISA-адресов устройств в app.config.", "Проблемы с настройками", true);
 				throw new ApplicationException("Не указаны VISA-адреса в app.config.");
@@ -251,6 +253,7 @@ namespace Remf.ViewModel
 				_topThermocuple = new PristV7_78(ConfigurationManager.AppSettings["TopVISA"]);
 				_resistanceDevice = new Agilent34410(ConfigurationManager.AppSettings["ResistanceVISA"]);
 				_gradientDevice = new ItechIT7626H(ConfigurationManager.AppSettings["GradientPowerVISA"], 220, 0.75);
+				_furnaceDevice = new ItechIT7626H(ConfigurationManager.AppSettings["FurnacePowerVISA"], 220, 6);
 			}
 			catch (Exception ex)
 			{
@@ -263,7 +266,7 @@ namespace Remf.ViewModel
 			try
 			{
 				_saver = new SaveHelper<MeasuredValues>(MeasuredValuesCollection, Settings.Default.SavedFilePath);
-				_core = new MeasurementCore(_topThermocuple, _bottomThermocuple, _resistanceDevice, _gradientDevice);
+				_core = new MeasurementCore(_topThermocuple, _bottomThermocuple, _resistanceDevice, _furnaceDevice,  _gradientDevice);
 			}
 			catch (Exception ex)
 			{

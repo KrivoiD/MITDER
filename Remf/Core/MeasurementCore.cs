@@ -42,12 +42,14 @@ namespace Remf.Core
 		IVoltageMeasurable _thermoEDF = null;
 		IResistanceMeasurable _resistance = null;
 		IPowerSupply _gradPower = null;
+		IPowerSupply _furnacePower = null;
 		Relay _relay = null;
 		GradientHelper _gradHelper = null;
+		PowerHelper _furnaceHelper = null;
 
 		/// <summary>
 		/// Интервал (в миллисекундах) измерения напряжения на верхней и нижней термопарах, контролирующих температуру.
-		/// По умолчанию 250 мс. Диапазон устанавливаемых значений от 200 мс до 10 с.
+		/// По умолчанию 500 мс. Диапазон устанавливаемых значений от 200 мс до 10 с.
 		/// Установка нового значения перезапускает таймер измерений.
 		/// </summary>
 		public double Interval
@@ -138,7 +140,7 @@ namespace Remf.Core
 		/// </summary>
 		public double GradientCurrent
 		{
-			get => _gradientCurrent; 
+			get => _gradientCurrent;
 			private set => _gradientCurrent = value < 0 ? 0 : value;
 		}
 
@@ -152,6 +154,26 @@ namespace Remf.Core
 			private set => _gradientVoltage = value < 0 ? 0 : value;
 		}
 
+		private double _furnaceCurrent;
+		/// <summary>
+		/// Сила тока на печи.
+		/// </summary>
+		public double FurnaceCurrent
+		{
+			get => _furnaceCurrent;
+			private set => _furnaceCurrent = value < 0 ? 0 : value;
+		}
+
+		private double _furnaceVoltage = 220;
+		/// <summary>
+		/// Напряжение тока на печи. По умолчанию 220 В.
+		/// </summary>
+		public double FurnaceVoltage
+		{
+			get => _furnaceVoltage;
+			private set => _furnaceVoltage = value < 0 ? 0 : value;
+		}
+
 		#endregion
 
 		private MeasurementCore()
@@ -161,16 +183,17 @@ namespace Remf.Core
 			MeasurementSteps.SelectedItemChanged += MeasurementSteps_SelectedItemChanged;
 #endif
 			_tempHelper = new TemperatureHelper(MeasurementSteps);
-			_timer = new System.Timers.Timer(MIN_INTERVAL);
+			_timer = new System.Timers.Timer(500);
 			_timer.AutoReset = true;
 			_timer.Elapsed += _timer_Elapsed;
 
-			if(!double.TryParse(ConfigurationManager.AppSettings["GradientSize"], out var gradSize))
+			if (!double.TryParse(ConfigurationManager.AppSettings["GradientSize"], out var gradSize))
 			{
 				WindowService.ShowMessage("В файле app.config для ключа GradientSize ожидалось числовое значение.", "Неверные настройки", true);
 				throw new ArgumentException("Неверный формат значения для ключа настройки GradientSize. Указанное значение " + ConfigurationManager.AppSettings["GradientSize"]);
 			}
 			_gradHelper = new GradientHelper(gradSize);
+			_furnaceHelper = new PowerHelper(30, Interval);
 		}
 
 #if WithoutDevices
@@ -199,25 +222,26 @@ namespace Remf.Core
 		/// <param name="topThermocouple">Устройство, снимающее показания с верхней термопары</param>
 		/// <param name="bottomThermocouple">Устройство, снимающее показания с нижней термопары</param>
 		/// <param name="resistance">Устройство, снимающее сопротивление с образца</param>
-		/// <param name="settings">Параметры измерения</param>
-		public MeasurementCore(IVoltageMeasurable topThermocouple, IVoltageMeasurable bottomThermocouple, IResistanceMeasurable resistance, IPowerSupply gradPower) : this()
+		public MeasurementCore(IVoltageMeasurable topThermocouple, IVoltageMeasurable bottomThermocouple, IResistanceMeasurable resistance, IPowerSupply furnacePower, IPowerSupply gradPower = null) : this()
 		{
-			if (topThermocouple == null || bottomThermocouple == null || resistance == null || gradPower == null)
+			if (topThermocouple == null || bottomThermocouple == null || resistance == null || furnacePower == null || gradPower == null)
 				throw new ArgumentNullException();
 			if (!topThermocouple.IsInitialized || !bottomThermocouple.IsInitialized
-				|| !resistance.IsInitialized || !gradPower.IsInitialized)
+				|| !resistance.IsInitialized || !gradPower.IsInitialized || !furnacePower.IsInitialized || !gradPower.IsInitialized)
 				throw new InvalidOperationException("Должны быть инициализированы все устройства.");
 #if !WithoutDevices
-            InitializeUsbRelay();
+			InitializeUsbRelay();
 #endif
 			_topThermocouple = topThermocouple;
 			_bottomThermocouple = bottomThermocouple;
 			_resistance = resistance;
 			_gradPower = gradPower;
+			_furnacePower = furnacePower;
 			//Прибор, измеряющий сопротивление, измеряет еще и термоЭДС
 			_thermoEDF = _resistance as IVoltageMeasurable;
 			//Задаем выходное напряжение на градиентную спираль
 			_gradPower.SetVoltage(GradientVoltage);
+			_furnacePower.SetVoltage(FurnaceVoltage);
 			_timer.Start();
 		}
 
@@ -239,20 +263,32 @@ namespace Remf.Core
 		void _timer_Elapsed(object sender, ElapsedEventArgs e)
 		{
 			MeasureTemperatureVoltages();
-			if(!IsMeasurementStarted)
+			if (!IsMeasurementStarted)
+			{
 				AdjustGradientPower();
+				AdjustFurnacePower();
+			}
 		}
 
 		private void AdjustGradientPower()
 		{
-			if (!IsMeasurementStarted)
-				return;
 			var direction = _gradHelper.GetPowerChangingDirection(BottomTemperature, TopTemperature);
-			if (IsMeasurementStarted && direction != 0)
+			if (IsMeasurementStarted && IsMeasureThermoEDF && direction != 0)
 			{
 				var value = _gradPower.SetCurrent(GradientCurrent + direction * 0.01);
 				if (value.HasValue)
 					GradientCurrent = value.Value;
+			}
+		}
+
+		private void AdjustFurnacePower()
+		{
+			var direction = _furnaceHelper.AddCurrentTemperature(BottomTemperature);
+			if(IsMeasurementStarted && direction != 0)
+			{
+				var value = _furnacePower.SetCurrent(FurnaceCurrent + direction * 0.01);
+				if (value.HasValue)
+					FurnaceCurrent = value.Value;
 			}
 		}
 
@@ -328,11 +364,11 @@ namespace Remf.Core
 				return double.NaN;
 			Resistance = _resistance.GetResistance(range);
 #if !WithoutDevices
-            _relay.WriteChannels(true);
+			_relay.WriteChannels(true);
 #endif
 			ReverseResistance = _resistance.GetResistance(range);
 #if !WithoutDevices
-            _relay.WriteChannels(false);
+			_relay.WriteChannels(false);
 #endif
 
 			return Resistance;
@@ -375,7 +411,12 @@ namespace Remf.Core
 		{
 			if (_gradPower.IsInitialized)
 			{
-				_gradPower.TurnPower(isOn);
+				_gradPower.TurnPower(isOn && IsMeasureThermoEDF);
+			}
+
+			if(_furnacePower.IsInitialized)
+			{
+				_furnacePower.TurnPower(isOn);
 			}
 
 			return IsMeasurementStarted = isOn;
@@ -398,8 +439,8 @@ namespace Remf.Core
 			_timer.Elapsed -= _timer_Elapsed;
 			_timer.Dispose();
 #if !WithoutDevices
-            if(_relay.IsOpened)
-                _relay.Close();
+			if (_relay.IsOpened)
+				_relay.Close();
 #endif
 			//ожидает полного освобождения ресурсов _timer;
 			_manualResetEvent.WaitOne();
