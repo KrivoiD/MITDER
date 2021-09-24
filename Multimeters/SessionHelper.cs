@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 
 using Ivi.Visa;
+using Services;
 
 namespace Multimeters
 {
@@ -20,14 +21,26 @@ namespace Multimeters
 				throw new ArgumentException();
 			var errors = new List<string>(4);
 			string error;
-			do
+			try
 			{
 				session.FormattedIO.PrintfAndFlush("SYSTEM:ERROR?");
-				error = session.FormattedIO.ReadString();
+				error = session.FormattedIO.ReadUntilEnd();
 				errors.Add(error);
-			} while (!error.Contains("No error"));
+				//do
+				//{
+				//} while (!(error.Contains("No error") || !error.Contains("Noerror")));
+			}
+			catch (Exception ex)
+			{
+				errors.Insert(0, "//n====>" + ex.ToString());
+			}
+			finally
+			{
+				session.FormattedIO.WriteLine("*CLS");
+			}
 			//удаляем последнию запись, которая указывает, что отсутствуют ошибки
-			errors.RemoveAt(errors.Count - 1);
+			//if(errors.Count > 0)
+			//	errors.RemoveAt(errors.Count - 1);
 			return errors;
 		}
 
@@ -42,6 +55,18 @@ namespace Multimeters
 			foreach (var error in GetErrors(session))
 				errorResult += error;
 			return errorResult;
+		}
+
+		/// <summary>
+		/// Возвращает модель устройства или VISA-адрес
+		/// </summary>
+		/// <param name="session">Установленная сессия прибора</param>
+		/// <returns></returns>
+		private static string GetDeviceName(IMessageBasedSession session)
+		{
+			if (session is IUsbSession usbSession)
+				return usbSession.ModelName;
+			return session.ResourceName;
 		}
 	}
 }

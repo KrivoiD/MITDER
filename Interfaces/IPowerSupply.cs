@@ -18,12 +18,14 @@ namespace Interfaces
 		/// Устанавливает заданное значение тока
 		/// </summary>
 		/// <param name="value">Устанавливаемое значение тока в Амперах</param>
-		void SetCurrent(double value);
+		/// <returns>Возвращает установленную силу тока</returns>
+		double? SetCurrent(double value);
 		/// <summary>
 		/// Устанавливает заданное значение напряжения
 		/// </summary>
 		/// <param name="value">Устанавливаемое значение напряжения в Вольтах</param>
-		void SetVoltage(double value);
+		/// <returns>Возвращает установленное напряжение тока</returns>
+		double? SetVoltage(double value);
 		/// <summary>
 		/// Устанавливает заданные значения тока и напряжения
 		/// </summary>

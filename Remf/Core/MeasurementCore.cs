@@ -167,7 +167,7 @@ namespace Remf.Core
 
 			if(!double.TryParse(ConfigurationManager.AppSettings["GradientSize"], out var gradSize))
 			{
-				WindowService.ShowMessage("В файле app.conf для ключа GradientSize ожидалось числовое значение.", "Неверные настройки", true);
+				WindowService.ShowMessage("В файле app.config для ключа GradientSize ожидалось числовое значение.", "Неверные настройки", true);
 				throw new ArgumentException("Неверный формат значения для ключа настройки GradientSize. Указанное значение " + ConfigurationManager.AppSettings["GradientSize"]);
 			}
 			_gradHelper = new GradientHelper(gradSize);
@@ -239,17 +239,20 @@ namespace Remf.Core
 		void _timer_Elapsed(object sender, ElapsedEventArgs e)
 		{
 			MeasureTemperatureVoltages();
-			AdjustGradientPower();
+			if(!IsMeasurementStarted)
+				AdjustGradientPower();
 		}
 
 		private void AdjustGradientPower()
 		{
+			if (!IsMeasurementStarted)
+				return;
 			var direction = _gradHelper.GetPowerChangingDirection(BottomTemperature, TopTemperature);
 			if (IsMeasurementStarted && direction != 0)
 			{
-				GradientCurrent += direction * 0.01;
-				_gradPower.SetCurrent(GradientCurrent);
-
+				var value = _gradPower.SetCurrent(GradientCurrent + direction * 0.01);
+				if (value.HasValue)
+					GradientCurrent = value.Value;
 			}
 		}
 
@@ -281,7 +284,7 @@ namespace Remf.Core
 		/// </summary>
 		private void MeasureResistanceIfNeed()
 		{
-			if (!IsResistanceMeasured && !_tempHelper.IsTakeMeasurement(BottomTemperature))
+			if (!IsResistanceMeasured || !_tempHelper.IsTakeMeasurement(BottomTemperature))
 				return;
 
 			//определяем диапазон измеряемого значения для омметра

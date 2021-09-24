@@ -250,7 +250,7 @@ namespace Remf.ViewModel
 				_bottomThermocuple = new PristV7_78(ConfigurationManager.AppSettings["BottomVISA"]);
 				_topThermocuple = new PristV7_78(ConfigurationManager.AppSettings["TopVISA"]);
 				_resistanceDevice = new Agilent34410(ConfigurationManager.AppSettings["ResistanceVISA"]);
-				_gradientDevice = new ItechIT7626H(ConfigurationManager.AppSettings["GradientPowerVISA"]);
+				_gradientDevice = new ItechIT7626H(ConfigurationManager.AppSettings["GradientPowerVISA"], 220, 0.75);
 			}
 			catch (Exception ex)
 			{
