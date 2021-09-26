@@ -29,6 +29,9 @@ namespace Core.Helpers
 		private double _temperatureRate;
 		private double _rateStabilityRange;
 
+		private int _measurementQty = 0;
+		private int _measurementCounter = 0;
+
 		/// <summary>
 		/// Необходимая скорость изменения температуры в мВ/с.
 		/// <br /> По умолчанию установлено 0,002 мВ/с, что примерно 180 град/час
@@ -69,7 +72,13 @@ namespace Core.Helpers
 			TemperatureRate = DEFAULT_TEMPERATURE_RATE;
 			RateStabilityRange = DEFAULT_RATE_STABILITY_RANGE;
 			_interval = interval;
-			_rateList = new MovableAverage(lastValuesAmount);
+
+			//TODO: переделать КОСТЫЛЬ
+			//выжидаем 5 секунд, прежде чем даем реальную команду на изменение питания
+			//т.е. каждый n-ый запрос будет вычислять возвращаемый коэффициент, в остальных случая всегда ноль. 
+			_measurementQty = (int)(3 / interval);
+
+			_rateList = new MovableAverage(_measurementQty);
 		}
 
 		/// <summary>
@@ -94,6 +103,14 @@ namespace Core.Helpers
 		/// -1 - необходимо уменьшить питание</returns>
 		public int GetPowerChangingDirection()
 		{
+			if (++_measurementCounter < _measurementQty)
+			{
+				return 0;
+			}
+			else
+			{
+				_measurementCounter = 0;
+			}
 			if (_rate < TemperatureRate - RateStabilityRange)
 				return 1;
 			if (_rate > TemperatureRate + RateStabilityRange)

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Configuration;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -104,11 +105,17 @@ namespace Remf.Core
 		/// </summary>
 		public bool IsResistanceMeasured { get; set; }
 
+		private bool _isMeasureThermoEDF;
+
 		/// <summary>
 		/// Указывает, производить ли измерения термоЭДС в заданном интервале [<see cref="MeasurementCore.From"/>;<see cref="MeasurementCore.To"/>]
 		/// с заданным шагом <see cref="MeasurementCore.Step"/>.
 		/// </summary>
-		public bool IsMeasureThermoEDF { get; set; }
+		public bool IsMeasureThermoEDF
+		{
+			get => _isMeasureThermoEDF;
+			set => _isMeasureThermoEDF = value && _gradPower != null;
+		}
 
 		/// <summary>
 		/// Указывает, запущен ли процесс измерения.
@@ -187,13 +194,13 @@ namespace Remf.Core
 			_timer.AutoReset = true;
 			_timer.Elapsed += _timer_Elapsed;
 
-			if (!double.TryParse(ConfigurationManager.AppSettings["GradientSize"], out var gradSize))
+			if (!double.TryParse(ConfigurationManager.AppSettings["GradientSize"], NumberStyles.Float, CultureInfo.InvariantCulture, out var gradSize))
 			{
 				WindowService.ShowMessage("В файле app.config для ключа GradientSize ожидалось числовое значение.", "Неверные настройки", true);
 				throw new ArgumentException("Неверный формат значения для ключа настройки GradientSize. Указанное значение " + ConfigurationManager.AppSettings["GradientSize"]);
 			}
 			_gradHelper = new GradientHelper(gradSize);
-			_furnaceHelper = new PowerHelper(30, Interval);
+			_furnaceHelper = new PowerHelper(30, Interval / 1000.0);
 		}
 
 #if WithoutDevices
@@ -224,10 +231,10 @@ namespace Remf.Core
 		/// <param name="resistance">Устройство, снимающее сопротивление с образца</param>
 		public MeasurementCore(IVoltageMeasurable topThermocouple, IVoltageMeasurable bottomThermocouple, IResistanceMeasurable resistance, IPowerSupply furnacePower, IPowerSupply gradPower = null) : this()
 		{
-			if (topThermocouple == null || bottomThermocouple == null || resistance == null || furnacePower == null || gradPower == null)
+			if (topThermocouple == null || bottomThermocouple == null || resistance == null || furnacePower == null)
 				throw new ArgumentNullException();
 			if (!topThermocouple.IsInitialized || !bottomThermocouple.IsInitialized
-				|| !resistance.IsInitialized || !gradPower.IsInitialized || !furnacePower.IsInitialized || !gradPower.IsInitialized)
+				|| !resistance.IsInitialized || !furnacePower.IsInitialized || (gradPower != null && !gradPower.IsInitialized))
 				throw new InvalidOperationException("Должны быть инициализированы все устройства.");
 #if !WithoutDevices
 			InitializeUsbRelay();
@@ -240,7 +247,8 @@ namespace Remf.Core
 			//Прибор, измеряющий сопротивление, измеряет еще и термоЭДС
 			_thermoEDF = _resistance as IVoltageMeasurable;
 			//Задаем выходное напряжение на градиентную спираль
-			_gradPower.SetVoltage(GradientVoltage);
+			if(_gradPower != null)
+				_gradPower.SetVoltage(GradientVoltage);
 			_furnacePower.SetVoltage(FurnaceVoltage);
 			_timer.Start();
 		}
@@ -263,7 +271,7 @@ namespace Remf.Core
 		void _timer_Elapsed(object sender, ElapsedEventArgs e)
 		{
 			MeasureTemperatureVoltages();
-			if (!IsMeasurementStarted)
+			if (IsMeasurementStarted)
 			{
 				AdjustGradientPower();
 				AdjustFurnacePower();
@@ -273,7 +281,7 @@ namespace Remf.Core
 		private void AdjustGradientPower()
 		{
 			var direction = _gradHelper.GetPowerChangingDirection(BottomTemperature, TopTemperature);
-			if (IsMeasurementStarted && IsMeasureThermoEDF && direction != 0)
+			if (IsMeasureThermoEDF && IsMeasurementStarted && direction != 0)
 			{
 				var value = _gradPower.SetCurrent(GradientCurrent + direction * 0.01);
 				if (value.HasValue)
@@ -284,7 +292,7 @@ namespace Remf.Core
 		private void AdjustFurnacePower()
 		{
 			var direction = _furnaceHelper.AddCurrentTemperature(BottomTemperature);
-			if(IsMeasurementStarted && direction != 0)
+			if (IsMeasurementStarted && direction != 0)
 			{
 				var value = _furnacePower.SetCurrent(FurnaceCurrent + direction * 0.01);
 				if (value.HasValue)
@@ -409,12 +417,12 @@ namespace Remf.Core
 
 		private bool TurnMesuarements(bool isOn)
 		{
-			if (_gradPower.IsInitialized)
+			if (_gradPower?.IsInitialized ?? false)
 			{
 				_gradPower.TurnPower(isOn && IsMeasureThermoEDF);
 			}
 
-			if(_furnacePower.IsInitialized)
+			if (_furnacePower.IsInitialized)
 			{
 				_furnacePower.TurnPower(isOn);
 			}

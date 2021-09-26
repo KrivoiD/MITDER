@@ -23,12 +23,12 @@ namespace Multimeters
 			string error;
 			try
 			{
-				session.FormattedIO.PrintfAndFlush("SYSTEM:ERROR?");
-				error = session.FormattedIO.ReadUntilEnd();
-				errors.Add(error);
-				//do
-				//{
-				//} while (!(error.Contains("No error") || !error.Contains("Noerror")));
+				do
+				{
+					session.FormattedIO.PrintfAndFlush("SYSTEM:ERROR?");
+					error = session.FormattedIO.ReadUntilEnd();
+					errors.Add(error);
+				} while (!(error.Contains("No error") || !error.Contains("Noerror")));
 			}
 			catch (Exception ex)
 			{
