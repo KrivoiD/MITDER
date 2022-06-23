@@ -13,9 +13,9 @@ namespace Core.Helpers
 	public class PowerHelper
 	{
 		/// <summary>
-		/// Величина скорости изменения температуры по умолчанию в мВ/с
+		/// Величина скорости изменения температуры по умолчанию в мВ/с (примерно 360 град/час).
 		/// </summary>
-		public const double DEFAULT_TEMPERATURE_RATE = 0.002;
+		public const double DEFAULT_TEMPERATURE_RATE = 0.004;
 		/// <summary>
 		/// Величина диапазона стабильности скорости по умолчанию в мВ/С
 		/// </summary>
@@ -34,7 +34,7 @@ namespace Core.Helpers
 
 		/// <summary>
 		/// Необходимая скорость изменения температуры в мВ/с.
-		/// <br /> По умолчанию установлено 0,002 мВ/с, что примерно 180 град/час
+		/// <br /> По умолчанию установлено значение <see cref="DEFAULT_TEMPERATURE_RATE"/>.
 		/// </summary>
 		public double TemperatureRate
 		{
@@ -67,7 +67,7 @@ namespace Core.Helpers
 		/// </summary>
 		/// <param name="lastValuesAmount">Количество последних показаний, используемых для расчета средней скорости изменения температуры</param>
 		/// <param name="interval">Интервал измерений показаний температур, в секундах</param>
-		public PowerHelper(int lastValuesAmount, double interval)
+		public PowerHelper(double interval)
 		{
 			TemperatureRate = DEFAULT_TEMPERATURE_RATE;
 			RateStabilityRange = DEFAULT_RATE_STABILITY_RANGE;
@@ -75,8 +75,8 @@ namespace Core.Helpers
 
 			//TODO: переделать КОСТЫЛЬ
 			//выжидаем 5 секунд, прежде чем даем реальную команду на изменение питания
-			//т.е. каждый n-ый запрос будет вычислять возвращаемый коэффициент, в остальных случая всегда ноль. 
-			_measurementQty = (int)(3 / interval);
+			//т.е. каждый 4-секундный запрос будет вычислять возвращаемый коэффициент, в остальных случая всегда ноль. 
+			_measurementQty = (int)(4 / interval);
 
 			_rateList = new MovableAverage(_measurementQty);
 		}
@@ -89,7 +89,7 @@ namespace Core.Helpers
 		/// Смотри <seealso cref="GetPowerChangingDirection()"/></returns>
 		public int AddCurrentTemperature(double value)
 		{
-			_rate = _rateList.AddValue((value - _lastTemperature) / _interval);
+			_rate = _rateList.AddValue(Math.Abs(value - _lastTemperature) / _interval);
 			_lastTemperature = value;
 			return GetPowerChangingDirection();
 		}

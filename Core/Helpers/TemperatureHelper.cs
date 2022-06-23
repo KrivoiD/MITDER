@@ -19,7 +19,7 @@ namespace Core.Helpers
 		/// <summary>
 		/// Текущая температура (последнее установленное значение)
 		/// </summary>
-		public double CurrentTemperature { get; private set; }
+		public double CurrentTemperature { get; private set; } = -10; //пока костыль, неправильно отсчитывает следующую точку измерения, т.к. по-умолчанию текущая стояла в ноль.
 
 		/// <summary>
 		/// Температура, при которой происходит следующее измерение
@@ -38,6 +38,7 @@ namespace Core.Helpers
 			
 			StepCollection = steps;
 			StepCollection.SelectedItemChanged += StepCollection_SelectionChanged;
+			FindActualNextTemperature();
 		}
 
 		/// <summary>
@@ -57,10 +58,10 @@ namespace Core.Helpers
 		{
 			isDone = false;
 			_step = collection.SelectedItem;
-			
+
 			//Установка текущего индекса в -1 означает, что достигли конца коллекции 
 			// или был вызван метод ResetSelection(), т.е. перезапустили этапы
-			if(collection.SelectedIndex == -1)
+			if (collection.SelectedIndex == -1)
 			{
 				isDone = true;
 				return;
@@ -68,10 +69,6 @@ namespace Core.Helpers
 
 			switch (collection.SelectedItem.Type)
 			{
-				//TODO: необходимо ли проверять на два этих типа?
-				case StepType.NotAssigned:
-				case StepType.Done:
-					return;
 				case StepType.Waiting:
 				case StepType.Heating:
 					_coeff = 1;
@@ -82,6 +79,11 @@ namespace Core.Helpers
 			}
 
 			NextTemperature = _step.From;
+			FindActualNextTemperature();
+		}
+
+		private void FindActualNextTemperature()
+		{
 			while (_coeff * NextTemperature < _coeff * CurrentTemperature)
 			{
 				NextTemperature += _coeff * _step.Step;

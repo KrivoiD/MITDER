@@ -241,7 +241,7 @@ namespace Remf.ViewModel
 			if (string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["BottomVISA"])
 				|| string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["TopVISA"])
 				|| string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["ResistanceVISA"])
-				|| string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["GradientPowerVISA"])
+				//|| string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["GradientPowerVISA"])
 				|| string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["FurnacePowerVISA"]))
 			{
 				WindowService.ShowMessage("Укажите значения VISA-адресов устройств в app.config.", "Проблемы с настройками", true);
@@ -249,11 +249,11 @@ namespace Remf.ViewModel
 			}
 			try
 			{
-				_bottomThermocuple = new PristV7_78(ConfigurationManager.AppSettings["BottomVISA"]);
-				_topThermocuple = new PristV7_78(ConfigurationManager.AppSettings["TopVISA"]);
+				_bottomThermocuple = new PristV7_78(ConfigurationManager.AppSettings["BottomVISA"]) { Name = "Нижняя термопара" };
+				_topThermocuple = new PristV7_78(ConfigurationManager.AppSettings["TopVISA"]) { Name = "Верхняя термопара" };
 				_resistanceDevice = new Agilent34410(ConfigurationManager.AppSettings["ResistanceVISA"]);
-				//_gradientDevice = new ItechIT7626H(ConfigurationManager.AppSettings["GradientPowerVISA"], 220, 0.75);
-				_furnaceDevice = new ItechIT7626H(ConfigurationManager.AppSettings["FurnacePowerVISA"], 220, 5);
+				//_gradientDevice = new ItechIT7626H(ConfigurationManager.AppSettings["GradientPowerVISA"], 220, 3) { Name = "Источник градиента" };
+				_furnaceDevice = new ItechIT7626H(ConfigurationManager.AppSettings["FurnacePowerVISA"], 220, 6) { Name = "Источник печи" };
 			}
 			catch (Exception ex)
 			{
@@ -266,7 +266,7 @@ namespace Remf.ViewModel
 			try
 			{
 				_saver = new SaveHelper<MeasuredValues>(MeasuredValuesCollection, Settings.Default.SavedFilePath);
-				_core = new MeasurementCore(_topThermocuple, _bottomThermocuple, _resistanceDevice, _furnaceDevice);
+				_core = new MeasurementCore(_topThermocuple, _bottomThermocuple, _resistanceDevice, _furnaceDevice, _gradientDevice);
 			}
 			catch (Exception ex)
 			{
@@ -279,7 +279,7 @@ namespace Remf.ViewModel
 			{
 				From = -5.6,
 				To = 40,
-				Step = 0.2,
+				Step = 0.05,
 				PointRange = 0.01,
 				Type = StepType.Heating
 			});

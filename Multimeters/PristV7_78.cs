@@ -66,19 +66,21 @@ namespace Multimeters
 			{
 				_session.FormattedIO.PrintfAndFlush("READ?");
 				var result = _session.FormattedIO.ReadLineDouble();
-				//Logger.Info(Name + " => Получено напряжение " + result.ToString("0.000000") + "В");
+				Logger.Info($"{Name} => Получено напряжение {result:N6} В");
 				return result;
 
 			}
 			catch (TimeoutException ex)
 			{
 				var error = SessionHelper.GetErrorsResult(_session);
-				Logger.Warn(Name + " => При получении напряжения возникло TimeoutException: " + ex.Message + "\n\t\tОшибка по прибору: " + error + "\n\t\tStackTrace" + ex.StackTrace);
+				Logger.Warn($"{Name} => При получении напряжения возникло TimeoutException: {ex.Message}" 
+								+$"\n\t\tОшибка по прибору: {error}\n\t\tStackTrace {ex.StackTrace}");
 			}
 			catch (Exception ex)
 			{
 				var error = SessionHelper.GetErrorsResult(_session);
-				Logger.Error(Name + " => При получении напряжения возникло исключение: " + ex.Message + "\n\t\tОшибка по прибору: " + error + "\n\t\tStackTrace" + ex.StackTrace);
+				Logger.Error($"{Name} => При получении напряжения возникло исключение: {ex.Message}"
+								+ $"\n\t\tОшибка по прибору: {error}\n\t\tStackTrace {ex.StackTrace}");
 			}
 			return double.NaN;
 			////_session.FormattedIO.PrintfAndFlush($"MEASURE:VOLTAGE:DC? {range.ToString("0.#", CultureInfo.InvariantCulture)},1e-7");

@@ -47,6 +47,7 @@ namespace Remf.Core
 		Relay _relay = null;
 		GradientHelper _gradHelper = null;
 		PowerHelper _furnaceHelper = null;
+		int _stepCoeff = 0;
 
 		/// <summary>
 		/// Интервал (в миллисекундах) измерения напряжения на верхней и нижней термопарах, контролирующих температуру.
@@ -114,7 +115,7 @@ namespace Remf.Core
 		public bool IsMeasureThermoEDF
 		{
 			get => _isMeasureThermoEDF;
-			set => _isMeasureThermoEDF = value && _gradPower != null;
+			set => _isMeasureThermoEDF = value; // && _gradPower != null;
 		}
 
 		/// <summary>
@@ -186,9 +187,8 @@ namespace Remf.Core
 		private MeasurementCore()
 		{
 			MeasurementSteps = new WSICollection<StepSettings>();
-#if WithoutDevices
 			MeasurementSteps.SelectedItemChanged += MeasurementSteps_SelectedItemChanged;
-#endif
+
 			_tempHelper = new TemperatureHelper(MeasurementSteps);
 			_timer = new System.Timers.Timer(500);
 			_timer.AutoReset = true;
@@ -199,8 +199,8 @@ namespace Remf.Core
 				WindowService.ShowMessage("В файле app.config для ключа GradientSize ожидалось числовое значение.", "Неверные настройки", true);
 				throw new ArgumentException("Неверный формат значения для ключа настройки GradientSize. Указанное значение " + ConfigurationManager.AppSettings["GradientSize"]);
 			}
-			_gradHelper = new GradientHelper(gradSize);
-			_furnaceHelper = new PowerHelper(30, Interval / 1000.0);
+			//_gradHelper = new GradientHelper(Interval / 1000.0, gradSize);
+			_furnaceHelper = new PowerHelper(Interval / 1000.0);
 		}
 
 #if WithoutDevices
@@ -221,6 +221,11 @@ namespace Remf.Core
 					break;
 			}
 		}
+#else
+		private void MeasurementSteps_SelectedItemChanged(WSICollection<StepSettings> collection, ChangedEventArgs<StepSettings> args)
+		{
+			_stepCoeff = (int)(collection.SelectedItem?.Type ?? StepType.Waiting);
+		}
 #endif
 
 		/// <summary>
@@ -234,7 +239,8 @@ namespace Remf.Core
 			if (topThermocouple == null || bottomThermocouple == null || resistance == null || furnacePower == null)
 				throw new ArgumentNullException();
 			if (!topThermocouple.IsInitialized || !bottomThermocouple.IsInitialized
-				|| !resistance.IsInitialized || !furnacePower.IsInitialized || (gradPower != null && !gradPower.IsInitialized))
+				|| !resistance.IsInitialized || !furnacePower.IsInitialized )
+				//|| (gradPower != null && !gradPower.IsInitialized))
 				throw new InvalidOperationException("Должны быть инициализированы все устройства.");
 #if !WithoutDevices
 			InitializeUsbRelay();
@@ -273,7 +279,7 @@ namespace Remf.Core
 			MeasureTemperatureVoltages();
 			if (IsMeasurementStarted)
 			{
-				AdjustGradientPower();
+				//AdjustGradientPower();
 				AdjustFurnacePower();
 			}
 		}
@@ -294,7 +300,7 @@ namespace Remf.Core
 			var direction = _furnaceHelper.AddCurrentTemperature(BottomTemperature);
 			if (IsMeasurementStarted && direction != 0)
 			{
-				var value = _furnacePower.SetCurrent(FurnaceCurrent + direction * 0.01);
+				var value = _furnacePower.SetCurrent(FurnaceCurrent + _stepCoeff * direction * 0.01);
 				if (value.HasValue)
 					FurnaceCurrent = value.Value;
 			}
@@ -345,7 +351,7 @@ namespace Remf.Core
 				//digitNumber = integer.ToString().Length;
 				//range = Math.Pow(10, digitNumber);
 
-				MeasureThermoEDF(0.1);
+				MeasureThermoEDF(10);
 			}
 
 			if (MeasuredResistance != null)

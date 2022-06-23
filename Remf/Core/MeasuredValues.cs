@@ -60,7 +60,7 @@ namespace Remf.Core
 		/// <returns></returns>
 		public string GetHeader()
 		{
-			return string.Format(CultureInfo.InvariantCulture, "BottomTemperature\tTopTemperature\tResistance\tReverseResistance\tThermoEDF(mV)");
+			return string.Format(CultureInfo.InvariantCulture, "Date\tBottomTemperature\tTopTemperature\tResistance\tReverseResistance\tThermoEDF(µV)");
 		}
 
 		/// <summary>
@@ -69,7 +69,7 @@ namespace Remf.Core
 		/// <returns></returns>
 		public override string ToString()
 		{
-			return string.Format(CultureInfo.InvariantCulture, "{0:N4}\t{1:N4}\t{2}\t{3}\t{4}", new object[] { BottomTemperature, TopTemperature, Resistance, ReverseResistance, ThermoEDF });
+			return string.Format(CultureInfo.InvariantCulture, "{0:dd.MM.yyyy HH:mm:ss}\t{1:N4}\t{2:N4}\t{3}\t{4}\t{5}", new object[] { Date, BottomTemperature, TopTemperature, Resistance, ReverseResistance, ThermoEDF });
 		}
 	}
 }
