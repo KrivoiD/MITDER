@@ -99,7 +99,9 @@ namespace Multimeters
 			if (value > MaxVoltage)
 				value = MaxVoltage;
 			value = Math.Max(value, 0);
-#if !WithoutDevices
+#if WithoutDevices
+			return value;
+#else
 			try
 			{
 				var volt = value.ToString("0.0", CultureInfo.InvariantCulture);
@@ -112,8 +114,8 @@ namespace Multimeters
 				var error = SessionHelper.GetErrorsResult(_session);
 				Logger.Error(Name + " => При установке значения напряжения тока возникло исключение: " + ex.Message + "\n\t\tОшибка по прибору: " + error + "\n\t\tStackTrace" + ex.StackTrace);
 			}
-#endif
 			return null;
+#endif
 		}
 
 		public void SetPower(double voltage, double currency)
@@ -157,6 +159,9 @@ namespace Multimeters
 
 		private double? GetCurrent()
 		{
+#if WithoutDevices
+			return 0;
+#else
 			try
 			{
 				_session.FormattedIO.PrintfAndFlush("CURRent?");
@@ -170,10 +175,14 @@ namespace Multimeters
 				Logger.Error(Name + " => При чтении значения силы тока возникло исключение: " + ex.Message + "\n\t\tОшибка по прибору: " + error + "\n\t\tStackTrace" + ex.StackTrace);
 			}
 			return null;
+#endif
 		}
 
 		private double? GetVoltage()
 		{
+#if WithoutDevices
+			return 0;
+#else
 			try
 			{
 				_session.FormattedIO.PrintfAndFlush("VOLTage?");
@@ -187,16 +196,19 @@ namespace Multimeters
 				Logger.Error(Name + " => При чтении значения напряжения тока возникло исключение: " + ex.Message + "\n\t\tОшибка по прибору: " + error + "\n\t\tStackTrace" + ex.StackTrace);
 			}
 			return null;
+#endif
 		}
 
 
 		public void Dispose()
 		{
+#if !WithoutDevices
 			if(!_session.IsDisposed)
 			{
 				TurnPower(false);
 				_session.Dispose();
 			}
+#endif
 		}
 	}
 }

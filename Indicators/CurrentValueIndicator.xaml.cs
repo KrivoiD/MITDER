@@ -21,9 +21,12 @@ namespace Indicators
     /// </summary>
     public partial class CurrentValueIndicator : UserControl
     {
+        private DpiScale _dpiInfo;
+
         public CurrentValueIndicator()
         {
             InitializeComponent();
+            this.Loaded += CurrentValueIndicator_Loaded;
         }
 
         #region Dependency Properties and its valuechanged methods
@@ -43,7 +46,7 @@ namespace Indicators
             var indicator = sender as CurrentValueIndicator;
             indicator.ValueTextBlock.Text = ((double)args.NewValue).ToString("0.00000");
             var currentSize = new Size(indicator.ValueTextBlock.ActualWidth, indicator.ValueTextBlock.ActualHeight);
-            indicator.ValueTextBlock.FontSize = CalculateFontSize(currentSize, indicator.ValueTextBlock);
+            indicator.ValueTextBlock.FontSize = indicator.CalculateFontSize(currentSize, indicator.ValueTextBlock);
         }
 
         [Category("Values")]
@@ -59,9 +62,9 @@ namespace Indicators
         private static void TitleChanged(DependencyObject sender, DependencyPropertyChangedEventArgs args)
         {
             var indicator = sender as CurrentValueIndicator;
-            indicator.TitleTextBlock.Text = ((string)args.NewValue);
+            indicator.TitleTextBlock.Text = (string)args.NewValue;
             var currentSize = new Size(indicator.TitleTextBlock.ActualWidth, indicator.TitleTextBlock.ActualHeight);            
-            indicator.TitleTextBlock.FontSize = CalculateFontSize(currentSize, indicator.TitleTextBlock);
+            indicator.TitleTextBlock.FontSize = indicator.CalculateFontSize(currentSize, indicator.TitleTextBlock);
         }
 
         [Category("Values")]
@@ -77,9 +80,9 @@ namespace Indicators
         private static void UnitChanged(DependencyObject sender, DependencyPropertyChangedEventArgs args)
         {
             var indicator = sender as CurrentValueIndicator;
-            indicator.UnitTextBlock.Text = ((string)args.NewValue);
+            indicator.UnitTextBlock.Text = (string)args.NewValue;
             var currentSize = new Size(indicator.UnitTextBlock.ActualWidth, indicator.UnitTextBlock.ActualHeight);
-            indicator.UnitTextBlock.FontSize = CalculateFontSize(currentSize, indicator.UnitTextBlock); 
+            indicator.UnitTextBlock.FontSize = indicator.CalculateFontSize(currentSize, indicator.UnitTextBlock); 
         }
 
         [Category("Values"), Description("Значение true отображается зеленным, false - красным, неопределенное состояние - черным")]
@@ -131,7 +134,7 @@ namespace Indicators
         /// <param name="newSize">Новый требуемый размер</param>
         /// <param name="tb"></param>
         /// <returns></returns>
-        private static double CalculateFontSize(Size newSize, TextBlock tb)
+        private double CalculateFontSize(Size newSize, TextBlock tb)
         {
             if (newSize.Height <= 0 || newSize.Width <= 0)
                 return tb.FontSize;
@@ -155,14 +158,25 @@ namespace Indicators
         }
 
         // Measures text size of textblock
-        private static Size MeasureText(TextBlock tb)
+        private Size MeasureText(TextBlock tb)
         {
             var formattedText = new FormattedText(tb.Text, CultureInfo.CurrentUICulture,
                 FlowDirection.LeftToRight,
                 new Typeface(tb.FontFamily, tb.FontStyle, tb.FontWeight, tb.FontStretch),
-                tb.FontSize, Brushes.Black);
+                tb.FontSize, Brushes.Black, _dpiInfo.PixelsPerDip);
 
             return new Size(formattedText.Width, formattedText.Height);
+        }
+
+        protected override void OnDpiChanged(DpiScale oldDpi, DpiScale newDpi)
+        {
+            base.OnDpiChanged(oldDpi, newDpi);
+            _dpiInfo = newDpi;
+        }
+
+        private void CurrentValueIndicator_Loaded(object sender, RoutedEventArgs e)
+        {
+            _dpiInfo = VisualTreeHelper.GetDpi(this);
         }
     }
 }
