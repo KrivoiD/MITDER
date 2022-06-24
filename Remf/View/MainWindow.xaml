@@ -2,7 +2,11 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:Remf.ViewModel"
-        xmlns:indicators="clr-namespace:Indicators;assembly=Indicators"
+        xmlns:indicators="clr-namespace:Indicators;assembly=Indicators" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=local:MainWindowViewModel}"
         DataContext="{x:Type local:MainWindowViewModel}"
         Title="MainWindow" Height="600" Width="900">
     <Grid>
@@ -30,15 +34,15 @@
                 <RowDefinition MinHeight="60" />
                 <RowDefinition MinHeight="60" />
                 <RowDefinition MinHeight="60" />
-				<RowDefinition MinHeight="60" />
-				<RowDefinition MinHeight="60" />
+                <RowDefinition MinHeight="60" />
+                <RowDefinition MinHeight="60" />
             </Grid.RowDefinitions>
             <indicators:CurrentValueIndicator Grid.Column="0" Grid.Row="0" Value="{Binding TopTemperature}" Title="Верхняя термопара" Unit="мВ" />
             <indicators:CurrentValueIndicator Grid.Column="0" Grid.Row="1" Value="{Binding BottomTemperature}" Title="Нижняя термопара" Unit="мВ" />
             <indicators:CurrentValueIndicator Grid.Column="0" Grid.Row="2" Value="{Binding NextPoint}" Title="Следующее измерение" Unit="мВ" />
             <indicators:CurrentValueIndicator Grid.Column="0" Grid.Row="3" Value="{Binding Resistance}" Title="Сопротивление" Unit="Ом" />
             <indicators:CurrentValueIndicator Grid.Column="0" Grid.Row="4" Value="{Binding ReverseResistance}" Title="Обратное сопротивление" Unit="Ом" />
-			<indicators:CurrentValueIndicator Grid.Column="0" Grid.Row="5" Value="{Binding ThermoEDF}" Title="ТермоЭДС" Unit="мкВ" />
+            <indicators:CurrentValueIndicator Grid.Column="0" Grid.Row="5" Value="{Binding ThermoEDF}" Title="ТермоЭДС" Unit="мкВ" />
         </Grid>
         <GridSplitter Grid.Column="0" Grid.Row="2" Height="3" VerticalAlignment="Center" HorizontalAlignment="Stretch" />
         <CheckBox Grid.Row="3" IsChecked="{Binding IsMeasureThermoEDF}" Content="Измерять термоЭДС?" />

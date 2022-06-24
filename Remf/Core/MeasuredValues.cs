@@ -53,12 +53,16 @@ namespace Remf.Core
 		/// Дата и время измерения
 		/// </summary>
 		public DateTime Date { get; private set; }
+		/// <summary>
+		/// Удельная термоЭДС образца
+		/// </summary>
+		public double Alpha => ThermoEDF / (TopTemperature - BottomTemperature);
 
 		/// <summary>
 		/// Возращает строку с названиями колонок.
 		/// </summary>
 		/// <returns></returns>
-		public string GetHeader()
+		public static string GetHeader()
 		{
 			return string.Format(CultureInfo.InvariantCulture, "Date\tBottomTemperature\tTopTemperature\tResistance\tReverseResistance\tThermoEDF(µV)");
 		}
